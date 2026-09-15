@@ -6,10 +6,10 @@ A full-stack POS & Inventory Management system built for a small retail shop, re
 
 ## Team
 
-| Role     | Owner             | Scope                                                                  |
-| -------- | ----------------- | ---------------------------------------------------------------------- |
-| Backend  | Kanx (@arkan_exe) | Laravel API — auth, models, stock-deduction logic, reporting endpoints |
-| Frontend | [Partner name]    | React + Tailwind UI, built from the Ready prototype                    |
+| Role     | Owner                   | Scope                                                                  |
+| -------- | ----------------------- | ---------------------------------------------------------------------- |
+| Backend  | AbdulRahman (@arkanexe) | Laravel API — auth, models, stock-deduction logic, reporting endpoints |
+| Frontend | [toluene-18]            | React + Tailwind UI, built from the Ready prototype                    |
 
 ## Tech Stack
 
