@@ -1,5 +1,5 @@
 # ERD — CWG Retail Suite
-Agreed by: Kanx + [Partner], [date]
+
 Status: LIVING DOCUMENT — same rule as the API contract. Update here before changing the database.
 
 ---
