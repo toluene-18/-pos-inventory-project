@@ -5,6 +5,12 @@ function SignIn() {
   const [pin, setPin] = useState("")
   const [error, setError] = useState("")
 
+  const staffAccounts = [
+    { id: 1, name: "Aisha Bello", role: "Owner/Admin", staffId: "CWG-001" },
+    { id: 2, name: "Daniel Okafor", role: "Manager", staffId: "CWG-024" },
+    { id: 3, name: "Grace Adeyemi", role: "Cashier", staffId: "CWG-118" },
+  ]
+
   function handleSignIn() {
     if (pin !== "1234") {
       setError("Invalid Staff ID or PIN. Please try again.")
@@ -61,6 +67,20 @@ function SignIn() {
           >
             Sign in
           </button>
+
+          <p className="mt-6 text-xs text-gray-400 text-center">Or use saved accounts</p>
+
+          {staffAccounts.map((staff) => (
+            <div
+              key={staff.id}
+              className="mt-2 border border-gray-200 rounded-md px-3 py-2 flex justify-between items-center hover:bg-gray-100 cursor-pointer"
+            >
+              <div>
+                <p className="text-sm font-medium text-gray-900">{staff.name}</p>
+                <p className="text-xs text-gray-500">{staff.role} · {staff.staffId}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
