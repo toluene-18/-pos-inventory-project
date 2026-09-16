@@ -7,7 +7,7 @@ function SignIn() {
 
   const staffAccounts = [
     { id: 1, name: "Aisha Bello", role: "Owner/Admin", staffId: "CWG-001" },
-    { id: 2, name: "Daniel Okafor", role: "Manager", staffId: "CWG-024" },
+   
     { id: 3, name: "Grace Adeyemi", role: "Cashier", staffId: "CWG-118" },
   ]
 
@@ -86,5 +86,6 @@ function SignIn() {
     </div>
   )
 }
+
 
 export default SignIn
