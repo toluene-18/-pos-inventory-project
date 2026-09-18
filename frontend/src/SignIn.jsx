@@ -73,6 +73,7 @@ function SignIn() {
           {staffAccounts.map((staff) => (
             <div
               key={staff.id}
+                onClick={() => setStaffId(staff.staffId)}
               className="mt-2 border border-gray-200 rounded-md px-3 py-2 flex justify-between items-center hover:bg-gray-100 cursor-pointer"
             >
               <div>
