@@ -1,13 +1,14 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 function SignIn() {
   const [staffId, setStaffId] = useState("")
   const [pin, setPin] = useState("")
   const [error, setError] = useState("")
+  const navigate = useNavigate()
 
   const staffAccounts = [
     { id: 1, name: "Aisha Bello", role: "Owner/Admin", staffId: "CWG-001" },
-   
     { id: 3, name: "Grace Adeyemi", role: "Cashier", staffId: "CWG-118" },
   ]
 
@@ -16,7 +17,7 @@ function SignIn() {
       setError("Invalid Staff ID or PIN. Please try again.")
     } else {
       setError("")
-      console.log("Signed in successfully!")
+      navigate("/dashboard")
     }
   }
 
@@ -73,7 +74,7 @@ function SignIn() {
           {staffAccounts.map((staff) => (
             <div
               key={staff.id}
-                onClick={() => setStaffId(staff.staffId)}
+              onClick={() => setStaffId(staff.staffId)}
               className="mt-2 border border-gray-200 rounded-md px-3 py-2 flex justify-between items-center hover:bg-gray-100 cursor-pointer"
             >
               <div>
@@ -87,6 +88,5 @@ function SignIn() {
     </div>
   )
 }
-
 
 export default SignIn
