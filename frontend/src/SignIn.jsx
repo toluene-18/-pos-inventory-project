@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-function SignIn({ setRole }) {
+function SignIn({ setUser }) {
   const [staffId, setStaffId] = useState("")
   const [pin, setPin] = useState("")
   const [error, setError] = useState("")
@@ -18,8 +18,8 @@ function SignIn({ setRole }) {
     } else {
       setError("")
       const matchedStaff = staffAccounts.find((s) => s.staffId === staffId)
-      const loggedInRole = matchedStaff ? matchedStaff.role : "cashier"
-      setRole(loggedInRole)
+      const loggedInUser = matchedStaff || { name: "Staff", role: "cashier", staffId }
+      setUser(loggedInUser)
       navigate("/dashboard")
     }
   }

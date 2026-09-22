@@ -4,12 +4,12 @@ import SignIn from './SignIn.jsx'
 import Dashboard from './Dashboard.jsx'
 
 function App() {
-  const [role, setRole] = useState(null)
+  const [user, setUser] = useState(null)
 
   return (
     <Routes>
-      <Route path="/" element={<SignIn setRole={setRole} />} />
-      <Route path="/dashboard" element={<Dashboard role={role} />} />
+      <Route path="/" element={<SignIn setUser={setUser} />} />
+      <Route path="/dashboard" element={<Dashboard user={user} />} />
     </Routes>
   )
 }
