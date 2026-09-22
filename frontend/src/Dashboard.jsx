@@ -1,8 +1,20 @@
+import StatCard from './StatCard.jsx'
+
 function Dashboard({ user }) {
   const ownerNavItems = ["Dashboard", "Point of Sale", "Inventory", "Products", "Sales", "Reports", "Settings"]
   const cashierNavItems = ["Dashboard", "Point of Sale", "Sales"]
 
   const navItems = user.role === "owner" ? ownerNavItems : cashierNavItems
+
+  const baseStats = [
+    { title: "Today's Sales", value: "₦108,700", subtitle: "vs. same time yesterday" },
+    { title: "Transactions", value: "27", subtitle: "86 items checked out" },
+    { title: "Avg. Basket", value: "₦4,026", subtitle: "per completed sale" },
+  ]
+
+  const cashierExtraStat = { title: "Low Stock Alerts", value: "4", subtitle: "1 out of stock" }
+
+  const stats = user.role === "cashier" ? [...baseStats, cashierExtraStat] : baseStats
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -27,10 +39,26 @@ function Dashboard({ user }) {
 
       {/* Main content */}
       <div className="flex-1 p-8">
-        <p className="text-2xl font-semibold text-gray-900">
-          Good morning, {user.name}
-        </p>
-        <p className="text-sm text-gray-500 mt-1">Role: {user.role}</p>
+        <div className="flex justify-between items-center">
+          <div>
+            <p className="text-2xl font-semibold text-gray-900">
+              Good morning, {user.name}
+            </p>
+            <p className="text-sm text-gray-500 mt-1">Role: {user.role}</p>
+          </div>
+
+          {user.role === "cashier" && (
+            <button className="bg-green-700 hover:bg-green-800 text-white text-sm font-medium px-4 py-2 rounded-md">
+              + New Sale
+            </button>
+          )}
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+          {stats.map((stat) => (
+            <StatCard key={stat.title} title={stat.title} value={stat.value} subtitle={stat.subtitle} />
+          ))}
+        </div>
       </div>
     </div>
   )
