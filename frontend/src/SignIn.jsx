@@ -1,15 +1,15 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-function SignIn() {
+function SignIn({ setRole }) {
   const [staffId, setStaffId] = useState("")
   const [pin, setPin] = useState("")
   const [error, setError] = useState("")
   const navigate = useNavigate()
 
   const staffAccounts = [
-    { id: 1, name: "Aisha Bello", role: "Owner/Admin", staffId: "CWG-001" },
-    { id: 3, name: "Grace Adeyemi", role: "Cashier", staffId: "CWG-118" },
+    { id: 1, name: "Aisha Bello", role: "owner", staffId: "CWG-001" },
+    { id: 3, name: "Grace Adeyemi", role: "cashier", staffId: "CWG-118" },
   ]
 
   function handleSignIn() {
@@ -17,16 +17,17 @@ function SignIn() {
       setError("Invalid Staff ID or PIN. Please try again.")
     } else {
       setError("")
+      const matchedStaff = staffAccounts.find((s) => s.staffId === staffId)
+      const loggedInRole = matchedStaff ? matchedStaff.role : "cashier"
+      setRole(loggedInRole)
       navigate("/dashboard")
     }
   }
 
   return (
     <div className="flex h-screen">
-      {/* Left side: background image */}
       <div className="hidden md:block w-1/2 bg-gradient-to-br from-green-800 to-green-950" />
 
-      {/* Right side: sign-in card */}
       <div className="w-full md:w-1/2 flex items-center justify-center bg-gray-50">
         <div className="w-full max-w-sm p-8">
           <h1 className="text-xl font-semibold text-gray-900">Staff sign in</h1>
