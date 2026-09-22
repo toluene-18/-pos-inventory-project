@@ -1,4 +1,6 @@
 import StatCard from './StatCard.jsx'
+import SalesChart from './SalesChart.jsx'
+import ActivityFeed from './ActivityFeed.jsx'
 
 function Dashboard({ user }) {
   const ownerNavItems = ["Dashboard", "Point of Sale", "Inventory", "Products", "Sales", "Reports", "Settings"]
@@ -38,7 +40,7 @@ function Dashboard({ user }) {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 p-8">
+      <div className="flex-1 p-8 overflow-y-auto">
         <div className="flex justify-between items-center">
           <div>
             <p className="text-2xl font-semibold text-gray-900">
@@ -59,6 +61,9 @@ function Dashboard({ user }) {
             <StatCard key={stat.title} title={stat.title} value={stat.value} subtitle={stat.subtitle} />
           ))}
         </div>
+
+        <SalesChart />
+        <ActivityFeed />
       </div>
     </div>
   )
