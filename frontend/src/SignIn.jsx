@@ -2,25 +2,40 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 function SignIn({ setUser }) {
-  const [staffId, setStaffId] = useState("")
-  const [pin, setPin] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
-  const staffAccounts = [
-    { id: 1, name: "Aisha Bello", role: "owner", staffId: "CWG-001" },
-    { id: 3, name: "Grace Adeyemi", role: "cashier", staffId: "CWG-118" },
+  const savedAccounts = [
+    { name: "Amaka Obi", role: "owner", email: "owner@cwgretail.com" },
+    { name: "Chidi Eze", role: "cashier", email: "chidi@cwgretail.com" },
   ]
 
-  function handleSignIn() {
-    if (pin !== "1234") {
-      setError("Invalid Staff ID or PIN. Please try again.")
-    } else {
-      setError("")
-      const matchedStaff = staffAccounts.find((s) => s.staffId === staffId)
-      const loggedInUser = matchedStaff || { name: "Staff", role: "cashier", staffId }
-      setUser(loggedInUser)
-      navigate("/dashboard")
+  async function handleSignIn() {
+    setError("")
+    setLoading(true)
+
+    try {
+      const response = await fetch("http://localhost:8000/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.message || "Invalid credentials")
+      } else {
+        setUser(data.user)
+        navigate("/dashboard")
+      }
+    } catch (err) {
+      setError("Could not reach the server. Is the backend running?")
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -32,27 +47,27 @@ function SignIn({ setUser }) {
         <div className="w-full max-w-sm p-8">
           <h1 className="text-xl font-semibold text-gray-900">Staff sign in</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Use your Staff ID and PIN to access the till
+            Use your email and password to access the till
           </p>
 
           <div className="mt-6">
-            <label className="text-sm font-medium text-gray-700">Staff ID</label>
+            <label className="text-sm font-medium text-gray-700">Email</label>
             <input
-              type="text"
-              placeholder="e.g. CWG-001"
-              value={staffId}
-              onChange={(e) => setStaffId(e.target.value)}
+              type="email"
+              placeholder="e.g. owner@cwgretail.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
             />
           </div>
 
           <div className="mt-4">
-            <label className="text-sm font-medium text-gray-700">PIN</label>
+            <label className="text-sm font-medium text-gray-700">Password</label>
             <input
               type="password"
-              placeholder="****"
-              value={pin}
-              onChange={(e) => setPin(e.target.value)}
+              placeholder="********"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
             />
           </div>
@@ -65,22 +80,23 @@ function SignIn({ setUser }) {
 
           <button
             onClick={handleSignIn}
-            className="mt-4 w-full bg-green-700 hover:bg-green-800 text-white text-sm font-medium py-2 rounded-md"
+            disabled={loading}
+            className="mt-4 w-full bg-green-700 hover:bg-green-800 text-white text-sm font-medium py-2 rounded-md disabled:opacity-50"
           >
-            Sign in
+            {loading ? "Signing in..." : "Sign in"}
           </button>
 
           <p className="mt-6 text-xs text-gray-400 text-center">Or use saved accounts</p>
 
-          {staffAccounts.map((staff) => (
+          {savedAccounts.map((account) => (
             <div
-              key={staff.id}
-              onClick={() => setStaffId(staff.staffId)}
+              key={account.email}
+              onClick={() => setEmail(account.email)}
               className="mt-2 border border-gray-200 rounded-md px-3 py-2 flex justify-between items-center hover:bg-gray-100 cursor-pointer"
             >
               <div>
-                <p className="text-sm font-medium text-gray-900">{staff.name}</p>
-                <p className="text-xs text-gray-500">{staff.role} · {staff.staffId}</p>
+                <p className="text-sm font-medium text-gray-900">{account.name}</p>
+                <p className="text-xs text-gray-500">{account.role} · {account.email}</p>
               </div>
             </div>
           ))}
