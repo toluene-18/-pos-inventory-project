@@ -2,6 +2,8 @@ import StatCard from './StatCard.jsx'
 import SalesChart from './SalesChart.jsx'
 import ActivityFeed from './ActivityFeed.jsx'
 import TopBar from './TopBar.jsx'
+import TopSellingProducts from './TopSellingProducts.jsx'
+import NeedsRestocking from './NeedsRestocking.jsx'
 
 function Dashboard({ user }) {
   const ownerNavItems = ["Dashboard", "Point of Sale", "Inventory", "Products", "Sales", "Reports", "Settings"]
@@ -68,6 +70,10 @@ function Dashboard({ user }) {
 
           <SalesChart />
           <ActivityFeed />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+            <TopSellingProducts />
+            <NeedsRestocking />
+          </div>
         </div>
       </div>
     </div>
