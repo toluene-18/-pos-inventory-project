@@ -12,4 +12,28 @@ class ProductController extends Controller
         $products = Product::all();
         return view('product.index', compact('products'));
     }
+
+    public function apiIndex()
+    {
+        $products = Product::all();
+
+        return response()->json($products);
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'sku' => 'required|string|max:255|unique:products,sku',
+            'category' => 'required|string|max:255',
+            'cost_price' => 'required|numeric|min:0',
+            'sell_price' => 'required|numeric|min:0',
+            'current_stock' => 'required|integer|min:0',
+            'reorder_threshold' => 'required|integer|min:0',
+        ]);
+
+        $product = Product::create($validated);
+
+        return response()->json($product, 201);
+    }
 }
