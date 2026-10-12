@@ -15,5 +15,6 @@ class Product extends Model
         'current_stock',
         'reorder_threshold',
         'image_path',
+        'is_active',
     ];
 }
