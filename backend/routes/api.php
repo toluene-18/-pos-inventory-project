@@ -7,12 +7,13 @@ use App\Http\Controllers\ProductController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
 
-Route::get('/products', [ProductController::class, 'apiIndex'])
-    ->middleware('auth:sanctum');
-
-Route::post('/products', [ProductController::class, 'store'])
-    ->middleware('auth:sanctum');
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+    Route::get('/products', [ProductController::class, 'index']);
+    Route::post('/products/create', [ProductController::class, 'store']);
+    Route::patch('/products/{product}', [ProductController::class, 'update']);
+    Route::delete('products/{product}', [ProductController::class,'delete']);
+});
