@@ -7,13 +7,13 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function webIndex()
     {
         $products = Product::all();
         return view('product.index', compact('products'));
     }
 
-    public function apiIndex()
+    public function index()
     {
         $products = Product::all();
 
@@ -35,5 +35,33 @@ class ProductController extends Controller
         $product = Product::create($validated);
 
         return response()->json($product, 201);
+    }
+
+    public function update(Request $request, Product $product)
+    {
+
+    public function update(Request $request, Product $product)
+    {
+        $validated = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'sku' => [
+                'sometimes',
+                'required',
+                'string',
+                'max:255',
+                'unique:products,sku,' . $product->id,
+            ],
+            'category' => 'sometimes|required|string|max:255',
+            'cost_price' => 'sometimes|required|numeric|min:0',
+            'sell_price' => 'sometimes|required|numeric|min:0',
+        ]);
+
+        $product->update($validated);
+
+        return response()->json($product->fresh(), 200);
+    }
+        $product->update($validated);
+
+        return response()->json($product->fresh(), 200);
     }
 }
