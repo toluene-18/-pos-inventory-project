@@ -15,7 +15,7 @@ class ProductController extends Controller
 
     public function index()
     {
-        $products = Product::all();
+        $products = Product::where('is_active', true)->get();
 
         return response()->json($products);
     }
@@ -37,8 +37,6 @@ class ProductController extends Controller
         return response()->json($product, 201);
     }
 
-    public function update(Request $request, Product $product)
-    {
 
     public function update(Request $request, Product $product)
     {
@@ -60,8 +58,16 @@ class ProductController extends Controller
 
         return response()->json($product->fresh(), 200);
     }
-        $product->update($validated);
 
-        return response()->json($product->fresh(), 200);
+    public function delete(Product $product)
+    {
+        $product->update([
+            'is_active' => false,
+        ]);
+
+        return response()->json([
+            'message' => 'Product deactivated successfully.',
+            'product' => $product->fresh(),
+        ], 200);
     }
 }
