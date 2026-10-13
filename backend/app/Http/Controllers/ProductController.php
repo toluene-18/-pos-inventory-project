@@ -4,18 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
     public function webIndex()
     {
-        $products = Product::all();
+        $products = Product::with('inventory')->get();
+
         return view('product.index', compact('products'));
     }
 
     public function index()
     {
-        $products = Product::where('is_active', true)->get();
+        $products = Product::with('inventory')
+            ->where('is_active', true)
+            ->get();
 
         return response()->json($products);
     }
@@ -32,11 +36,25 @@ class ProductController extends Controller
             'reorder_threshold' => 'required|integer|min:0',
         ]);
 
-        $product = Product::create($validated);
+        $product = DB::transaction(function () use ($validated) {
+            $product = Product::create([
+                'name' => $validated['name'],
+                'sku' => $validated['sku'],
+                'category' => $validated['category'],
+                'cost_price' => $validated['cost_price'],
+                'sell_price' => $validated['sell_price'],
+            ]);
+
+            $product->inventory()->create([
+                'quantity' => $validated['current_stock'],
+                'reorder_threshold' => $validated['reorder_threshold'],
+            ]);
+
+            return $product->load('inventory');
+        });
 
         return response()->json($product, 201);
     }
-
 
     public function update(Request $request, Product $product)
     {
@@ -56,7 +74,10 @@ class ProductController extends Controller
 
         $product->update($validated);
 
-        return response()->json($product->fresh(), 200);
+        return response()->json(
+            $product->fresh()->load('inventory'),
+            200
+        );
     }
 
     public function delete(Product $product)
@@ -67,7 +88,7 @@ class ProductController extends Controller
 
         return response()->json([
             'message' => 'Product deactivated successfully.',
-            'product' => $product->fresh(),
+            'product' => $product->fresh()->load('inventory'),
         ], 200);
     }
 }
