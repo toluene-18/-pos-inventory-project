@@ -1,6 +1,7 @@
 <?php
 
 namespace Database\Seeders;
+
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -15,31 +16,49 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        User::firstOrCreate(
+            ['email' => 'test@example.com'],
+            ['name' => 'Test User']
+        );
+        $products = [
+            [
+                'name' => 'Coca-Cola 50cl',
+                'sku' => 'CC-50',
+                'category' => 'drinks',
+                'cost_price' => 350,
+                'sell_price' => 500,
+                'quantity' => 12,
+                'reorder_threshold' => 10,
+            ],
+            [
+                'name' => 'Indomie Noodles',
+                'sku' => 'IN-70',
+                'category' => 'groceries',
+                'cost_price' => 250,
+                'sell_price' => 350,
+                'quantity' => 30,
+                'reorder_threshold' => 15,
+            ],
+        ];
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        foreach ($products as $data) {
+            $product = Product::updateOrCreate(
+                ['sku' => $data['sku']],
+                [
+                    'name' => $data['name'],
+                    'category' => $data['category'],
+                    'cost_price' => $data['cost_price'],
+                    'sell_price' => $data['sell_price'],
+                ]
+            );
 
-        Product::create([
-            'name' => 'Coca-Cola 50cl',
-            'sku' => 'CC-50',
-            'category' => 'drinks',
-            'cost_price' => 350,
-            'sell_price' => 500,
-            'current_stock' => 12,
-            'reorder_threshold' => 10,
-        ]);
-
-        Product::create([
-            'name' => 'Indomie Noodles',
-            'sku' => 'IN-70',
-            'category' => 'groceries',
-            'cost_price' => 250,
-            'sell_price' => 350,
-            'current_stock' => 30,
-            'reorder_threshold' => 15,
-        ]);
+            $product->inventory()->updateOrCreate(
+                ['product_id' => $product->id],
+                [
+                    'quantity' => $data['quantity'],
+                    'reorder_threshold' => $data['reorder_threshold'],
+                ]
+            );
+        }
     }
 }
