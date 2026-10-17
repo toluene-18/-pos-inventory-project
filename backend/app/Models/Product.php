@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Inventory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+
 
 class Product extends Model
 {
@@ -12,8 +15,12 @@ class Product extends Model
         'category',
         'cost_price',
         'sell_price',
-        'current_stock',
-        'reorder_threshold',
         'image_path',
+        'is_active',
     ];
+
+    public function inventory(): HasOne
+    {
+        return $this->hasOne(Inventory::class);
+    }
 }
