@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StockAdjustmentController;
+use App\Http\Controllers\SaleController;
 
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -25,4 +26,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/products/{product}/stock-adjustments',
         [StockAdjustmentController::class, 'store']);
     });
+
+    Route::post('/sales', [SaleController::class, 'store']);
+    Route::get('/sales/{sale}', [SaleController::class, 'show']);
+    Route::get('/sales', [SaleController::class, 'index']);
 });

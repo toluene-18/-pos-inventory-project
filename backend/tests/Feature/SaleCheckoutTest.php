@@ -1,0 +1,259 @@
+<?php
+
+use App\Models\Inventory;
+use App\Models\Product;
+use App\Models\Sale;
+use App\Models\SaleItem;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(RefreshDatabase::class);
+
+function createCheckoutProduct(int $stock = 10): Product
+{
+    $product = Product::create([
+        'name' => 'Test Product',
+        'sku' => 'TEST-' . uniqid(),
+        'category' => 'Test',
+        'cost_price' => 100,
+        'sell_price' => 150,
+        'is_active' => true,
+    ]);
+
+    Inventory::create([
+        'product_id' => $product->id,
+        'quantity' => $stock,
+        'reorder_threshold' => 2,
+    ]);
+
+    return $product;
+}
+
+test('authenticated cashier can complete a sale', function () {
+    /** @var \Tests\TestCase $this */
+    $user = User::factory()->create([
+        'role' => 'cashier',
+    ]);
+
+    $product = createCheckoutProduct(10);
+
+    $response = $this->actingAs($user)->postJson('/api/sales', [
+        'payment_method' => 'cash',
+        'items' => [
+            [
+                'product_id' => $product->id,
+                'quantity' => 2,
+            ],
+        ],
+    ]);
+
+    $response->assertCreated()
+    ->assertJsonPath('sale.subtotal', 300)
+    ->assertJsonPath('sale.total', 300);
+
+    $this->assertDatabaseHas('sales', [
+        'user_id' => $user->id,
+        'payment_method' => 'cash',
+        'total' => 300,
+    ]);
+
+    $this->assertDatabaseHas('sale_items', [
+        'product_id' => $product->id,
+        'quantity' => 2,
+        'unit_price' => 150,
+        'line_total' => 300,
+    ]);
+
+    // Refresh product and read the related inventory quantity
+    expect($product->fresh()->inventory->quantity)->toBe(8);
+});
+
+test('checkout rejects insufficient stock without creating a sale', function () {
+    /** @var \Tests\TestCase $this */
+    $user = User::factory()->create([
+        'role' => 'cashier',
+    ]);
+
+    $product = createCheckoutProduct(2);
+
+    $response = $this->actingAs($user)->postJson('/api/sales', [
+        'payment_method' => 'cash',
+        'items' => [
+            [
+                'product_id' => $product->id,
+                'quantity' => 5,
+            ],
+        ],
+    ]);
+
+    $response->assertUnprocessable();
+
+    $this->assertDatabaseCount('sales', 0);
+    $this->assertDatabaseCount('sale_items', 0);
+
+    // Refresh product and ensure inventory quantity unchanged
+    expect($product->fresh()->inventory->quantity)->toBe(2);
+});
+
+test('checkout rejects invalid payment methods', function () {
+    /** @var \Tests\TestCase $this */
+    $user = User::factory()->create([
+        'role' => 'cashier',
+    ]);
+
+    $product = createCheckoutProduct();
+
+    $response = $this->actingAs($user)->postJson('/api/sales', [
+        'payment_method' => 'bitcoin',
+        'items' => [
+            [
+                'product_id' => $product->id,
+                'quantity' => 1,
+            ],
+        ],
+    ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors('payment_method');
+
+    $this->assertDatabaseCount('sales', 0);
+    $this->assertDatabaseCount('sale_items', 0);
+});
+
+test('checkout rolls back all changes when one product has insufficient stock', function () {
+    /** @var \Tests\TestCase $this */
+    $user = User::factory()->create([
+        'role' => 'cashier',
+    ]);
+
+    // The first product has enough stock.
+    $product1 = createCheckoutProduct(10);
+
+    // The second product has insufficient stock.
+    $product2 = Product::create([
+        'name' => 'Second Test Product',
+        'sku' => 'TEST-' . uniqid(),
+        'category' => 'Test',
+        'cost_price' => 100,
+        'sell_price' => 200,
+        'is_active' => true,
+    ]);
+
+    Inventory::create([
+        'product_id' => $product2->id,
+        'quantity' => 1,
+        'reorder_threshold' => 2,
+    ]);
+
+    $response = $this->actingAs($user)->postJson('/api/sales', [
+        'payment_method' => 'cash',
+        'items' => [
+            [
+                'product_id' => $product1->id,
+                'quantity' => 2,
+            ],
+            [
+                'product_id' => $product2->id,
+                'quantity' => 5,
+            ],
+        ],
+    ]);
+
+    $response->assertUnprocessable();
+
+    // No partial sale should be saved.
+    $this->assertDatabaseCount('sales', 0);
+    $this->assertDatabaseCount('sale_items', 0);
+
+    // Both products must retain their original stock.
+    expect($product1->fresh()->inventory->quantity)->toBe(10);
+    expect($product2->fresh()->inventory->quantity)->toBe(1);
+});
+
+
+
+test('authenticated user can retrieve a sale receipt with its items', function () {
+    /** @var \Tests\TestCase $this */
+    $user = User::factory()->create([
+        'role' => 'cashier',
+    ]);
+
+    $product = createCheckoutProduct(10);
+
+    $sale = Sale::create([
+        'user_id' => $user->id,
+        'payment_method' => 'cash',
+        'subtotal' => 300,
+        'total' => 300,
+    ]);
+
+    SaleItem::create([
+        'sale_id' => $sale->id,
+        'product_id' => $product->id,
+        'quantity' => 2,
+        'unit_price' => 150,
+        'line_total' => 300,
+    ]);
+
+    $response = $this->actingAs($user)
+        ->getJson("/api/sales/{$sale->id}");
+
+    $response->assertOk()
+        ->assertJsonPath('sale.id', $sale->id)
+        ->assertJsonPath('sale.payment_method', 'cash')
+        ->assertJsonPath('sale.items.0.product_id', $product->id)
+        ->assertJsonPath('sale.items.0.quantity', 2)
+        ->assertJsonPath('sale.items.0.product.name', 'Test Product');
+});
+
+test('receipt retrieval returns 404 for a nonexistent sale', function () {
+    /** @var \Tests\TestCase $this */
+    $user = User::factory()->create([
+        'role' => 'cashier',
+    ]);
+
+    $response = $this->actingAs($user)
+        ->getJson('/api/sales/999999');
+
+    $response->assertNotFound();
+});
+
+
+
+test('authenticated user can retrieve sales history', function () {
+    /** @var \Tests\TestCase $this */
+    $user = User::factory()->create([
+        'role' => 'cashier',
+    ]);
+
+    $product = createCheckoutProduct();
+
+    $sale = \App\Models\Sale::create([
+        'user_id' => $user->id,
+        'payment_method' => 'cash',
+        'subtotal' => 300,
+        'total' => 300,
+    ]);
+
+    $sale->items()->create([
+        'product_id' => $product->id,
+        'quantity' => 2,
+        'unit_price' => 150,
+        'line_total' => 300,
+    ]);
+
+    $response = $this->actingAs($user)
+        ->getJson('/api/sales');
+
+    $response->assertOk()
+        ->assertJsonPath('data.0.id', $sale->id)
+        ->assertJsonPath('data.0.payment_method', 'cash')
+        ->assertJsonPath('data.0.total', 300);
+});
+
+test('sales history requires authentication', function () {
+    /** @var \Tests\TestCase $this */
+    $response = $this->getJson('/api/sales');
+
+    $response->assertUnauthorized();
+});
