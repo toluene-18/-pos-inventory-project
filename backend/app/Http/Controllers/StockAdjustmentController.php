@@ -23,6 +23,7 @@ class StockAdjustmentController extends Controller
             $product,
             $validated
         ) {
+            /** @var \App\Models\Inventory $inventory */
             $inventory = $product->inventory()
                 ->lockForUpdate()
                 ->firstOrFail();
@@ -47,6 +48,7 @@ class StockAdjustmentController extends Controller
             $inventory->quantity += $quantityChange;
             $inventory->save();
 
+            /** @var \App\Models\StockAdjustment $adjustment */
             $adjustment = StockAdjustment::create([
                 'product_id' => $product->id,
                 'user_id' => $request->user()->id,
