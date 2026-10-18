@@ -348,3 +348,305 @@ test('owner can retrieve sales belonging to multiple cashiers', function () {
     $response->assertOk()
         ->assertJsonCount(2, 'data');
 });
+
+
+
+test('sales history can be filtered by payment method', function () {
+    /** @var \Tests\TestCase $this */
+    $owner = User::factory()->create([
+        'role' => 'owner',
+    ]);
+
+    $cashSale = Sale::create([
+        'user_id' => $owner->id,
+        'payment_method' => 'cash',
+        'subtotal' => 300,
+        'total' => 300,
+    ]);
+
+    Sale::create([
+        'user_id' => $owner->id,
+        'payment_method' => 'card',
+        'subtotal' => 500,
+        'total' => 500,
+    ]);
+
+    $response = $this->actingAs($owner)
+        ->getJson('/api/sales?payment_method=cash');
+
+    $response->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.id', $cashSale->id)
+        ->assertJsonPath('data.0.payment_method', 'cash');
+});
+
+
+test('sales history can be filtered by date range', function () {
+    /** @var \Tests\TestCase $this */
+    $owner = User::factory()->create([
+        'role' => 'owner',
+    ]);
+
+    $olderSale = Sale::create([
+        'user_id' => $owner->id,
+        'payment_method' => 'cash',
+        'subtotal' => 100,
+        'total' => 100,
+    ]);
+
+    $matchingSale = Sale::create([
+        'user_id' => $owner->id,
+        'payment_method' => 'card',
+        'subtotal' => 300,
+        'total' => 300,
+    ]);
+
+    $newerSale = Sale::create([
+        'user_id' => $owner->id,
+        'payment_method' => 'cash',
+        'subtotal' => 500,
+        'total' => 500,
+    ]);
+
+    $olderSale->forceFill([
+        'created_at' => '2026-09-28 10:00:00',
+    ])->save();
+
+    $matchingSale->forceFill([
+        'created_at' => '2026-10-05 12:00:00',
+    ])->save();
+
+    $newerSale->forceFill([
+        'created_at' => '2026-10-20 15:00:00',
+    ])->save();
+
+    $response = $this->actingAs($owner)
+        ->getJson('/api/sales?from=2026-10-01&to=2026-10-10');
+
+    $response->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.id', $matchingSale->id);
+});
+
+
+
+test('sales history combines payment method and date filters', function () {
+    /** @var \Tests\TestCase $this */
+    $owner = User::factory()->create([
+        'role' => 'owner',
+    ]);
+
+    $matchingSale = Sale::create([
+        'user_id' => $owner->id,
+        'payment_method' => 'cash',
+        'subtotal' => 300,
+        'total' => 300,
+    ]);
+
+    $wrongPaymentSale = Sale::create([
+        'user_id' => $owner->id,
+        'payment_method' => 'card',
+        'subtotal' => 400,
+        'total' => 400,
+    ]);
+
+    $wrongDateSale = Sale::create([
+        'user_id' => $owner->id,
+        'payment_method' => 'cash',
+        'subtotal' => 500,
+        'total' => 500,
+    ]);
+
+    $matchingSale->forceFill([
+        'created_at' => '2026-10-05 12:00:00',
+    ])->save();
+
+    $wrongPaymentSale->forceFill([
+        'created_at' => '2026-10-05 13:00:00',
+    ])->save();
+
+    $wrongDateSale->forceFill([
+        'created_at' => '2026-10-20 12:00:00',
+    ])->save();
+
+    $response = $this->actingAs($owner)->getJson(
+        '/api/sales?payment_method=cash&from=2026-10-01&to=2026-10-10'
+    );
+
+    $response->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.id', $matchingSale->id)
+        ->assertJsonPath('data.0.payment_method', 'cash');
+});
+
+
+test('sales history filters by payment method', function () {
+    /** @var \Tests\TestCase $this */
+    $owner = User::factory()->create(['role' => 'owner']);
+
+    $cashSale = Sale::create([
+        'user_id' => $owner->id,
+        'payment_method' => 'cash',
+        'subtotal' => 300,
+        'total' => 300,
+    ]);
+
+    Sale::create([
+        'user_id' => $owner->id,
+        'payment_method' => 'card',
+        'subtotal' => 500,
+        'total' => 500,
+    ]);
+
+    $this->actingAs($owner)
+        ->getJson('/api/sales?payment_method=cash')
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.id', $cashSale->id);
+});
+
+test('sales history filters by date range', function () {
+    /** @var \Tests\TestCase $this */
+    $owner = User::factory()->create(['role' => 'owner']);
+
+    $outsideBefore = Sale::create([
+        'user_id' => $owner->id,
+        'payment_method' => 'cash',
+        'subtotal' => 100,
+        'total' => 100,
+    ]);
+
+    $matchingSale = Sale::create([
+        'user_id' => $owner->id,
+        'payment_method' => 'card',
+        'subtotal' => 300,
+        'total' => 300,
+    ]);
+
+    $outsideAfter = Sale::create([
+        'user_id' => $owner->id,
+        'payment_method' => 'cash',
+        'subtotal' => 500,
+        'total' => 500,
+    ]);
+
+    $outsideBefore->forceFill([
+        'created_at' => '2026-09-28 10:00:00',
+    ])->save();
+
+    $matchingSale->forceFill([
+        'created_at' => '2026-10-05 12:00:00',
+    ])->save();
+
+    $outsideAfter->forceFill([
+        'created_at' => '2026-10-20 15:00:00',
+    ])->save();
+
+    $this->actingAs($owner)
+        ->getJson('/api/sales?from=2026-10-01&to=2026-10-10')
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.id', $matchingSale->id);
+});
+
+test('sales history combines payment and date filters', function () {
+    /** @var \Tests\TestCase $this */
+    $owner = User::factory()->create(['role' => 'owner']);
+
+    $matchingSale = Sale::create([
+        'user_id' => $owner->id,
+        'payment_method' => 'cash',
+        'subtotal' => 300,
+        'total' => 300,
+    ]);
+
+    $wrongPayment = Sale::create([
+        'user_id' => $owner->id,
+        'payment_method' => 'card',
+        'subtotal' => 400,
+        'total' => 400,
+    ]);
+
+    $wrongDate = Sale::create([
+        'user_id' => $owner->id,
+        'payment_method' => 'cash',
+        'subtotal' => 500,
+        'total' => 500,
+    ]);
+
+    $matchingSale->forceFill([
+        'created_at' => '2026-10-05 12:00:00',
+    ])->save();
+
+    $wrongPayment->forceFill([
+        'created_at' => '2026-10-05 13:00:00',
+    ])->save();
+
+    $wrongDate->forceFill([
+        'created_at' => '2026-10-20 12:00:00',
+    ])->save();
+
+    $this->actingAs($owner)
+        ->getJson(
+            '/api/sales?payment_method=cash&from=2026-10-01&to=2026-10-10'
+        )
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.id', $matchingSale->id);
+});
+
+test('sales history rejects an invalid payment method filter', function () {
+    /** @var \Tests\TestCase $this */
+    $owner = User::factory()->create(['role' => 'owner']);
+
+    $this->actingAs($owner)
+        ->getJson('/api/sales?payment_method=bitcoin')
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors('payment_method');
+});
+
+test('sales history rejects invalid date formats', function () {
+    /** @var \Tests\TestCase $this */
+    $owner = User::factory()->create(['role' => 'owner']);
+
+    $this->actingAs($owner)
+        ->getJson('/api/sales?from=not-a-date')
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors('from');
+});
+
+test('sales history rejects a date range where the end is before the start', function () {
+    /** @var \Tests\TestCase $this */
+    $owner = User::factory()->create(['role' => 'owner']);
+
+    $this->actingAs($owner)
+        ->getJson('/api/sales?from=2026-10-10&to=2026-10-01')
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors('to');
+});
+
+test('cashier filters never expose another cashiers sales', function () {
+    /** @var \Tests\TestCase $this */
+    $cashierA = User::factory()->create(['role' => 'cashier']);
+    $cashierB = User::factory()->create(['role' => 'cashier']);
+
+    $ownSale = Sale::create([
+        'user_id' => $cashierA->id,
+        'payment_method' => 'cash',
+        'subtotal' => 300,
+        'total' => 300,
+    ]);
+
+    Sale::create([
+        'user_id' => $cashierB->id,
+        'payment_method' => 'cash',
+        'subtotal' => 900,
+        'total' => 900,
+    ]);
+
+    $this->actingAs($cashierA)
+        ->getJson('/api/sales?payment_method=cash')
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.id', $ownSale->id);
+});
