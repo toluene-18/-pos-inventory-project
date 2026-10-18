@@ -91,9 +91,17 @@ class SaleController extends Controller
         ], 201);
     }
 
-
-    public function show(Sale $sale)
+    public function show(Request $request, Sale $sale)
     {
+        $user = $request->user();
+
+        // Cashiers can only view their own sales.
+        if ($user->role === 'cashier' && $sale->user_id !== $user->id) {
+            return response()->json([
+                'message' => 'Forbidden.',
+            ], 403);
+        }
+
         $sale->load(['items.product', 'user']);
 
         return response()->json([
@@ -101,15 +109,20 @@ class SaleController extends Controller
         ]);
     }
 
-
     public function index(Request $request)
     {
         $validated = $request->validate([
-    'from' => 'sometimes|date_format:Y-m-d',
-    'to' => 'sometimes|date_format:Y-m-d|after_or_equal:from',
-    ]);
+            'payment_method' => 'sometimes|in:cash,card,bank_transfer',
+            'from' => 'sometimes|date_format:Y-m-d',
+            'to' => 'sometimes|date_format:Y-m-d|after_or_equal:from',
+        ]);
 
         $query = Sale::with('user');
+
+        // Owners can view all sales; cashiers only see their own.
+        if ($request->user()->role === 'cashier') {
+            $query->where('user_id', $request->user()->id);
+        }
 
         if (isset($validated['payment_method'])) {
             $query->where(
@@ -130,5 +143,4 @@ class SaleController extends Controller
 
         return response()->json($sales);
     }
-
 }

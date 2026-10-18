@@ -257,3 +257,94 @@ test('sales history requires authentication', function () {
 
     $response->assertUnauthorized();
 });
+
+test('cashier cannot retrieve another cashier receipt', function () {
+    /** @var \Tests\TestCase $this */
+    $cashierA = User::factory()->create([
+        'role' => 'cashier',
+    ]);
+
+    $cashierB = User::factory()->create([
+        'role' => 'cashier',
+    ]);
+
+    $sale = Sale::create([
+        'user_id' => $cashierB->id,
+        'payment_method' => 'cash',
+        'subtotal' => 300,
+        'total' => 300,
+    ]);
+
+    $response = $this->actingAs($cashierA)
+        ->getJson("/api/sales/{$sale->id}");
+
+    $response->assertForbidden();
+});
+
+test('cashier sales history contains only their own sales', function () {
+    /** @var \Tests\TestCase $this */
+    $cashierA = User::factory()->create([
+        'role' => 'cashier',
+    ]);
+
+    $cashierB = User::factory()->create([
+        'role' => 'cashier',
+    ]);
+
+    $ownSale = Sale::create([
+        'user_id' => $cashierA->id,
+        'payment_method' => 'cash',
+        'subtotal' => 300,
+        'total' => 300,
+    ]);
+
+    Sale::create([
+        'user_id' => $cashierB->id,
+        'payment_method' => 'card',
+        'subtotal' => 500,
+        'total' => 500,
+    ]);
+
+    $response = $this->actingAs($cashierA)
+        ->getJson('/api/sales');
+
+    $response->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.id', $ownSale->id)
+        ->assertJsonPath('data.0.total', 300);
+});
+
+test('owner can retrieve sales belonging to multiple cashiers', function () {
+    /** @var \Tests\TestCase $this */
+    $owner = User::factory()->create([
+        'role' => 'owner',
+    ]);
+
+    $cashierA = User::factory()->create([
+        'role' => 'cashier',
+    ]);
+
+    $cashierB = User::factory()->create([
+        'role' => 'cashier',
+    ]);
+
+    Sale::create([
+        'user_id' => $cashierA->id,
+        'payment_method' => 'cash',
+        'subtotal' => 300,
+        'total' => 300,
+    ]);
+
+    Sale::create([
+        'user_id' => $cashierB->id,
+        'payment_method' => 'card',
+        'subtotal' => 500,
+        'total' => 500,
+    ]);
+
+    $response = $this->actingAs($owner)
+        ->getJson('/api/sales');
+
+    $response->assertOk()
+        ->assertJsonCount(2, 'data');
+});
