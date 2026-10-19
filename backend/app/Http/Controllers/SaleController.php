@@ -143,4 +143,63 @@ class SaleController extends Controller
 
         return response()->json($sales);
     }
+
+
+    public function report(Request $request)
+    {
+        $validated = $request->validate([
+            'from' => 'sometimes|required|date_format:Y-m-d',
+            'to' => 'sometimes|required|date_format:Y-m-d|after_or_equal:from',
+        ]);
+
+        $query = Sale::query();
+
+        if (isset($validated['from'])) {
+            $query->whereDate('created_at', '>=', $validated['from']);
+        }
+
+        if (isset($validated['to'])) {
+            $query->whereDate('created_at', '<=', $validated['to']);
+        }
+
+        $summary = (clone $query)
+            ->selectRaw(
+                'COUNT(*) as total_sales,
+                COALESCE(SUM(total), 0) as total_revenue,
+                COALESCE(AVG(total), 0) as average_sale_value'
+            )
+            ->first();
+
+        $paymentBreakdown = (clone $query)
+            ->select('payment_method')
+            ->selectRaw(
+                'COUNT(*) as transactions,
+                COALESCE(SUM(total), 0) as revenue'
+            )
+            ->groupBy('payment_method')
+            ->get()
+            ->map(function ($entry) {
+                $entry->transactions = (int) $entry->transactions;
+                $entry->revenue = (float) $entry->revenue;
+
+                return $entry;
+            });
+
+        return response()->json([
+            'filters' => [
+                'from' => $validated['from'] ?? null,
+                'to' => $validated['to'] ?? null,
+            ],
+            'summary' => [
+                'total_sales' => (int) $summary->total_sales,
+                'total_revenue' => (float) $summary->total_revenue,
+                'average_sale_value' => round(
+                    (float) $summary->average_sale_value,
+                    2
+                ),
+            ],
+            'payment_breakdown' => $paymentBreakdown,
+        ]);
+    }
+
 }

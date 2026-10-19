@@ -25,6 +25,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('/products/{product}/stock-adjustments',
         [StockAdjustmentController::class, 'store']);
+
+        Route::get('/reports/sales', [SaleController::class, 'report']);
     });
 
     Route::post('/sales', [SaleController::class, 'store']);
