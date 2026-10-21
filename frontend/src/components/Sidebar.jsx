@@ -1,58 +1,75 @@
-function Sidebar({ user, activePage, onNavigate, onLogout }) {
-  const navigation = [
-    { name: 'Dashboard', icon: '▦' },
-    { name: 'Products', icon: '□' },
-    { name: 'Point of Sale', icon: '＋' },
-    { name: 'Sales', icon: '↗' },
-    { name: 'Reports', icon: '▤' },
-    { name: 'Staff', icon: '♙' },
-  ];
+import Icon from './ui/Icon';
+import '../styles/sidebar.css';
+
+const NAV_ITEMS = [
+  { name: 'Dashboard',    icon: 'dashboard' },
+  { name: 'Point of Sale', icon: 'pos'      },
+  { name: 'Inventory',    icon: 'inventory' },
+  { name: 'Products',     icon: 'products'  },
+  { name: 'Sales',        icon: 'sales'     },
+  { name: 'Reports',      icon: 'reports'   },
+  { name: 'Restock',      icon: 'restock'   },
+  { name: 'Settings',     icon: 'settings'  },
+];
+
+/**
+ * Sidebar — main navigation.
+ * Props:
+ *   user       object  — { name, email, role }
+ *   activePage string  — currently active page name
+ *   onNavigate fn      — called with the page name when a nav item is clicked
+ *   onLogout   fn      — called when the user triggers sign-out
+ */
+function Sidebar({ user, activePage, onNavigate }) {
+  const initials = (user?.name || user?.email || 'U')
+    .split(' ')
+    .map(w => w[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
 
   return (
-    <aside className="dashboard-sidebar">
-      <a className="dashboard-brand" href="/" aria-label="CWG Retail">
-        <span className="dashboard-brand-icon">C</span>
-        <span>
+    <aside className="sidebar" aria-label="Main navigation">
+      {/* Brand */}
+      <div className="sidebar-brand">
+        <span className="sidebar-brand-icon" aria-hidden="true">C</span>
+        <div className="sidebar-brand-text">
           <strong>CWG Retail</strong>
           <small>Management Suite</small>
-        </span>
-      </a>
+        </div>
+      </div>
 
-      <p className="dashboard-nav-label">WORKSPACE</p>
+      {/* Nav group label */}
+      <p className="sidebar-section-label">OPERATIONS</p>
 
-      <nav className="dashboard-nav" aria-label="Main navigation">
-        {navigation.map(item => (
-          <button
-            key={item.name}
-            type="button"
-            className={`dashboard-nav-item ${
-              activePage === item.name ? 'active' : ''
-            }`}
-            onClick={() => onNavigate(item.name)}
-          >
-            <span className="dashboard-nav-icon" aria-hidden="true">
-              {item.icon}
-            </span>
-            <span>{item.name}</span>
-          </button>
-        ))}
+      {/* Nav links */}
+      <nav>
+        <ul className="sidebar-nav" role="list">
+          {NAV_ITEMS.map(item => (
+            <li key={item.name}>
+              <button
+                type="button"
+                className={`sidebar-nav-item${activePage === item.name ? ' active' : ''}`}
+                onClick={() => onNavigate(item.name)}
+                aria-current={activePage === item.name ? 'page' : undefined}
+              >
+                <Icon name={item.icon} size={17} />
+                <span>{item.name}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
       </nav>
 
-      <div className="dashboard-sidebar-bottom">
-        <div className="dashboard-user">
-          <div className="dashboard-avatar">
-            {(user.name || user.email || 'U').charAt(0).toUpperCase()}
-          </div>
-
-          <div className="dashboard-user-info">
-            <strong>{user.name || user.email}</strong>
-            <small>{user.role || 'Staff'}</small>
+      {/* User card at the bottom */}
+      <div className="sidebar-footer">
+        <div className="sidebar-user">
+          <div className="sidebar-avatar" aria-hidden="true">{initials}</div>
+          <div className="sidebar-user-info">
+            <strong>{user?.name || user?.email || 'Staff'}</strong>
+            <small>{user?.role === 'owner' ? 'Owner / Admin' : 'Cashier'}</small>
           </div>
         </div>
-
-        <button type="button" className="dashboard-logout" onClick={onLogout}>
-          Sign out
-        </button>
       </div>
     </aside>
   );
