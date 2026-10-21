@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
 import DashboardHome from './DashboardHome';
+import PointOfSale from './PointOfSale';
 import Icon from '../components/ui/Icon';
 import '../styles/dashboard.css';
 
@@ -74,6 +75,9 @@ function Dashboard({ user = {}, onLogout }) {
   function renderContent() {
     if (activePage === 'Dashboard') {
       return <DashboardHome user={user} onNavigate={setActivePage} />;
+    }
+    if (activePage === 'Point of Sale') {
+      return <PointOfSale user={user} onSessionExpired={onLogout} />;
     }
     return (
       <PlaceholderPage

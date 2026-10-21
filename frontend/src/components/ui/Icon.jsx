@@ -96,6 +96,24 @@ const paths = {
     </>
   ),
   moon: <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />,
+  minus: <path d="M5 12h14" />,
+  x: <path d="M18 6 6 18M6 6l12 12" />,
+  check: <path d="M20 6 9 17l-5-5" />,
+  trash: <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6" />,
+  card: (
+    <>
+      <rect x="2" y="5" width="20" height="14" rx="2" />
+      <path d="M2 10h20M6 15h4" />
+    </>
+  ),
+  transfer: <path d="M7 7h13l-4-4M17 17H4l4 4" />,
+  printer: (
+    <>
+      <path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+      <rect x="6" y="14" width="12" height="8" />
+    </>
+  ),
+  barcode: <path d="M3 5v14M7 5v14M11 5v14M14 5v14M18 5v14M21 5v14" />,
 };
 
 function Icon({ name, size = 20, className = '' }) {

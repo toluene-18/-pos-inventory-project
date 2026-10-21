@@ -170,3 +170,24 @@ export async function getSalesReport({ from, to } = {}) {
   const query = params.toString();
   return apiRequest(query ? `/reports/sales?${query}` : '/reports/sales');
 }
+
+/**
+ * Complete a sale. Backend validates stock and computes totals.
+ * items: [{ product_id, quantity }]
+ * Throws ApiError with a readable message on 422 (e.g. insufficient stock).
+ */
+export async function createSale({ paymentMethod, items }) {
+  try {
+    const data = await apiRequest('/sales', {
+      method: 'POST',
+      body: JSON.stringify({ payment_method: paymentMethod, items }),
+    });
+    return data.sale;
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 422 && error.data?.errors) {
+      const first = Object.values(error.data.errors).flat()[0];
+      if (first) throw new ApiError(first, 422, error.data);
+    }
+    throw error;
+  }
+}

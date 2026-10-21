@@ -1,0 +1,57 @@
+/* receipt.css — sale success modal + printable receipt */
+.receipt-backdrop {
+  position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 20px;
+  background: rgba(0, 0, 0, .55); backdrop-filter: blur(3px); animation: fade .15s ease-out;
+}
+.receipt-modal {
+  width: min(420px, 100%); max-height: 92vh; overflow-y: auto; padding: 22px;
+  border: 1px solid var(--border); border-radius: 14px; background: var(--surface);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .35); animation: pop .2s ease-out;
+}
+.receipt-success { text-align: center; margin-bottom: 16px; }
+.receipt-success span {
+  display: inline-grid; place-items: center; width: 48px; height: 48px; border-radius: 50%;
+  background: var(--green); color: #fff;
+}
+.receipt-success h2 { margin: 10px 0 2px; font-size: 18px; color: var(--text); }
+.receipt-success p { margin: 0; color: var(--text-muted); font-size: 12px; }
+
+.receipt {
+  padding: 16px; border: 1px dashed var(--border); border-radius: 10px;
+  background: #fffefb; color: #1c1c1a; font-size: 12px;
+  font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace;
+}
+.receipt header { text-align: center; margin-bottom: 10px; }
+.receipt header strong { display: block; font-size: 14px; }
+.receipt header small { color: #6b6a64; font-size: 10px; }
+.receipt-meta {
+  display: flex; flex-direction: column; gap: 1px; padding: 8px 0;
+  border-block: 1px dashed #cfccc2; font-size: 10.5px; color: #4b4a45;
+}
+.receipt table { width: 100%; margin: 8px 0; border-collapse: collapse; }
+.receipt th { text-align: left; font-size: 10px; color: #6b6a64; font-weight: 600; padding-bottom: 4px; }
+.receipt th:nth-child(n+2), .receipt td:nth-child(n+2) { text-align: right; }
+.receipt td { padding: 4px 0; vertical-align: top; }
+.receipt td small { display: block; color: #8a8880; font-size: 10px; }
+.receipt dl { margin: 0; padding-top: 6px; border-top: 1px dashed #cfccc2; }
+.receipt dl div { display: flex; justify-content: space-between; padding: 2px 0; }
+.receipt dt, .receipt dd { margin: 0; }
+.receipt-total { font-size: 14px; font-weight: 700; }
+.receipt footer { margin-top: 10px; text-align: center; font-size: 10.5px; color: #6b6a64; }
+
+.receipt-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px; }
+.receipt-actions .btn { justify-content: center; }
+
+@keyframes fade { from { opacity: 0; } }
+@keyframes pop { from { opacity: 0; transform: scale(.96) translateY(6px); } }
+
+/* Print only the receipt, sized for an 80mm thermal roll or A4. */
+@media print {
+  body * { visibility: hidden; }
+  #receipt-print, #receipt-print * { visibility: visible; }
+  #receipt-print {
+    position: absolute; top: 0; left: 0; width: 80mm;
+    border: 0; padding: 0; background: #fff; color: #000;
+  }
+  .no-print { display: none !important; }
+}
