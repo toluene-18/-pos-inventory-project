@@ -117,7 +117,7 @@ class SaleController extends Controller
             'to' => 'sometimes|date_format:Y-m-d|after_or_equal:from',
         ]);
 
-        $query = Sale::with('user');
+        $query = Sale::with(['user', 'items.product']);
 
         // Owners can view all sales; cashiers only see their own.
         if ($request->user()->role === 'cashier') {
