@@ -97,6 +97,7 @@ function Dashboard({ user = {}, onLogout }) {
           user={user}
           activePage={activePage}
           onLogout={onLogout}
+          onNavigate={setActivePage}
         />
 
         <main className="app-content" id="main-content">

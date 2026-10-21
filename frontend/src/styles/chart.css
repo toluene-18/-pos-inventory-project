@@ -1,0 +1,114 @@
+/* ================================================================
+   chart.css — sales trend area chart + hover tooltip
+   ================================================================ */
+.chart {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.chart-y {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 220px;
+  padding: 4px 0 2px;
+  font-size: 10px;
+  color: var(--text-dim);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.chart-body { min-width: 0; }
+
+.chart-plot {
+  position: relative;
+  height: 220px;
+  cursor: crosshair;
+}
+
+.chart-plot svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.chart-grid {
+  stroke: var(--border);
+  stroke-width: 1;
+  stroke-dasharray: 4 5;
+  vector-effect: non-scaling-stroke;
+}
+
+.chart-line {
+  fill: none;
+  stroke: var(--green);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.chart-cursor {
+  stroke: var(--text-dim);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.chart-dot {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 3px solid var(--green);
+  box-shadow: 0 0 0 4px var(--green-soft);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.chart-tip {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 130px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+  transform: translate(14px, -50%);
+  pointer-events: none;
+  animation: tip-in 120ms ease-out;
+}
+
+.chart-tip--left { transform: translate(calc(-100% - 14px), -50%); }
+
+.chart-tip small { font-size: 10px; color: var(--text-muted); }
+.chart-tip strong { font-size: 14px; color: var(--text); font-variant-numeric: tabular-nums; }
+.chart-tip span { font-size: 11px; font-weight: 600; color: var(--green); }
+
+.chart-x {
+  position: relative;
+  height: 18px;
+  margin-top: 6px;
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+.chart-x span {
+  position: absolute;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.chart-x span:first-child { transform: none; }
+.chart-x span:last-child { transform: translateX(-100%); }
+
+@keyframes tip-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

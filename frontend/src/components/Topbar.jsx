@@ -1,4 +1,5 @@
 import Icon from './ui/Icon';
+import NotificationMenu from './NotificationMenu';
 import { useTheme } from '../context/ThemeContext';
 import '../styles/topbar.css';
 
@@ -10,7 +11,7 @@ import '../styles/topbar.css';
  *   activePage string — current page name shown as breadcrumb
  *   onLogout   fn     — called when user clicks sign out
  */
-function Topbar({ user, onLogout }) {
+function Topbar({ user, onLogout, onNavigate }) {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === 'dark';
 
@@ -58,14 +59,7 @@ function Topbar({ user, onLogout }) {
           <Icon name={isDark ? 'sun' : 'moon'} size={18} />
         </button>
 
-        {/* Notification bell */}
-        <button
-          type="button"
-          className="topbar-icon-btn"
-          aria-label="Notifications"
-        >
-          <Icon name="bell" size={18} />
-        </button>
+        <NotificationMenu onNavigate={onNavigate} />
 
         {/* User / role pill */}
         <button

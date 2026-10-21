@@ -67,13 +67,21 @@ export function buildChartPoints(sales, from, to) {
   for (const sale of sales) {
     const day = String(sale.created_at || '').slice(0, 10);
     if (!day) continue;
-    totals.set(day, addMoney(totals.get(day) || 0, sale.total));
+    const cur = totals.get(day) || { value: 0, count: 0 };
+    totals.set(day, { value: addMoney(cur.value, sale.total), count: cur.count + 1 });
   }
 
-  return eachDateYmd(from, to).map(day => ({
-    day: chartLabel(day),
-    value: totals.get(day) || 0,
-  }));
+  return eachDateYmd(from, to).map(day => {
+    const [y, m, d] = day.split('-').map(Number);
+    return {
+      day: chartLabel(day),
+      fullDate: new Date(y, m - 1, d).toLocaleDateString('en-GB', {
+        weekday: 'short', day: 'numeric', month: 'short',
+      }),
+      value: totals.get(day)?.value || 0,
+      count: totals.get(day)?.count || 0,
+    };
+  });
 }
 
 export function buildTopProducts(sales, limit = 5) {
