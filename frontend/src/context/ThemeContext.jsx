@@ -4,9 +4,9 @@ const ThemeContext = createContext(null);
 
 function getInitialTheme() {
   try {
-    return localStorage.getItem('cwg-theme') === 'dark' ? 'dark' : 'light';
+    return localStorage.getItem('cwg-theme') === 'light' ? 'light' : 'dark';
   } catch {
-    return 'light';
+    return 'dark';
   }
 }
 

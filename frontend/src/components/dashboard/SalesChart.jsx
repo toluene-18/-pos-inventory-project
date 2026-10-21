@@ -1,36 +1,18 @@
 import { useMemo } from 'react';
 
-const PLACEHOLDER_DATA = {
-  '7d': [
-    { day: '26 Sep', value: 42000 },
-    { day: '27 Sep', value: 89000 },
-    { day: '28 Sep', value: 136000 },
-    { day: '29 Sep', value: 108000 },
-    { day: '30 Sep', value: 180000 },
-    { day: '1 Oct',  value: 222000 },
-    { day: '2 Oct',  value: 195000 },
-  ],
-  '30d': [
-    { day: 'Week 1', value: 340000 },
-    { day: 'Week 2', value: 520000 },
-    { day: 'Week 3', value: 480000 },
-    { day: 'Week 4', value: 710000 },
-  ],
-};
-
 /**
- * SalesChart — SVG area/line chart.
+ * SalesChart — SVG area/line chart of real daily revenue.
  * Props:
- *   period   '7d' | '30d'
- *   data     array of { day, value } (optional — falls back to placeholder)
+ *   data  array of { day, value }
  */
-function SalesChart({ period, data }) {
-  const points = data || PLACEHOLDER_DATA[period];
+function SalesChart({ data = [] }) {
+  const points = data;
 
   const plotted = useMemo(() => {
     const W = 700;
     const H = 200;
-    const max = Math.max(...points.map(p => p.value)) * 1.15;
+    const highest = Math.max(0, ...points.map(p => p.value));
+    const max = highest > 0 ? highest * 1.15 : 1;
 
     return points.map((p, i) => ({
       ...p,

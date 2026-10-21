@@ -1,34 +1,38 @@
-import { useState } from 'react';
-import Icon from '../ui/Icon';
 import SalesChart from './SalesChart';
+import PanelStatus from './PanelStatus';
+import { formatMoney } from '../../utils/dashboardStats';
 
-/**
- * SalesTrendPanel — the large left panel in the dashboard middle row.
- * Shows a period toggle, summary figures, and the SVG chart.
- */
-function SalesTrendPanel() {
-  const [period, setPeriod] = useState('7d');
+function SalesTrendPanel({
+  period,
+  onPeriodChange,
+  loading,
+  error,
+  points,
+  totalRevenue,
+  dailyAverage,
+}) {
+  const empty = !loading && !error && (!points || points.every(point => point.value === 0));
 
   return (
     <article className="panel trend-panel">
       <div className="panel-head">
         <div>
           <h3>Sales trend</h3>
-          <p>Last {period === '7d' ? '7 days' : '30 days'} performance</p>
+          <p>Last {period === '7d' ? '7 days' : '30 days'} from recorded sales</p>
         </div>
 
         <div className="period-switch" role="group" aria-label="Chart period">
           <button
             type="button"
             className={period === '7d' ? 'active' : ''}
-            onClick={() => setPeriod('7d')}
+            onClick={() => onPeriodChange('7d')}
           >
             7d
           </button>
           <button
             type="button"
             className={period === '30d' ? 'active' : ''}
-            onClick={() => setPeriod('30d')}
+            onClick={() => onPeriodChange('30d')}
           >
             30d
           </button>
@@ -43,15 +47,22 @@ function SalesTrendPanel() {
       <div className="chart-summary-row">
         <div className="chart-figure">
           <span>TOTAL REVENUE</span>
-          <strong>—</strong>
+          <strong>{loading ? '—' : formatMoney(totalRevenue)}</strong>
         </div>
         <div className="chart-figure">
           <span>DAILY AVERAGE</span>
-          <strong>—</strong>
+          <strong>{loading ? '—' : formatMoney(dailyAverage)}</strong>
         </div>
       </div>
 
-      <SalesChart period={period} />
+      <PanelStatus
+        loading={loading}
+        error={error}
+        empty={empty}
+        emptyMessage="No sales were recorded in this period."
+      >
+        <SalesChart period={period} data={points} />
+      </PanelStatus>
     </article>
   );
 }

@@ -1,0 +1,124 @@
+﻿/* login-responsive.css — login breakpoints, motion, error state */
+@media (min-width: 1500px) {
+  .brand-panel-content {
+    padding: 60px;
+  }
+
+  .form-panel {
+    padding-right: 90px;
+    padding-left: 90px;
+  }
+}
+
+@media (max-width: 1000px) {
+  .login-page {
+    grid-template-columns: minmax(0, 0.85fr) minmax(400px, 1fr);
+  }
+
+  .brand-panel-content {
+    padding: 32px;
+  }
+
+  .brand-message h1 {
+    font-size: clamp(29px, 3.2vw, 40px);
+    letter-spacing: -1.2px;
+  }
+
+  .store-stats {
+    gap: 20px;
+  }
+
+  .form-panel {
+    padding: 40px 30px;
+  }
+}
+
+@media (max-width: 720px) {
+  .login-page {
+    display: block;
+    min-height: 100vh;
+  }
+
+  .brand-panel {
+    display: none;
+  }
+
+  .form-panel {
+    min-height: 100vh;
+    padding: 36px 24px;
+  }
+
+  .login-container {
+    max-width: 430px;
+    margin: auto;
+  }
+
+  .mobile-brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    margin-bottom: 52px;
+  }
+
+  .mobile-brand .brand-icon {
+    border-color: #3c3e35;
+    background: #20221c;
+    color: var(--accent);
+  }
+
+  .mobile-brand .brand-name strong {
+    color: #f7f7f2;
+  }
+
+  .mobile-brand .brand-name > span {
+    color: #92948a;
+  }
+
+  .login-heading h2 {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 400px) {
+  .form-panel {
+    padding: 28px 18px;
+  }
+
+  .mobile-brand {
+    margin-bottom: 42px;
+  }
+
+  .role-option {
+    gap: 6px;
+    padding: 7px 4px;
+    font-size: 11px;
+  }
+
+  .login-footer {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+
+.login-error {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border: 1px solid #e7b4b4;
+  border-radius: 8px;
+  background: #fff1f1;
+  color: #9b2525;
+  font-size: 14px;
+  line-height: 1.5;
+}
