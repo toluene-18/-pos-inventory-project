@@ -15,11 +15,16 @@ class ProductController extends Controller
         return view('product.index', compact('products'));
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $products = Product::with('inventory')
             ->where('is_active', true)
             ->get();
+
+        // Cost price reveals margins — owners only.
+        if ($request->user()?->role !== 'owner') {
+            $products->each->makeHidden('cost_price');
+        }
 
         return response()->json($products);
     }
