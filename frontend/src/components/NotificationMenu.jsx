@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import Icon from './ui/Icon';
 import useNotifications from '../hooks/useNotifications';
+import { canAccess, pageByName } from '../routes/navigation';
 import '../styles/notifications.css';
 
 const TYPE_ICON = { sale: 'money', low: 'alert', out: 'alert' };
 
 /** NotificationMenu — bell button with unread badge and dropdown list. */
-function NotificationMenu({ onNavigate }) {
+function NotificationMenu({ user, onNavigate }) {
   const [open, setOpen] = useState(false);
   const { items, unreadCount, markAllRead } = useNotifications();
   const ref = useRef(null);
@@ -28,7 +29,8 @@ function NotificationMenu({ onNavigate }) {
 
   function openItem(item) {
     setOpen(false);
-    onNavigate?.(item.target);
+    // Cashiers can't open Inventory — keep them where they are.
+    if (canAccess(user, pageByName(item.target))) onNavigate?.(item.target);
   }
 
   return (

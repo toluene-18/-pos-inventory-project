@@ -61,6 +61,7 @@ function DashboardHome({ user, onNavigate, onSessionExpired }) {
           items={d.lowStock}
           loading={d.loading}
           error={d.productsError}
+          canManage={isOwner}
           onNavigate={onNavigate}
         />
       </section>

@@ -59,7 +59,7 @@ function Topbar({ user, onLogout, onNavigate }) {
           <Icon name={isDark ? 'sun' : 'moon'} size={18} />
         </button>
 
-        <NotificationMenu onNavigate={onNavigate} />
+        <NotificationMenu user={user} onNavigate={onNavigate} />
 
         {/* User / role pill */}
         <button

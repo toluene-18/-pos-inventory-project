@@ -6,7 +6,7 @@ const ALERT_LABEL = {
   low: 'Low Stock',
 };
 
-function LowStockPanel({ items, loading, error, onNavigate }) {
+function LowStockPanel({ items, loading, error, onNavigate, canManage = false }) {
   const outCount = items.filter(item => item.status === 'out').length;
 
   return (
@@ -20,13 +20,15 @@ function LowStockPanel({ items, loading, error, onNavigate }) {
               : `${items.length} item${items.length === 1 ? '' : 's'} need attention`}
           </p>
         </div>
-        <button
-          type="button"
-          className="link-action"
-          onClick={() => onNavigate('Inventory')}
-        >
-          View all <Icon name="arrow" size={13} />
-        </button>
+        {canManage && (
+          <button
+            type="button"
+            className="link-action"
+            onClick={() => onNavigate('Inventory')}
+          >
+            View all <Icon name="arrow" size={13} />
+          </button>
+        )}
       </div>
 
       <PanelStatus

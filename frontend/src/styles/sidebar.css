@@ -71,6 +71,7 @@
 }
 
 .sidebar-nav-item {
+  text-decoration: none;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -162,6 +163,7 @@
   }
 
   .sidebar-nav-item {
+  text-decoration: none;
     justify-content: center;
     padding: 11px 6px;
   }

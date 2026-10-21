@@ -1,26 +1,14 @@
+import { NavLink } from 'react-router-dom';
 import Icon from './ui/Icon';
+import { pagesFor } from '../routes/navigation';
 import '../styles/sidebar.css';
 
-const NAV_ITEMS = [
-  { name: 'Dashboard',    icon: 'dashboard' },
-  { name: 'Point of Sale', icon: 'pos'      },
-  { name: 'Inventory',    icon: 'inventory' },
-  { name: 'Products',     icon: 'products'  },
-  { name: 'Sales',        icon: 'sales'     },
-  { name: 'Reports',      icon: 'reports'   },
-  { name: 'Restock',      icon: 'restock'   },
-  { name: 'Settings',     icon: 'settings'  },
-];
-
 /**
- * Sidebar — main navigation.
+ * Sidebar — main navigation. Shows only pages the user's role may open.
  * Props:
- *   user       object  — { name, email, role }
- *   activePage string  — currently active page name
- *   onNavigate fn      — called with the page name when a nav item is clicked
- *   onLogout   fn      — called when the user triggers sign-out
+ *   user  object — { name, email, role }
  */
-function Sidebar({ user, activePage, onNavigate }) {
+function Sidebar({ user }) {
   const initials = (user?.name || user?.email || 'U')
     .split(' ')
     .map(w => w[0])
@@ -30,7 +18,6 @@ function Sidebar({ user, activePage, onNavigate }) {
 
   return (
     <aside className="sidebar" aria-label="Main navigation">
-      {/* Brand */}
       <div className="sidebar-brand">
         <span className="sidebar-brand-icon" aria-hidden="true">C</span>
         <div className="sidebar-brand-text">
@@ -39,29 +26,24 @@ function Sidebar({ user, activePage, onNavigate }) {
         </div>
       </div>
 
-      {/* Nav group label */}
       <p className="sidebar-section-label">OPERATIONS</p>
 
-      {/* Nav links */}
       <nav>
         <ul className="sidebar-nav" role="list">
-          {NAV_ITEMS.map(item => (
-            <li key={item.name}>
-              <button
-                type="button"
-                className={`sidebar-nav-item${activePage === item.name ? ' active' : ''}`}
-                onClick={() => onNavigate(item.name)}
-                aria-current={activePage === item.name ? 'page' : undefined}
+          {pagesFor(user).map(page => (
+            <li key={page.path}>
+              <NavLink
+                to={page.path}
+                className={({ isActive }) => `sidebar-nav-item${isActive ? ' active' : ''}`}
               >
-                <Icon name={item.icon} size={17} />
-                <span>{item.name}</span>
-              </button>
+                <Icon name={page.icon} size={17} />
+                <span>{page.name}</span>
+              </NavLink>
             </li>
           ))}
         </ul>
       </nav>
 
-      {/* User card at the bottom */}
       <div className="sidebar-footer">
         <div className="sidebar-user">
           <div className="sidebar-avatar" aria-hidden="true">{initials}</div>
