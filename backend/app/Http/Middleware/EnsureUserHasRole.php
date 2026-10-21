@@ -9,14 +9,14 @@ use Symfony\Component\HttpFoundation\Response;
 class EnsureUserHasRole
 {
     /**
-     * Handle an incoming request.
+     * Allow the request only if the user has one of the given roles.
+     * Usage: ->middleware('role:owner') or ->middleware('role:owner,manager')
      *
      * @param  Closure(Request): (Response)  $next
      */
-    
-    public function handle(Request $request, Closure $next, string $role): Response
+    public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        if (!$request->user() || $request->user()->role !== $role) {
+        if (!$request->user() || !in_array($request->user()->role, $roles, true)) {
             return response()->json([
                 'message' => 'Forbidden.',
             ], 403);

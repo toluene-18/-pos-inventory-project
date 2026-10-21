@@ -72,7 +72,9 @@ function Topbar({ user, onLogout, onNavigate }) {
           <div className="topbar-avatar" aria-hidden="true">{initials}</div>
           <div className="topbar-user-info">
             <strong>{user?.name || user?.email}</strong>
-            <small>{user?.role === 'owner' ? 'Owner / Admin' : 'Cashier'}</small>
+            <small>
+              {user?.role === 'owner' ? 'Owner / Admin' : user?.role === 'manager' ? 'Manager' : 'Cashier'}
+            </small>
           </div>
         </button>
       </div>

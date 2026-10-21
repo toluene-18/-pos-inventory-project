@@ -95,8 +95,8 @@ class SaleController extends Controller
     {
         $user = $request->user();
 
-        // Cashiers can only view their own sales.
-        if ($user->role === 'cashier' && $sale->user_id !== $user->id) {
+        // Cashiers can only view their own sales; managers and owners can see all sales.
+        if (in_array($user->role, ['cashier'], true) && $sale->user_id !== $user->id) {
             return response()->json([
                 'message' => 'Forbidden.',
             ], 403);
@@ -119,7 +119,7 @@ class SaleController extends Controller
 
         $query = Sale::with(['user', 'items.product']);
 
-        // Owners can view all sales; cashiers only see their own.
+        // Owners and managers can view all sales; cashiers only see their own.
         if ($request->user()->role === 'cashier') {
             $query->where('user_id', $request->user()->id);
         }

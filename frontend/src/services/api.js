@@ -104,6 +104,10 @@ export async function loginUser(email, password) {
       throw new ApiError('Invalid email or password.', 401, data);
     }
 
+    if (response.status === 403) {
+      throw new ApiError(data.message || 'Your account is awaiting approval.', 403, data);
+    }
+
     throw new ApiError(
       data.message || `Login failed (HTTP ${response.status}).`,
       response.status,
@@ -117,6 +121,43 @@ export async function loginUser(email, password) {
       200,
       data
     );
+  }
+
+  sessionStorage.setItem('auth_token', data.token);
+  sessionStorage.setItem('auth_user', JSON.stringify(data.user));
+
+  return data;
+}
+
+export async function registerUser({ name, email, password, role = 'cashier' }) {
+  let response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}/register`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name, email, password, password_confirmation: password, role }),
+    });
+  } catch {
+    throw new TypeError('Network request failed');
+  }
+
+  const data = await readJson(response);
+
+  if (!response.ok) {
+    const errorMessage = data?.message || 'Account creation failed.';
+    if (data?.errors) {
+      const firstError = Object.values(data.errors).flat()[0];
+      throw new ApiError(firstError || errorMessage, response.status, data);
+    }
+    throw new ApiError(errorMessage, response.status, data);
+  }
+
+  if (!data.token || !data.user) {
+    throw new ApiError('The server returned an unexpected registration response.', 200, data);
   }
 
   sessionStorage.setItem('auth_token', data.token);

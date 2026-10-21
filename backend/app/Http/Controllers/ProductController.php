@@ -21,8 +21,8 @@ class ProductController extends Controller
             ->where('is_active', true)
             ->get();
 
-        // Cost price reveals margins — owners only.
-        if ($request->user()?->role !== 'owner') {
+        // Cost price reveals margins — owners and managers only.
+        if (! in_array($request->user()?->role, ['owner', 'manager'], true)) {
             $products->each->makeHidden('cost_price');
         }
 

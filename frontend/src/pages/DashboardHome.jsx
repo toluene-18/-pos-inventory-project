@@ -11,6 +11,8 @@ import '../styles/dashboard-panels.css';
 
 function DashboardHome({ user, onNavigate, onSessionExpired }) {
   const isOwner = user?.role === 'owner';
+  const isManager = user?.role === 'manager';
+  const canManageInventory = isOwner || isManager;
   const [period, setPeriod] = useState('7d');
   const d = useDashboardData({ isOwner, period, onSessionExpired });
 
@@ -18,7 +20,7 @@ function DashboardHome({ user, onNavigate, onSessionExpired }) {
     <div className="dash-home">
       <WelcomeSection
         user={user}
-        isOwner={isOwner}
+        isOwner={isOwner || isManager}
         error={d.error}
         truncated={d.trend.truncated}
         onNavigate={onNavigate}
@@ -26,7 +28,7 @@ function DashboardHome({ user, onNavigate, onSessionExpired }) {
 
       <MetricGrid
         loading={d.loading}
-        isOwner={isOwner}
+        isOwner={isOwner || isManager}
         todayMetrics={d.todayMetrics}
         lowStock={d.lowStock}
         productsError={d.productsError}
@@ -54,14 +56,14 @@ function DashboardHome({ user, onNavigate, onSessionExpired }) {
           items={d.topProducts}
           loading={d.loading}
           error={d.salesError}
-          isOwner={isOwner}
+          isOwner={isOwner || isManager}
           onNavigate={onNavigate}
         />
         <LowStockPanel
           items={d.lowStock}
           loading={d.loading}
           error={d.productsError}
-          canManage={isOwner}
+          canManage={canManageInventory}
           onNavigate={onNavigate}
         />
       </section>

@@ -9,7 +9,7 @@ use App\Http\Controllers\SaleController;
 
 
 Route::post('/login', [AuthController::class, 'login']);
-
+Route::post('/register', [AuthController::class, 'register']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
@@ -18,7 +18,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/products', [ProductController::class, 'index']);
 
-    Route::middleware('role:owner')->group(function () {
+    Route::middleware('role:owner,manager')->group(function () {
         Route::post('/products/create', [ProductController::class, 'store']);
         Route::patch('/products/{product}', [ProductController::class, 'update']);
         Route::delete('products/{product}', [ProductController::class,'delete']);
@@ -27,6 +27,10 @@ Route::middleware('auth:sanctum')->group(function () {
         [StockAdjustmentController::class, 'store']);
 
         Route::get('/reports/sales', [SaleController::class, 'report']);
+    });
+
+    Route::middleware('role:owner')->group(function () {
+        Route::patch('/staff/{user}/approve', [AuthController::class, 'approveStaff']);
     });
 
     Route::post('/sales', [SaleController::class, 'store']);

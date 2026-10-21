@@ -1,18 +1,18 @@
 /**
  * Single source of truth for app pages: URL, sidebar icon, and who may open it.
  * Roles mirror backend middleware:
- *   - products create/update/delete, stock adjustments, reports → owner only
- *   - sales checkout + own sales history → owner and cashier
+ *   - product management, stock adjustments, and reports → owner + manager
+ *   - sales checkout + history → owner, manager, and cashier
  */
 export const PAGES = [
-  { name: 'Dashboard',     path: '/dashboard', icon: 'dashboard', roles: ['owner', 'cashier'] },
-  { name: 'Point of Sale', path: '/pos',       icon: 'pos',       roles: ['owner', 'cashier'] },
-  { name: 'Sales',         path: '/sales',     icon: 'sales',     roles: ['owner', 'cashier'] },
-  { name: 'Inventory',     path: '/inventory', icon: 'inventory', roles: ['owner'] },
-  { name: 'Products',      path: '/products',  icon: 'products',  roles: ['owner'] },
-  { name: 'Restock',       path: '/restock',   icon: 'restock',   roles: ['owner'] },
-  { name: 'Reports',       path: '/reports',   icon: 'reports',   roles: ['owner'] },
-  { name: 'Settings',      path: '/settings',  icon: 'settings',  roles: ['owner'] },
+  { name: 'Dashboard',     path: '/dashboard', icon: 'dashboard', roles: ['owner', 'manager', 'cashier'] },
+  { name: 'Point of Sale', path: '/pos',       icon: 'pos',       roles: ['owner', 'manager', 'cashier'] },
+  { name: 'Sales',         path: '/sales',     icon: 'sales',     roles: ['owner', 'manager', 'cashier'] },
+  { name: 'Inventory',     path: '/inventory', icon: 'inventory', roles: ['owner', 'manager'] },
+  { name: 'Products',      path: '/products',  icon: 'products',  roles: ['owner', 'manager'] },
+  { name: 'Restock',       path: '/restock',   icon: 'restock',   roles: ['owner', 'manager'] },
+  { name: 'Reports',       path: '/reports',   icon: 'reports',   roles: ['owner', 'manager'] },
+  { name: 'Settings',      path: '/settings',  icon: 'settings',  roles: ['owner', 'manager'] },
 ];
 
 export function canAccess(user, page) {

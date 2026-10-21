@@ -49,7 +49,9 @@ function Sidebar({ user }) {
           <div className="sidebar-avatar" aria-hidden="true">{initials}</div>
           <div className="sidebar-user-info">
             <strong>{user?.name || user?.email || 'Staff'}</strong>
-            <small>{user?.role === 'owner' ? 'Owner / Admin' : 'Cashier'}</small>
+            <small>
+              {user?.role === 'owner' ? 'Owner / Admin' : user?.role === 'manager' ? 'Manager' : 'Cashier'}
+            </small>
           </div>
         </div>
       </div>

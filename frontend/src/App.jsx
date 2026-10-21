@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import AppLayout from './pages/AppLayout';
 import DashboardHome from './pages/DashboardHome';
 import PointOfSale from './pages/PointOfSale';
@@ -40,6 +41,11 @@ function App() {
       <Route
         path="/login"
         element={user ? <Navigate to="/dashboard" replace /> : <Login onLogin={handleLogin} />}
+      />
+
+      <Route
+        path="/register"
+        element={user ? <Navigate to="/dashboard" replace /> : <Register />}
       />
 
       <Route
