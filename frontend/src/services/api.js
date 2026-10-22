@@ -255,3 +255,39 @@ export async function createSale({ paymentMethod, items }) {
     throw error;
   }
 }
+
+export async function createProduct(payload) {
+  try {
+    return await apiRequest('/products/create', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 422 && error.data?.errors) {
+      const first = Object.values(error.data.errors).flat()[0];
+      if (first) throw new ApiError(first, 422, error.data);
+    }
+    throw error;
+  }
+}
+
+export async function updateProduct(id, payload) {
+  try {
+    return await apiRequest(`/products/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    });
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 422 && error.data?.errors) {
+      const first = Object.values(error.data.errors).flat()[0];
+      if (first) throw new ApiError(first, 422, error.data);
+    }
+    throw error;
+  }
+}
+
+export async function deactivateProduct(id) {
+  return apiRequest(`/products/${id}`, {
+    method: 'DELETE',
+  });
+}

@@ -5,6 +5,7 @@ import Register from './pages/Register';
 import AppLayout from './pages/AppLayout';
 import DashboardHome from './pages/DashboardHome';
 import PointOfSale from './pages/PointOfSale';
+import Products from './pages/Products';
 import ProtectedRoute from './routes/ProtectedRoute';
 import RoleRoute from './routes/RoleRoute';
 import usePageNavigate from './hooks/usePageNavigate';
@@ -14,7 +15,6 @@ import { clearAuth, getStoredUser } from './services/api';
 const UPCOMING = [
   ['/sales', 'Sales'],
   ['/inventory', 'Inventory'],
-  ['/products', 'Products'],
   ['/restock', 'Restock'],
   ['/reports', 'Reports'],
   ['/settings', 'Settings'],
@@ -74,6 +74,14 @@ function App() {
           element={
             <RoleRoute user={user} name="Point of Sale">
               <PointOfSale user={user} onSessionExpired={handleLogout} />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/products"
+          element={
+            <RoleRoute user={user} name="Products">
+              <Products user={user} onSessionExpired={handleLogout} />
             </RoleRoute>
           }
         />

@@ -1,0 +1,248 @@
+/* ================================================================
+   products.css — Product catalogue layout, controls, and table
+   ================================================================ */
+
+.products-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.products-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.products-header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: var(--text);
+}
+
+.products-header p {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.product-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  font-size: 13px;
+}
+
+.product-alert--success {
+  background: var(--green-soft);
+  color: var(--green);
+  border: 1px solid var(--green);
+}
+
+.product-alert--error {
+  background: var(--rose-soft);
+  color: var(--rose);
+  border: 1px solid var(--rose);
+}
+
+.products-controls {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.products-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 240px;
+  display: flex;
+  align-items: center;
+}
+
+.products-search-wrap svg {
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.products-search-wrap input {
+  width: 100%;
+  padding: 10px 12px 10px 38px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.products-search-wrap input:focus {
+  outline: none;
+  border-color: var(--green);
+}
+
+.products-filter-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.products-filter-wrap label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.products-filter-wrap select {
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.products-table-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow-x: auto;
+  box-shadow: var(--shadow);
+}
+
+.products-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+.products-table th {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--surface-2);
+}
+
+.products-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-soft);
+  color: var(--text);
+  vertical-align: middle;
+}
+
+.products-table tr:last-child td {
+  border-bottom: none;
+}
+
+.products-table tr:hover td {
+  background: var(--surface-2);
+}
+
+.product-name-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.product-sku-tag {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-family: monospace;
+}
+
+.product-cat-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 11px;
+  text-transform: capitalize;
+}
+
+.product-cost-cell {
+  color: var(--text-muted);
+}
+
+.product-price-cell strong {
+  color: var(--green);
+}
+
+.stock-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.stock-badge--ok {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+.stock-badge--low {
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+
+.stock-badge--out {
+  background: var(--rose-soft);
+  color: var(--rose);
+}
+
+.product-actions-cell {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.btn-icon {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 6px;
+  padding: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--surface-2);
+  color: var(--text);
+  border-color: var(--text-dim);
+}
+
+.btn-icon--danger:hover {
+  background: var(--rose-soft);
+  color: var(--rose);
+  border-color: var(--rose);
+}
+
+.text-right {
+  text-align: right;
+}
+
+.products-loading,
+.products-empty {
+  padding: 48px 16px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.products-empty svg {
+  margin-bottom: 8px;
+  color: var(--text-dim);
+}
