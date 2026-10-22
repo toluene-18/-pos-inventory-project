@@ -4,7 +4,8 @@
 > **Last Updated:** 2026-10-22  
 > **Active Git Branch:** `feature/my-react-frontend`  
 > **Repository:** `https://github.com/toluene-18/-pos-inventory-project.git`  
-> **Project Root:** `C:\Users\Dell\pos-inventory-project`
+> **Project Root:** `C:\Users\Dell\pos-inventory-project`  
+> **Persistent Local Markdown File:** [`HANDOVER_PLAN.md`](file:///C:/Users/Dell/pos-inventory-project/HANDOVER_PLAN.md)
 
 ---
 
@@ -79,57 +80,62 @@ The system supports 3 roles: **`owner`**, **`manager`**, and **`cashier`**.
 - Dynamic Sidebar displaying only accessible routes based on user role (`navigation.js`, `Sidebar.jsx`).
 - Strict URL route guarding via `RoleRoute.jsx` and `ProtectedRoute.jsx`.
 
-### Testing & Build Verification
-- **Backend Test Suite:** `62 passed (189 assertions)` via `php artisan test`.
-- **Frontend Quality:** `eslint .` passes with 0 errors, production bundle `npm run build` succeeds cleanly in < 1s.
-- **Git status:** Branch `feature/my-react-frontend` is completely clean and in sync with `origin/feature/my-react-frontend`.
+### Milestone 5: Products Catalogue Management (`/products`) — COMPLETE ✅
+- **Interactive Catalogue:** Real-time search by name, SKU, or category filter pills.
+- **Role-Gated Columns:** Selling price visible to all; cost price visible exclusively to Owners and Managers.
+- **Product Modal Form:** Add new products or edit existing records (`ProductFormModal.jsx`), including SKU uniqueness, prices, category, initial stock, and threshold alerts.
+- **Soft Deactivation:** Safe deactivation preserves transaction records while hiding item from POS.
+- **Styling & Size:** Kept under 300 lines per file (`Products.jsx`, `ProductFormModal.jsx`, `products.css`, `products-modal.css`).
+
+### Milestone 6: Inventory Management & Stock Adjustments (`/inventory`) — COMPLETE ✅
+- **Store-Wide Stock Overview:** Real-time KPI summary (Total units in store, Low stock warnings, Out of stock count).
+- **Tab Filters:** Filter between *All Stock*, *Low Stock*, and *Out of Stock*.
+- **Stock Adjustment Modal:** Owners & Managers can add (+) or deduct (−) stock with live on-hand preview (`StockAdjustModal.jsx`).
+- **Audit Trails & Reason Tracking:** Presets and custom text fields for shipments, damaged items, expired products, cycle counts, or loss prevention.
+- **Zero-Floor Protection:** Frontend and backend row-locked guards prevent negative inventory levels.
+- **Modular Services:** Storage separated into `authStorage.js`, keeping `api.js` clean at 171 lines.
 
 ---
 
-## 4. Remaining Roadmap & Implementation Plan
+## 4. Current Test & Build Verification
+
+- **Backend Test Suite:** `62 passed (189 assertions)` via `php artisan test`.
+- **Frontend Quality:** `eslint .` passes with 0 errors, production bundle `npm run build` succeeds cleanly in < 1s.
+- **File Line Count Audit:** Every `.jsx`, `.js`, and `.css` file in `frontend/src/` is strictly **under 300 lines**.
+- **Git Branch:** `feature/my-react-frontend` is completely clean and pushed to `origin`.
+
+---
+
+## 5. Remaining Implementation Roadmap
 
 ```mermaid
 flowchart TD
-    A[Milestone 5: Products & Catalogue] --> B[Milestone 6: Inventory & Stock Adjustments]
-    B --> C[Milestone 7: Sales History & Receipt View]
-    C --> D[Milestone 8: Restock Workflow]
-    D --> E[Milestone 9: Reports & Analytics]
-    E --> F[Milestone 10: Settings & Staff Management]
+    A[Milestone 7: Sales History & Receipts] --> B[Milestone 8: Restock Workflow]
+    B --> C[Milestone 9: Reports & Analytics]
+    C --> D[Milestone 10: Settings & Staff Management]
 ```
 
-### Phase 1: Products Management (`/products`)
-- **Backend Available:** `POST /api/products/create`, `PATCH /api/products/{product}`, `DELETE /api/products/{product}` (Soft-deactivate via `is_active = false`).
-- **Frontend To Build:**
-  1. `frontend/src/pages/Products.jsx`: Data table with search, category filtering, status pill, price columns.
-  2. `frontend/src/components/products/ProductFormModal.jsx`: Modal to Add/Edit product (name, SKU, category, cost price, sell price, initial stock).
-  3. `frontend/src/components/products/ProductActionMenu.jsx`: Edit and Deactivate triggers.
-  4. Styles: `frontend/src/styles/products.css` (< 300 lines).
-
-### Phase 2: Inventory & Stock Adjustments (`/inventory`)
-- **Backend Available:** `POST /api/products/{product}/stock-adjustments`.
-- **Frontend To Build:**
-  1. `frontend/src/pages/Inventory.jsx`: Inventory level overview, low-stock threshold badges, filter by out-of-stock / low-stock.
-  2. `frontend/src/components/inventory/StockAdjustModal.jsx`: Modal for owners/managers to adjust stock (+/- qty) with required reason (`damaged`, `restock`, `inventory_count`, etc.).
-
-### Phase 3: Sales History & Receipts (`/sales`)
+### Phase 1: Sales History & Receipts (`/sales`) — NEXT
 - **Backend Available:** `GET /api/sales` (paginated, date filters, payment_method filters), `GET /api/sales/{sale}`.
 - **Frontend To Build:**
   1. `frontend/src/pages/Sales.jsx`: Transactions history table (Cashier sees own, Owner/Manager sees all with cashier name).
   2. View Receipt Modal: Reuse `ReceiptModal.jsx` to view and reprint past receipts.
+  3. Filter controls: payment method (Cash, Card, Transfer), date range, search by receipt ID.
+  4. Styles: `frontend/src/styles/sales.css` (< 300 lines).
 
-### Phase 4: Restock Workflow (`/restock`)
+### Phase 2: Restock Workflow (`/restock`)
 - Rapid stock intake UI for receiving bulk inventory shipments.
 
-### Phase 5: Owner Reports (`/reports`)
+### Phase 3: Owner Reports (`/reports`)
 - Date range sales summary, revenue graphs, payment method breakdown cards.
 
-### Phase 6: Settings & Staff Approval Management (`/settings`)
+### Phase 4: Settings & Staff Approval Management (`/settings`)
 - List pending staff sign-ups, approve/reject buttons, role assignment modal, and deactivate staff button.
 
 ---
 
-## 5. How Any Engineer or AI Resumes This Project
+## 6. How Any Engineer or AI Resumes This Project
 1. Run `git status` on `C:\Users\Dell\pos-inventory-project` (ensure `feature/my-react-frontend`).
 2. Run `php artisan test` in `backend/` to verify backend integrity.
 3. Run `npm run lint` and `npm run build` in `frontend/`.
-4. Pick up the next step (**Phase 1: Products Management**) by creating `frontend/src/pages/Products.jsx` and hooking it into `App.jsx`.
+4. Pick up the next step (**Phase 1: Sales History & Receipts**) by creating `frontend/src/pages/Sales.jsx` and hooking it into `App.jsx`.
