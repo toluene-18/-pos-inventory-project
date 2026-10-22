@@ -1,0 +1,279 @@
+/* ================================================================
+   inventory.css — Inventory page, metrics cards, table, badges
+   ================================================================ */
+
+.inventory-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.inventory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.inventory-header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: var(--text);
+}
+
+.inventory-header p {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.inventory-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  font-size: 13px;
+}
+
+.inventory-alert--success {
+  background: var(--green-soft);
+  color: var(--green);
+  border: 1px solid var(--green);
+}
+
+.inventory-alert--error {
+  background: var(--rose-soft);
+  color: var(--rose);
+  border: 1px solid var(--rose);
+}
+
+.inventory-stat-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.inv-stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: var(--shadow);
+}
+
+.inv-stat-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inv-stat-icon--total {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.inv-stat-icon--low {
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+
+.inv-stat-icon--out {
+  background: var(--rose-soft);
+  color: var(--rose);
+}
+
+.inv-stat-info small {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.inv-stat-info strong {
+  font-size: 18px;
+  color: var(--text);
+}
+
+.inventory-controls {
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.inventory-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 240px;
+  display: flex;
+  align-items: center;
+}
+
+.inventory-search-wrap svg {
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.inventory-search-wrap input {
+  width: 100%;
+  padding: 10px 12px 10px 38px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.inventory-search-wrap input:focus {
+  outline: none;
+  border-color: var(--green);
+}
+
+.inventory-tabs {
+  display: flex;
+  gap: 6px;
+  background: var(--surface-2);
+  padding: 4px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.inv-tab {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.inv-tab:hover {
+  color: var(--text);
+}
+
+.inv-tab--active {
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.inventory-table-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow-x: auto;
+  box-shadow: var(--shadow);
+}
+
+.inventory-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+.inventory-table th {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--surface-2);
+}
+
+.inventory-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-soft);
+  color: var(--text);
+  vertical-align: middle;
+}
+
+.inventory-table tr:last-child td {
+  border-bottom: none;
+}
+
+.inventory-table tr:hover td {
+  background: var(--surface-2);
+}
+
+.inv-prod-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.inv-sku-tag {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-family: monospace;
+}
+
+.inv-cat-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 11px;
+  text-transform: capitalize;
+}
+
+.inv-qty-value {
+  font-size: 14px;
+}
+
+.inv-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.inv-badge--ok {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+.inv-badge--low {
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+
+.inv-badge--out {
+  background: var(--rose-soft);
+  color: var(--rose);
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.inventory-loading,
+.inventory-empty {
+  padding: 48px 16px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.inventory-empty svg {
+  margin-bottom: 8px;
+  color: var(--text-dim);
+}

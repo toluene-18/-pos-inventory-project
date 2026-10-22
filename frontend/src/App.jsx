@@ -6,6 +6,7 @@ import AppLayout from './pages/AppLayout';
 import DashboardHome from './pages/DashboardHome';
 import PointOfSale from './pages/PointOfSale';
 import Products from './pages/Products';
+import Inventory from './pages/Inventory';
 import ProtectedRoute from './routes/ProtectedRoute';
 import RoleRoute from './routes/RoleRoute';
 import usePageNavigate from './hooks/usePageNavigate';
@@ -14,7 +15,6 @@ import { clearAuth, getStoredUser } from './services/api';
 /** Pages without a real screen yet — RoleRoute shows a placeholder or "restricted". */
 const UPCOMING = [
   ['/sales', 'Sales'],
-  ['/inventory', 'Inventory'],
   ['/restock', 'Restock'],
   ['/reports', 'Reports'],
   ['/settings', 'Settings'],
@@ -82,6 +82,14 @@ function App() {
           element={
             <RoleRoute user={user} name="Products">
               <Products user={user} onSessionExpired={handleLogout} />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/inventory"
+          element={
+            <RoleRoute user={user} name="Inventory">
+              <Inventory user={user} onSessionExpired={handleLogout} />
             </RoleRoute>
           }
         />
