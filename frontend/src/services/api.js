@@ -125,10 +125,11 @@ export async function adjustStock(productId, { type, quantity, reason }) {
   }
 }
 
-export async function getSales({ from, to, page = 1 } = {}) {
+export async function getSales({ from, to, payment_method, page = 1 } = {}) {
   const params = new URLSearchParams();
   if (from) params.set('from', from);
   if (to) params.set('to', to);
+  if (payment_method && payment_method !== 'all') params.set('payment_method', payment_method);
   params.set('page', String(page));
   return apiRequest(`/sales?${params.toString()}`);
 }
