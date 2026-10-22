@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 uses(RefreshDatabase::class);
 
 test('manager can access product and report routes as a management role', function () {
+    /** @var \Tests\TestCase $this */
     $manager = User::factory()->create([
         'role' => 'manager',
         'status' => 'active',
@@ -22,6 +23,7 @@ test('manager can access product and report routes as a management role', functi
 });
 
 test('new staff accounts start pending until the owner approves them', function () {
+    /** @var \Tests\TestCase $this */
     $owner = User::factory()->create([
         'role' => 'owner',
         'status' => 'active',
@@ -59,6 +61,7 @@ test('new staff accounts start pending until the owner approves them', function 
 });
 
 test('pending staff cannot sign in until approved', function () {
+    /** @var \Tests\TestCase $this */
     $pendingUser = User::factory()->create([
         'role' => 'cashier',
         'status' => 'pending',
