@@ -14,7 +14,9 @@ export async function apiRequest(path, options = {}) {
   const headers = { Accept: 'application/json', ...options.headers };
 
   if (token) headers.Authorization = `Bearer ${token}`;
-  if (options.body && !headers['Content-Type']) headers['Content-Type'] = 'application/json';
+  if (options.body && !(options.body instanceof FormData) && !headers['Content-Type']) {
+    headers['Content-Type'] = 'application/json';
+  }
 
   const response = await fetch(`${API_BASE_URL}${path}`, { ...options, headers });
   const data = await readJson(response);
@@ -169,4 +171,24 @@ export async function createSale({ paymentMethod, items }) {
     }
     throw error;
   }
+}
+
+export async function uploadProductImage(file) {
+  const formData = new FormData();
+  formData.append('image', file);
+  return apiRequest('/products/upload-image', {
+    method: 'POST',
+    body: formData,
+  });
+}
+
+export async function getStaff() {
+  return apiRequest('/staff');
+}
+
+export async function updateStaffStatus(userId, { role, status }) {
+  return apiRequest(`/staff/${userId}/approve`, {
+    method: 'PATCH',
+    body: JSON.stringify({ role, status }),
+  });
 }

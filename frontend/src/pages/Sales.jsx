@@ -1,9 +1,14 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import Icon from '../components/ui/Icon';
 import ReceiptViewModal from '../components/sales/ReceiptViewModal';
+import SalesKpis from '../components/sales/SalesKpis';
 import { getSales } from '../services/api';
 import { formatMoney, paymentLabel } from '../utils/dashboardStats';
 import '../styles/sales.css';
+
+function toYmd(date) {
+  return date.toISOString().slice(0, 10);
+}
 
 export default function Sales({ user, onSessionExpired }) {
   const [sales, setSales] = useState([]);
@@ -14,6 +19,8 @@ export default function Sales({ user, onSessionExpired }) {
   const [paymentFilter, setPaymentFilter] = useState('all');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
+  const [timePreset, setTimePreset] = useState('all');
+  const [search, setSearch] = useState('');
   const [viewingSale, setViewingSale] = useState(null);
 
   const isManagement = ['owner', 'manager'].includes(user?.role);
@@ -47,17 +54,44 @@ export default function Sales({ user, onSessionExpired }) {
     fetchSales();
   }, [fetchSales]);
 
-  const summary = useMemo(() => {
-    const totalRev = sales.reduce((sum, s) => sum + (Number(s.total) || 0), 0);
-    return { count: sales.length, revenue: totalRev };
-  }, [sales]);
-
-  function handleResetFilters() {
-    setPaymentFilter('all');
-    setFromDate('');
-    setToDate('');
+  function handlePreset(preset) {
+    setTimePreset(preset);
     setPage(1);
+    const now = new Date();
+    if (preset === 'today') {
+      const todayStr = toYmd(now);
+      setFromDate(todayStr);
+      setToDate(todayStr);
+    } else if (preset === '7d') {
+      const past = new Date();
+      past.setDate(past.getDate() - 7);
+      setFromDate(toYmd(past));
+      setToDate(toYmd(now));
+    } else if (preset === '30d') {
+      const past = new Date();
+      past.setDate(past.getDate() - 30);
+      setFromDate(toYmd(past));
+      setToDate(toYmd(now));
+    } else {
+      setFromDate('');
+      setToDate('');
+    }
   }
+
+  const filteredSales = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return sales;
+    return sales.filter(s => {
+      const idStr = String(s.id);
+      const cashier = s.user?.name?.toLowerCase() || '';
+      return idStr.includes(q) || cashier.includes(q);
+    });
+  }, [sales, search]);
+
+  const summary = useMemo(() => {
+    const totalRev = filteredSales.reduce((sum, s) => sum + (Number(s.total) || 0), 0);
+    return { count: filteredSales.length, revenue: totalRev };
+  }, [filteredSales]);
 
   return (
     <div className="sales-page">
@@ -66,7 +100,7 @@ export default function Sales({ user, onSessionExpired }) {
           <h2>Sales Transactions</h2>
           <p>
             {isManagement
-              ? 'View and inspect all store-wide transactions, receipts, and cashier settlements.'
+              ? 'View and inspect store-wide transactions, receipts, and cashier settlements.'
               : 'View and reprint receipts for transactions you processed.'}
           </p>
         </div>
@@ -78,83 +112,69 @@ export default function Sales({ user, onSessionExpired }) {
         </div>
       )}
 
-      <div className="sales-stat-cards">
-        <div className="sales-stat-card">
-          <span className="sales-stat-icon sales-stat-icon--rev">
-            <Icon name="money" size={18} />
-          </span>
-          <div className="sales-stat-info">
-            <small>Page Revenue ({summary.count} sales)</small>
-            <strong>{formatMoney(summary.revenue)}</strong>
-          </div>
+      <SalesKpis summary={summary} totalTransactions={pagination.total} />
+
+      <div className="sales-controls-card">
+        <div className="sales-preset-pills">
+          <button
+            type="button"
+            className={`preset-btn ${timePreset === 'all' ? 'preset-btn--active' : ''}`}
+            onClick={() => handlePreset('all')}
+          >
+            All Time
+          </button>
+          <button
+            type="button"
+            className={`preset-btn ${timePreset === 'today' ? 'preset-btn--active' : ''}`}
+            onClick={() => handlePreset('today')}
+          >
+            Today
+          </button>
+          <button
+            type="button"
+            className={`preset-btn ${timePreset === '7d' ? 'preset-btn--active' : ''}`}
+            onClick={() => handlePreset('7d')}
+          >
+            Last 7 Days
+          </button>
+          <button
+            type="button"
+            className={`preset-btn ${timePreset === '30d' ? 'preset-btn--active' : ''}`}
+            onClick={() => handlePreset('30d')}
+          >
+            Last 30 Days
+          </button>
         </div>
 
-        <div className="sales-stat-card">
-          <span className="sales-stat-icon sales-stat-icon--count">
-            <Icon name="sales" size={18} />
-          </span>
-          <div className="sales-stat-info">
-            <small>Total Historical Sales</small>
-            <strong>{pagination.total} transactions</strong>
-          </div>
-        </div>
-      </div>
+        <div className="sales-filter-row">
+          <input
+            type="search"
+            placeholder="Search by receipt ID or cashier..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="sales-search-input"
+          />
 
-      <div className="sales-filters-bar">
-        <div className="sales-filter-group">
-          <label htmlFor="sales-pay-filter">Payment:</label>
           <select
-            id="sales-pay-filter"
             value={paymentFilter}
             onChange={e => {
               setPaymentFilter(e.target.value);
               setPage(1);
             }}
+            className="sales-select"
           >
-            <option value="all">All Methods</option>
+            <option value="all">All Payment Methods</option>
             <option value="cash">Cash</option>
             <option value="card">Card</option>
             <option value="bank_transfer">Transfer</option>
           </select>
         </div>
-
-        <div className="sales-filter-group">
-          <label htmlFor="sales-from">From:</label>
-          <input
-            id="sales-from"
-            type="date"
-            value={fromDate}
-            onChange={e => {
-              setFromDate(e.target.value);
-              setPage(1);
-            }}
-          />
-        </div>
-
-        <div className="sales-filter-group">
-          <label htmlFor="sales-to">To:</label>
-          <input
-            id="sales-to"
-            type="date"
-            value={toDate}
-            onChange={e => {
-              setToDate(e.target.value);
-              setPage(1);
-            }}
-          />
-        </div>
-
-        {(paymentFilter !== 'all' || fromDate || toDate) && (
-          <button type="button" className="btn btn-secondary btn-sm" onClick={handleResetFilters}>
-            Reset Filters
-          </button>
-        )}
       </div>
 
       <div className="sales-table-container">
         {loading ? (
           <div className="sales-loading">Loading transactions...</div>
-        ) : sales.length === 0 ? (
+        ) : filteredSales.length === 0 ? (
           <div className="sales-empty">
             <Icon name="sales" size={32} />
             <p>No sales found for the selected filters.</p>
@@ -173,8 +193,8 @@ export default function Sales({ user, onSessionExpired }) {
               </tr>
             </thead>
             <tbody>
-              {sales.map(s => {
-                const itemCount = (s.items || []).reduce((sum, item) => sum + (item.quantity || 0), 0);
+              {filteredSales.map(s => {
+                const itemCount = (s.items || []).reduce((sum, i) => sum + (i.quantity || 0), 0);
                 const when = new Date(s.created_at).toLocaleString('en-GB', {
                   dateStyle: 'medium',
                   timeStyle: 'short',

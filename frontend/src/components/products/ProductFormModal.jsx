@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import Icon from '../ui/Icon';
+import ProductImageUploader from './ProductImageUploader';
+import { formatMoney } from '../../utils/dashboardStats';
 import '../../styles/products-modal.css';
 
 const CATEGORIES = [
@@ -12,14 +14,27 @@ const CATEGORIES = [
   'stationery',
 ];
 
+const UNITS = [
+  { value: 'piece', label: 'Piece / Item' },
+  { value: 'bag', label: 'Bag' },
+  { value: 'tin', label: 'Tin / Can' },
+  { value: 'pack', label: 'Pack' },
+  { value: 'bottle', label: 'Bottle' },
+  { value: 'carton', label: 'Carton' },
+  { value: 'kg', label: 'Kilogram (kg)' },
+  { value: 'litre', label: 'Litre (L)' },
+];
+
 function getInitialState(product) {
   if (product) {
     return {
       name: product.name || '',
       sku: product.sku || '',
       category: product.category || 'groceries',
+      unit: product.unit || 'piece',
       cost_price: product.cost_price ?? '',
       sell_price: product.sell_price ?? '',
+      image_path: product.image_path || '',
       current_stock: product.inventory?.quantity ?? '0',
       reorder_threshold: product.inventory?.reorder_threshold ?? '5',
     };
@@ -28,8 +43,10 @@ function getInitialState(product) {
     name: '',
     sku: '',
     category: 'groceries',
+    unit: 'piece',
     cost_price: '',
     sell_price: '',
+    image_path: '',
     current_stock: '0',
     reorder_threshold: '5',
   };
@@ -43,6 +60,12 @@ export default function ProductFormModal({ product, isOpen, onClose, onSave }) {
 
   if (!isOpen) return null;
 
+  const cost = parseFloat(formData.cost_price) || 0;
+  const sell = parseFloat(formData.sell_price) || 0;
+  const profit = sell - cost;
+  const marginPercent = sell > 0 ? Math.round((profit / sell) * 100) : 0;
+  const hasMarginData = formData.cost_price !== '' && formData.sell_price !== '' && sell > 0;
+
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
@@ -53,8 +76,10 @@ export default function ProductFormModal({ product, isOpen, onClose, onSave }) {
         name: formData.name.trim(),
         sku: formData.sku.trim(),
         category: formData.category,
+        unit: formData.unit,
         cost_price: parseFloat(formData.cost_price),
         sell_price: parseFloat(formData.sell_price),
+        image_path: formData.image_path || null,
       };
 
       if (!isEditing) {
@@ -135,6 +160,20 @@ export default function ProductFormModal({ product, isOpen, onClose, onSave }) {
 
           <div className="form-row">
             <div className="form-group">
+              <label htmlFor="prod-unit">Unit of Measure *</label>
+              <select
+                id="prod-unit"
+                value={formData.unit}
+                onChange={e => setFormData({ ...formData, unit: e.target.value })}
+              >
+                {UNITS.map(u => (
+                  <option key={u.value} value={u.value}>
+                    {u.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
               <label htmlFor="prod-cost">Cost Price (₦) *</label>
               <input
                 id="prod-cost"
@@ -147,6 +186,9 @@ export default function ProductFormModal({ product, isOpen, onClose, onSave }) {
                 placeholder="0.00"
               />
             </div>
+          </div>
+
+          <div className="form-row">
             <div className="form-group">
               <label htmlFor="prod-sell">Selling Price (₦) *</label>
               <input
@@ -161,6 +203,27 @@ export default function ProductFormModal({ product, isOpen, onClose, onSave }) {
               />
             </div>
           </div>
+
+          {hasMarginData && (
+            <div
+              className={`product-margin-badge ${
+                profit < 0
+                  ? 'product-margin-badge--negative'
+                  : marginPercent >= 20
+                  ? 'product-margin-badge--high'
+                  : 'product-margin-badge--medium'
+              }`}
+            >
+              <span>{profit < 0 ? 'Warning: Below cost' : 'Estimated Margin:'}</span>
+              <strong>{profit >= 0 ? '+' : ''}{formatMoney(profit)} ({marginPercent}%)</strong>
+            </div>
+          )}
+
+          <ProductImageUploader
+            imagePath={formData.image_path}
+            onChange={url => setFormData(prev => ({ ...prev, image_path: url }))}
+            onError={setError}
+          />
 
           {!isEditing && (
             <div className="form-row">
@@ -205,7 +268,7 @@ export default function ProductFormModal({ product, isOpen, onClose, onSave }) {
               className="btn btn-primary"
               disabled={submitting}
             >
-              {submitting ? 'Saving...' : isEditing ? 'Update Product' : 'Create Product'}
+              {submitting ? 'Saving...' : isEditing ? 'Update Product' : 'Add Product'}
             </button>
           </div>
         </form>

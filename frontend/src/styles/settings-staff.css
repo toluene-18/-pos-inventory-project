@@ -1,0 +1,198 @@
+/* ================================================================
+   settings-staff.css — Staff table, Pending cards, Role badges
+   ================================================================ */
+
+.pending-approvals-box {
+  background: var(--surface);
+  border: 1px solid var(--amber);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+
+.pending-approvals-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.pending-approvals-head h4 {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.pending-approvals-badge {
+  background: var(--amber);
+  color: #000;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+
+.pending-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.pending-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.member-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--green-soft);
+  color: var(--green);
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.member-avatar--sm {
+  width: 30px;
+  height: 30px;
+  font-size: 11px;
+}
+
+.member-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.member-cell small {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.tag-you {
+  font-size: 11px;
+  color: var(--green);
+  font-style: normal;
+  margin-left: 4px;
+}
+
+.member-details strong {
+  display: block;
+  font-size: 13px;
+}
+
+.member-details small {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.role-requested {
+  display: block;
+  font-size: 11px;
+  color: var(--amber);
+  margin-top: 2px;
+}
+
+.pending-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.settings-table-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+
+.settings-table-card h4 {
+  margin: 0 0 14px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.settings-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.settings-table th {
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-table td {
+  padding: 12px 14px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.role-select {
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 12px;
+}
+
+.staff-role-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.staff-role-pill--owner {
+  background: rgba(168, 85, 247, 0.15);
+  color: #a855f7;
+}
+
+.staff-role-pill--manager {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+.staff-role-pill--cashier {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.staff-status-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.staff-status-pill--active {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+.staff-status-pill--pending {
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+
+.staff-status-pill--inactive {
+  background: var(--rose-soft);
+  color: var(--rose);
+}

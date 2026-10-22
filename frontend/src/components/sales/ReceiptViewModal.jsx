@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import Icon from '../ui/Icon';
 import { formatMoney, paymentLabel } from '../../utils/dashboardStats';
+import '../../styles/receipt-view-modal.css';
 import '../../styles/receipt.css';
 
 /**

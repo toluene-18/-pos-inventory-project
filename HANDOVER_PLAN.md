@@ -35,12 +35,14 @@ The system supports 3 roles: **`owner`**, **`manager`**, and **`cashier`**.
 | :--- | :---: | :---: | :---: | :--- |
 | **Login / Register** | ✅ | ✅ | ✅ | Public |
 | **Staff Registration Approval** | ❌ | ❌ | ✅ | `role:owner` |
-| **Staff List / Deactivation** | ❌ | ❌ | ✅ | `role:owner` |
+| **Staff List & Role Assignment** | ❌ | View Only | ✅ | `role:owner,manager` (edit `role:owner`) |
+| **Store Profile & Receipt Branding**| ❌ | View Only | ✅ | Frontend `localStorage` + UI settings |
 | **POS (Checkout & Sales)** | ✅ | ✅ | ✅ | `auth:sanctum`, `active` |
 | **Sales History** | Own sales only | All sales | All sales | `auth:sanctum`, `active` (`user_id` scoped for cashier) |
 | **Dashboard KPIs & Charts** | Personal metrics | Store metrics | Store metrics + Profit | `role:owner,manager` on reports; cost price hidden from cashier |
 | **Product Viewing** | Selling price only | Selling + Cost price | Selling + Cost price | `ProductController@index` masks `cost_price` for non-owners/managers |
 | **Product Create/Update/Delete** | ❌ | ✅ | ✅ | `role:owner,manager` |
+| **Product Photo Upload** | ❌ | ✅ | ✅ | `role:owner,manager` (`POST /api/products/upload-image`) |
 | **Stock Adjustments & Restock** | ❌ | ✅ | ✅ | `role:owner,manager` |
 | **Reports (Summary & Breakdown)** | ❌ | ✅ | ✅ | `role:owner,manager` |
 
@@ -50,18 +52,19 @@ The system supports 3 roles: **`owner`**, **`manager`**, and **`cashier`**.
 
 ### Milestone 1: Authentication, Self-Registration & Staff Approval Flow
 - **Backend:**
-  - `users` table migration: added `status` (`pending`, `active`, `inactive`), `approved_by`, `approved_at`.
+  - `users` table: `status` (`pending`, `active`, `inactive`), `approved_by`, `approved_at`.
   - Middleware `EnsureUserHasRole` allows multi-role declarations (`role:owner,manager`).
   - Middleware `EnsureUserIsActive` blocks `pending` and `inactive` users from using Sanctum bearer tokens.
   - Endpoints:
     - `POST /api/register`: Creates `pending` staff account.
     - `POST /api/login`: Validates credentials and blocks non-active accounts with informative errors.
-    - `PATCH /api/staff/{user}/approve`: Owner-only endpoint to assign role (`cashier`, `manager`, `owner`) and set status to `active` or `rejected`.
+    - `GET /api/staff`: Lists registered staff accounts (Owners and Managers).
+    - `PATCH /api/staff/{user}/approve`: Owner-only endpoint to assign role (`cashier`, `manager`, `owner`) and set status to `active` or `inactive`.
 - **Frontend:**
   - Dedicated pages: `frontend/src/pages/Login.jsx` & `frontend/src/pages/Register.jsx`.
   - Clean error banners and pending account status screens.
 
-### Milestone 2: Modern Dark & Light Dashboard (Matches Design)
+### Milestone 2: Modern Dark & Light Dashboard
 - Dynamic Greeting, KPI Metric cards (`MetricGrid.jsx`, `MetricCard.jsx`).
 - Custom SVG smooth curve chart with hover tooltip displaying **Daily Revenue** and **Number of Transactions** (`SalesChart.jsx`, `chartMath.js`).
 - Working notification bell dropdown with real-time low stock items and today's sales feed (`NotificationMenu.jsx`, `useNotifications.js`).
@@ -76,40 +79,49 @@ The system supports 3 roles: **`owner`**, **`manager`**, and **`cashier`**.
 - Transactional backend processing with row-locking and rollbacks (`SaleController@store`).
 
 ### Milestone 4: Multi-Page Routing & Cashier Security
-- Real browser URLs using `react-router-dom`: `/dashboard`, `/pos`, `/sales`, `/inventory`, `/products`, `/restock`, `/reports`, `/settings`.
+- Real browser URLs using `react-router-dom`: `/dashboard`, `/pos`, `/sales`, `/inventory`, `/products`, `/settings`, `/restock`, `/reports`.
 - Dynamic Sidebar displaying only accessible routes based on user role (`navigation.js`, `Sidebar.jsx`).
 - Strict URL route guarding via `RoleRoute.jsx` and `ProtectedRoute.jsx`.
 
-### Milestone 5: Products Catalogue Management (`/products`) — COMPLETE ✅
-- **Interactive Catalogue:** Real-time search by name, SKU, or category filter pills.
-- **Role-Gated Columns:** Selling price visible to all; cost price visible exclusively to Owners and Managers.
-- **Product Modal Form:** Add new products or edit existing records (`ProductFormModal.jsx`), including SKU uniqueness, prices, category, initial stock, and threshold alerts.
-- **Soft Deactivation:** Safe deactivation preserves transaction records while hiding item from POS.
-- **Styling & Size:** Kept under 300 lines per file (`Products.jsx`, `ProductFormModal.jsx`, `products.css`, `products-modal.css`).
+### Milestone 5: Settings & Staff Management (`/settings`) — COMPLETE ✅
+- **Staff Roster & Pending Approvals:** Owners can review pending accounts, approve with one-click, change role (Cashier / Manager / Owner), and deactivate/reactivate staff members (`StaffManagementTab.jsx`, `settings-staff.css`).
+- **Store Profile & Receipt Branding:** Management can configure store name, branch address, support phone, currency, and custom receipt header/footer messages (`StoreProfileTab.jsx`).
+- **Account Inspector:** Current logged-in user summary with active role badges and permission scope explanation.
+- **Strict Size Separation:** `Settings.jsx` (152 lines), `StaffManagementTab.jsx` (193 lines), `StoreProfileTab.jsx` (143 lines), `settings.css` (144 lines), `settings-staff.css` (169 lines).
 
-### Milestone 6: Inventory Management & Stock Adjustments (`/inventory`) — COMPLETE ✅
-- **Store-Wide Stock Overview:** Real-time KPI summary (Total units in store, Low stock warnings, Out of stock count).
-- **Tab Filters:** Filter between *All Stock*, *Low Stock*, and *Out of Stock*.
-- **Stock Adjustment Modal:** Owners & Managers can add (+) or deduct (−) stock with live on-hand preview (`StockAdjustModal.jsx`).
-- **Audit Trails & Reason Tracking:** Presets and custom text fields for shipments, damaged items, expired products, cycle counts, or loss prevention.
-- **Zero-Floor Protection:** Frontend and backend row-locked guards prevent negative inventory levels.
-- **Modular Services:** Storage separated into `authStorage.js`, keeping `api.js` clean at 171 lines.
+### Milestone 6: Product Image Upload & Storage — COMPLETE ✅
+- **Backend:** `POST /api/products/upload-image` validates image mime types (`jpeg,png,jpg,webp,gif`, max 5MB) and stores to `storage/app/public/products`. Public symlink active at `backend/public/storage`.
+- **Frontend Uploader:** `ProductImageUploader.jsx` with instant preview, drag/click upload, and remove action.
+- **Image Display:** Product photos render dynamically across Table view, Grid card view, Inventory table, and POS catalog tiles (falling back gracefully to category monograms).
 
-### Milestone 7: Sales History & Receipts (`/sales`) — COMPLETE ✅
-- **Transactions Table:** Paginated list of completed sales showing Receipt ID, Timestamp, Cashier name (Owners & Managers), items count, payment method pill, and total.
-- **Strict Role Scoping:** Cashiers see strictly their own processed sales; Owners and Managers see all store-wide sales.
-- **Multi-Filter Bar:** Filter by Payment Method (*Cash*, *Card*, *Bank Transfer*), Date From, and Date To with instant reset option.
-- **Receipt Modal & Reprinting:** View past transactions and reprint thermal receipts (`ReceiptViewModal.jsx`).
-- **File Size Discipline:** `Sales.jsx` (254 lines), `ReceiptViewModal.jsx` (104 lines), `sales.css` (272 lines).
+### Milestone 7: Products Catalogue Management (`/products`) — COMPLETE ✅
+- **Interactive Catalogue:** Real-time search by name, SKU, or category filter dropdown.
+- **Dual View Modes:** Instant switch between standard **Table view** and visual **Grid Card view** (`ProductsTable.jsx`, `products-grid.css`).
+- **Live Margin Badge:** Dynamic badge calculating `((sell - cost) / sell) * 100` with visual status color (Green for >= 20%, Amber for 0-19%, Red for below cost) (`ProductFormModal.jsx`).
+- **Unit of Measure:** Native support for units (`piece`, `bag`, `tin`, `pack`, `carton`, `kg`, `litre`) persisted in database.
+- **KPI Summary Cards:** Total Products, Average Margin %, Needs Attention, Priced Below Cost (`ProductKpis.jsx`).
+
+### Milestone 8: Inventory Management & Stock Adjustments (`/inventory`) — COMPLETE ✅
+- **Store-Wide Stock Overview:** 4 KPI cards: Products Tracked, Units on Hand, Stock Value (at cost price for management), and Needs Attention (`InventoryKpis.jsx`).
+- **Advanced Filters & Sorting:** Search input, category dropdown, sorting dropdown (Name A-Z, Name Z-A, Highest Stock, Lowest Stock), and status tabs (*All Items*, *Low Stock*, *Out of Stock*).
+- **Stock Adjustment Modal:** Mode switcher tabs (`↓ Restock in` / `↑ Remove out`), dynamic unit in quantity label, contextual reason presets, and live projection arrow (`StockAdjustModal.jsx`).
+- **Modular Table & Styles:** Split into `InventoryTable.jsx` (141 lines), `inventory-table.css` (164 lines), `Inventory.jsx` (193 lines), `inventory.css` (184 lines).
+
+### Milestone 9: Sales History & Receipts (`/sales`) — COMPLETE ✅
+- **Transactions Table:** Paginated list showing Receipt ID (`#CWG-XXXXXX`), Date/Time, Cashier name, items count, payment pill, and total amount.
+- **Time Range Preset Pills:** Quick filter by *All Time*, *Today*, *Last 7 Days*, and *Last 30 Days* with live date calculation.
+- **Search & Payment Filter:** Search by receipt ID or cashier name, plus filter by payment method (*Cash*, *Card*, *Bank Transfer*).
+- **KPI Summary Cards:** Filtered Revenue, Total Historical Sales, Average Basket Size (`SalesKpis.jsx`).
+- **Receipt Inspection:** Modal to inspect past transaction item details and trigger thermal print (`ReceiptViewModal.jsx`, `receipt-view-modal.css`).
 
 ---
 
 ## 4. Current Test & Build Verification
 
 - **Backend Test Suite:** `62 passed (189 assertions)` via `php artisan test`.
-- **Frontend Quality:** `eslint .` passes with 0 errors, production bundle `npm run build` succeeds cleanly in < 1s.
-- **File Line Count Audit:** Every `.jsx`, `.js`, and `.css` file in `frontend/src/` is strictly **under 300 lines**.
-- **Git Branch:** `feature/my-react-frontend` is completely clean and pushed to `origin`.
+- **Frontend Quality:** `eslint .` passes with 0 errors, production bundle `npm run build` succeeds cleanly in < 4s with 0 warnings.
+- **File Line Count Audit:** Every `.jsx`, `.js`, and `.css` file in `frontend/src/` is strictly **under 300 lines** (maximum is 258 lines in `ProductFormModal.jsx`).
+- **Git Branch:** `feature/my-react-frontend`.
 
 ---
 
@@ -117,27 +129,23 @@ The system supports 3 roles: **`owner`**, **`manager`**, and **`cashier`**.
 
 ```mermaid
 flowchart TD
-    A[Milestone 8: Restock Workflow] --> B[Milestone 9: Reports & Analytics]
-    B --> C[Milestone 10: Settings & Staff Management]
+    A[Milestone 10: Restock Batch Receiving Station] --> B[Milestone 11: Reports & Analytics Deep Dive]
 ```
 
-### Phase 1: Restock Workflow (`/restock`) — NEXT
+### Phase 1: Restock Batch Receiving Station (`/restock`) — NEXT
 - **Backend Available:** `POST /api/products/{product}/stock-adjustments`.
 - **Frontend To Build:**
-  1. `frontend/src/pages/Restock.jsx`: Dedicated intake station for receiving incoming inventory shipments.
-  2. Quick item picker, intake batch table with incoming quantity inputs, supplier / batch note, and one-click bulk stock intake confirmation.
+  1. `frontend/src/pages/Restock.jsx`: Dedicated intake station for receiving incoming multi-product supplier shipments.
+  2. Quick item picker, intake batch table with incoming quantity inputs, supplier / delivery note, and one-click bulk stock intake confirmation.
   3. Styles: `frontend/src/styles/restock.css` (< 300 lines).
 
 ### Phase 2: Owner Reports (`/reports`)
 - Date range sales summary, revenue graphs, payment method breakdown cards.
 
-### Phase 3: Settings & Staff Approval Management (`/settings`)
-- List pending staff sign-ups, approve/reject buttons, role assignment modal, and deactivate staff button.
-
 ---
 
 ## 6. How Any Engineer or AI Resumes This Project
 1. Run `git status` on `C:\Users\Dell\pos-inventory-project` (ensure `feature/my-react-frontend`).
-2. Run `php artisan test` in `backend/` to verify backend integrity.
-3. Run `npm run lint` and `npm run build` in `frontend/`.
-4. Pick up the next step (**Phase 1: Restock Workflow**) by creating `frontend/src/pages/Restock.jsx` and hooking it into `App.jsx`.
+2. Run `cd backend; php artisan test` to verify backend integrity.
+3. Run `cd frontend; npm run lint; npm run build`.
+4. Pick up the next step (**Phase 1: Restock Batch Receiving Station**) by creating `frontend/src/pages/Restock.jsx` and hooking it into `App.jsx`.

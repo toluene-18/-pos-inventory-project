@@ -1,0 +1,45 @@
+/* ================================================================
+   receipt-view-modal.css — Modal styles for inspecting receipts
+   ================================================================ */
+
+.receipt-view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.receipt-view-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.receipt-view-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--green-soft);
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.receipt-view-title h3 {
+  margin: 0;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.receipt-view-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.receipt-view-close:hover {
+  color: var(--text);
+}

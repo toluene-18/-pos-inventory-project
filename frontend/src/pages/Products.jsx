@@ -1,13 +1,14 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import Icon from '../components/ui/Icon';
 import ProductFormModal from '../components/products/ProductFormModal';
+import ProductKpis from '../components/products/ProductKpis';
+import ProductsTable from '../components/products/ProductsTable';
 import {
   getProducts,
   createProduct,
   updateProduct,
   deactivateProduct,
 } from '../services/api';
-import { formatMoney } from '../utils/dashboardStats';
 import '../styles/products.css';
 
 export default function Products({ user, onSessionExpired }) {
@@ -16,6 +17,7 @@ export default function Products({ user, onSessionExpired }) {
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [viewMode, setViewMode] = useState('table');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [statusMessage, setStatusMessage] = useState('');
@@ -44,6 +46,33 @@ export default function Products({ user, onSessionExpired }) {
   const categories = useMemo(() => {
     const set = new Set(products.map(p => p.category).filter(Boolean));
     return ['all', ...Array.from(set).sort()];
+  }, [products]);
+
+  const stats = useMemo(() => {
+    let totalProducts = products.length;
+    let needsAttention = 0;
+    let belowCostCount = 0;
+    let marginSum = 0;
+    let marginCount = 0;
+
+    for (const p of products) {
+      const qty = p.inventory?.quantity ?? 0;
+      const threshold = p.inventory?.reorder_threshold ?? 0;
+      if (qty <= threshold) needsAttention += 1;
+
+      if (p.cost_price != null && p.sell_price != null) {
+        const cost = Number(p.cost_price);
+        const sell = Number(p.sell_price);
+        if (sell < cost) belowCostCount += 1;
+        if (sell > 0) {
+          marginSum += ((sell - cost) / sell) * 100;
+          marginCount += 1;
+        }
+      }
+    }
+
+    const avgMargin = marginCount > 0 ? Math.round(marginSum / marginCount) : 0;
+    return { totalProducts, needsAttention, belowCostCount, avgMargin };
   }, [products]);
 
   const filteredProducts = useMemo(() => {
@@ -100,7 +129,7 @@ export default function Products({ user, onSessionExpired }) {
       <header className="products-header">
         <div>
           <h2>Product Catalogue</h2>
-          <p>Manage items, prices, SKUs, and stock tracking across all categories.</p>
+          <p>Manage items, prices, SKUs, product photos, and profit margin analysis.</p>
         </div>
         {isManagement && (
           <button type="button" className="btn btn-primary" onClick={handleOpenCreate}>
@@ -121,6 +150,8 @@ export default function Products({ user, onSessionExpired }) {
         </div>
       )}
 
+      <ProductKpis stats={stats} isManagement={isManagement} />
+
       <div className="products-controls">
         <div className="products-search-wrap">
           <Icon name="search" size={16} />
@@ -133,7 +164,6 @@ export default function Products({ user, onSessionExpired }) {
         </div>
 
         <div className="products-filter-wrap">
-          <label htmlFor="cat-filter">Category:</label>
           <select
             id="cat-filter"
             value={selectedCategory}
@@ -145,94 +175,37 @@ export default function Products({ user, onSessionExpired }) {
               </option>
             ))}
           </select>
+
+          <div className="view-mode-toggle">
+            <button
+              type="button"
+              className={`view-btn ${viewMode === 'table' ? 'view-btn--active' : ''}`}
+              onClick={() => setViewMode('table')}
+              title="Table View"
+            >
+              Table
+            </button>
+            <button
+              type="button"
+              className={`view-btn ${viewMode === 'grid' ? 'view-btn--active' : ''}`}
+              onClick={() => setViewMode('grid')}
+              title="Grid View"
+            >
+              Grid
+            </button>
+          </div>
         </div>
       </div>
 
       <div className="products-table-container">
-        {loading ? (
-          <div className="products-loading">Loading products...</div>
-        ) : filteredProducts.length === 0 ? (
-          <div className="products-empty">
-            <Icon name="products" size={32} />
-            <p>No products found matching your filters.</p>
-          </div>
-        ) : (
-          <table className="products-table">
-            <thead>
-              <tr>
-                <th>Product & SKU</th>
-                <th>Category</th>
-                {isManagement && <th>Cost Price</th>}
-                <th>Sell Price</th>
-                <th>Current Stock</th>
-                <th>Threshold</th>
-                {isManagement && <th className="text-right">Actions</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {filteredProducts.map(p => {
-                const qty = p.inventory?.quantity ?? 0;
-                const threshold = p.inventory?.reorder_threshold ?? 0;
-                const isLow = qty <= threshold && qty > 0;
-                const isOut = qty <= 0;
-
-                return (
-                  <tr key={p.id}>
-                    <td>
-                      <div className="product-name-cell">
-                        <strong>{p.name}</strong>
-                        <span className="product-sku-tag">{p.sku}</span>
-                      </div>
-                    </td>
-                    <td>
-                      <span className="product-cat-pill">
-                        {p.category ? p.category.replace('_', ' ') : 'General'}
-                      </span>
-                    </td>
-                    {isManagement && (
-                      <td className="product-cost-cell">
-                        {p.cost_price ? formatMoney(p.cost_price) : '—'}
-                      </td>
-                    )}
-                    <td className="product-price-cell">
-                      <strong>{formatMoney(p.sell_price)}</strong>
-                    </td>
-                    <td>
-                      <span
-                        className={`stock-badge ${
-                          isOut ? 'stock-badge--out' : isLow ? 'stock-badge--low' : 'stock-badge--ok'
-                        }`}
-                      >
-                        {qty} {isOut ? '(Out)' : isLow ? '(Low)' : 'in stock'}
-                      </span>
-                    </td>
-                    <td className="product-threshold-cell">{threshold}</td>
-                    {isManagement && (
-                      <td className="text-right product-actions-cell">
-                        <button
-                          type="button"
-                          className="btn-icon"
-                          title="Edit Product"
-                          onClick={() => handleOpenEdit(p)}
-                        >
-                          <Icon name="edit" size={16} />
-                        </button>
-                        <button
-                          type="button"
-                          className="btn-icon btn-icon--danger"
-                          title="Deactivate Product"
-                          onClick={() => handleDeactivate(p)}
-                        >
-                          <Icon name="trash" size={16} />
-                        </button>
-                      </td>
-                    )}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        )}
+        <ProductsTable
+          products={filteredProducts}
+          loading={loading}
+          isManagement={isManagement}
+          viewMode={viewMode}
+          onEdit={handleOpenEdit}
+          onDeactivate={handleDeactivate}
+        />
       </div>
 
       <ProductFormModal

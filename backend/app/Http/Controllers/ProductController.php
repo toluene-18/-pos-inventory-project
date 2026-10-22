@@ -35,8 +35,10 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'sku' => 'required|string|max:255|unique:products,sku',
             'category' => 'required|string|max:255',
+            'unit' => 'nullable|string|max:50',
             'cost_price' => 'required|numeric|min:0',
             'sell_price' => 'required|numeric|min:0',
+            'image_path' => 'nullable|string|max:1000',
             'current_stock' => 'required|integer|min:0',
             'reorder_threshold' => 'required|integer|min:0',
         ]);
@@ -46,8 +48,10 @@ class ProductController extends Controller
                 'name' => $validated['name'],
                 'sku' => $validated['sku'],
                 'category' => $validated['category'],
+                'unit' => $validated['unit'] ?? 'piece',
                 'cost_price' => $validated['cost_price'],
                 'sell_price' => $validated['sell_price'],
+                'image_path' => $validated['image_path'] ?? null,
             ]);
 
             $product->inventory()->create([
@@ -73,8 +77,10 @@ class ProductController extends Controller
                 'unique:products,sku,' . $product->id,
             ],
             'category' => 'sometimes|required|string|max:255',
+            'unit' => 'nullable|string|max:50',
             'cost_price' => 'sometimes|required|numeric|min:0',
             'sell_price' => 'sometimes|required|numeric|min:0',
+            'image_path' => 'nullable|string|max:1000',
         ]);
 
         $product->update($validated);
@@ -83,6 +89,20 @@ class ProductController extends Controller
             $product->fresh()->load('inventory'),
             200
         );
+    }
+
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,webp,gif|max:5120',
+        ]);
+
+        $path = $request->file('image')->store('products', 'public');
+
+        return response()->json([
+            'url' => '/storage/' . $path,
+            'message' => 'Image uploaded successfully.',
+        ], 201);
     }
 
     public function delete(Product $product)

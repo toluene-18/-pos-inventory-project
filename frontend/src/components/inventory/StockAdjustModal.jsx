@@ -1,50 +1,68 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Icon from '../ui/Icon';
 import '../../styles/inventory-modal.css';
 
-const REASON_PRESETS = [
-  'Stock shipment / Delivery received',
-  'Routine physical count reconciliation',
+const RESTOCK_REASONS = [
+  'Supplier shipment / Delivery received',
+  'Physical audit found excess stock',
+  'Customer return to inventory',
+  'Internal store transfer in',
+  'Other (specify note)...',
+];
+
+const REMOVE_REASONS = [
   'Damaged / Broken goods removed',
   'Expired / Spoilage write-off',
-  'Theft / Missing inventory adjustment',
-  'Internal store use',
+  'Physical count discrepancy (theft/loss)',
+  'Internal store consumption',
+  'Returned back to supplier/vendor',
+  'Other (specify note)...',
 ];
 
 export default function StockAdjustModal({ product, isOpen, onClose, onSave }) {
   const [type, setType] = useState('increase');
   const [quantity, setQuantity] = useState('1');
-  const [reason, setReason] = useState(REASON_PRESETS[0]);
+  const [reasonIndex, setReasonIndex] = useState(0);
   const [customReason, setCustomReason] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  const reasonList = useMemo(
+    () => (type === 'increase' ? RESTOCK_REASONS : REMOVE_REASONS),
+    [type]
+  );
 
   if (!isOpen || !product) return null;
 
   const currentStock = product.inventory?.quantity ?? 0;
   const numQuantity = parseInt(quantity, 10) || 0;
+  const unit = product.unit || 'units';
+
   const projectedStock =
     type === 'increase'
       ? currentStock + numQuantity
       : Math.max(0, currentStock - numQuantity);
+
+  const selectedReason = reasonList[reasonIndex] || reasonList[0];
+  const isCustom = selectedReason.startsWith('Other');
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
 
     if (numQuantity <= 0) {
-      setError('Adjustment quantity must be at least 1.');
+      setError(`Adjustment quantity must be at least 1 ${unit}.`);
       return;
     }
 
     if (type === 'decrease' && numQuantity > currentStock) {
-      setError(`Cannot reduce stock below zero (current: ${currentStock}).`);
+      setError(`Cannot reduce stock below zero (current on hand: ${currentStock} ${unit}).`);
       return;
     }
 
-    const finalReason = reason === 'custom' ? customReason.trim() : reason;
-    if (reason === 'custom' && !finalReason) {
-      setError('Please provide a specific reason for this custom adjustment.');
+    const finalReason = isCustom ? customReason.trim() : selectedReason;
+    if (isCustom && !finalReason) {
+      setError('Please provide a specific reason note.');
       return;
     }
 
@@ -63,6 +81,12 @@ export default function StockAdjustModal({ product, isOpen, onClose, onSave }) {
     }
   }
 
+  function handleTypeChange(newType) {
+    setType(newType);
+    setReasonIndex(0);
+    setError('');
+  }
+
   return (
     <div className="adjust-modal-backdrop" role="dialog" aria-modal="true">
       <div className="adjust-modal">
@@ -72,7 +96,7 @@ export default function StockAdjustModal({ product, isOpen, onClose, onSave }) {
               <Icon name="inventory" size={18} />
             </span>
             <div>
-              <h3>Adjust Stock Level</h3>
+              <h3>Adjust Stock</h3>
               <p>{product.name} ({product.sku})</p>
             </div>
           </div>
@@ -92,35 +116,37 @@ export default function StockAdjustModal({ product, isOpen, onClose, onSave }) {
             <button
               type="button"
               className={`toggle-btn ${type === 'increase' ? 'toggle-btn--increase' : ''}`}
-              onClick={() => setType('increase')}
+              onClick={() => handleTypeChange('increase')}
             >
-              <Icon name="plus" size={16} /> Add Stock (+)
+              ↓ Restock in
             </button>
             <button
               type="button"
               className={`toggle-btn ${type === 'decrease' ? 'toggle-btn--decrease' : ''}`}
-              onClick={() => setType('decrease')}
+              onClick={() => handleTypeChange('decrease')}
             >
-              <Icon name="minus" size={16} /> Deduct Stock (−)
+              ↑ Remove out
             </button>
           </div>
 
           <div className="adjust-stock-preview">
-            <div>
+            <div className="adjust-preview-step">
               <small>Current On Hand</small>
-              <strong>{currentStock} units</strong>
+              <strong>{currentStock} {unit}</strong>
             </div>
             <div className="adjust-arrow">→</div>
-            <div>
+            <div className="adjust-preview-step">
               <small>New Level After</small>
               <strong className={type === 'increase' ? 'text-green' : 'text-amber'}>
-                {projectedStock} units
+                {projectedStock} {unit}
               </strong>
             </div>
           </div>
 
           <div className="form-group">
-            <label htmlFor="adjust-qty">Quantity to {type === 'increase' ? 'Add' : 'Deduct'} *</label>
+            <label htmlFor="adjust-qty">
+              Quantity ({unit}) *
+            </label>
             <input
               id="adjust-qty"
               type="number"
@@ -133,24 +159,23 @@ export default function StockAdjustModal({ product, isOpen, onClose, onSave }) {
           </div>
 
           <div className="form-group">
-            <label htmlFor="adjust-reason">Audit Reason *</label>
+            <label htmlFor="adjust-reason">Reason *</label>
             <select
               id="adjust-reason"
-              value={reason}
-              onChange={e => setReason(e.target.value)}
+              value={reasonIndex}
+              onChange={e => setReasonIndex(parseInt(e.target.value, 10))}
             >
-              {REASON_PRESETS.map(r => (
-                <option key={r} value={r}>
+              {reasonList.map((r, idx) => (
+                <option key={r} value={idx}>
                   {r}
                 </option>
               ))}
-              <option value="custom">Other (specify below)...</option>
             </select>
           </div>
 
-          {reason === 'custom' && (
+          {isCustom && (
             <div className="form-group">
-              <label htmlFor="adjust-custom">Custom Reason Details *</label>
+              <label htmlFor="adjust-custom">Reason Details *</label>
               <textarea
                 id="adjust-custom"
                 rows="2"
@@ -176,7 +201,7 @@ export default function StockAdjustModal({ product, isOpen, onClose, onSave }) {
               className={`btn ${type === 'increase' ? 'btn-primary' : 'btn-danger'}`}
               disabled={submitting}
             >
-              {submitting ? 'Applying...' : `Confirm ${type === 'increase' ? 'Addition' : 'Deduction'}`}
+              {submitting ? 'Applying...' : 'Apply adjustment'}
             </button>
           </div>
         </form>

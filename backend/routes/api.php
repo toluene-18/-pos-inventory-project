@@ -19,7 +19,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/products', [ProductController::class, 'index']);
 
     Route::middleware('role:owner,manager')->group(function () {
+        Route::get('/staff', [AuthController::class, 'listStaff']);
         Route::post('/products/create', [ProductController::class, 'store']);
+        Route::post('/products/upload-image', [ProductController::class, 'uploadImage']);
         Route::patch('/products/{product}', [ProductController::class, 'update']);
         Route::delete('products/{product}', [ProductController::class,'delete']);
 
