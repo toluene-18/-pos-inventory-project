@@ -95,6 +95,13 @@ The system supports 3 roles: **`owner`**, **`manager`**, and **`cashier`**.
 - **Zero-Floor Protection:** Frontend and backend row-locked guards prevent negative inventory levels.
 - **Modular Services:** Storage separated into `authStorage.js`, keeping `api.js` clean at 171 lines.
 
+### Milestone 7: Sales History & Receipts (`/sales`) — COMPLETE ✅
+- **Transactions Table:** Paginated list of completed sales showing Receipt ID, Timestamp, Cashier name (Owners & Managers), items count, payment method pill, and total.
+- **Strict Role Scoping:** Cashiers see strictly their own processed sales; Owners and Managers see all store-wide sales.
+- **Multi-Filter Bar:** Filter by Payment Method (*Cash*, *Card*, *Bank Transfer*), Date From, and Date To with instant reset option.
+- **Receipt Modal & Reprinting:** View past transactions and reprint thermal receipts (`ReceiptViewModal.jsx`).
+- **File Size Discipline:** `Sales.jsx` (254 lines), `ReceiptViewModal.jsx` (104 lines), `sales.css` (272 lines).
+
 ---
 
 ## 4. Current Test & Build Verification
@@ -110,26 +117,21 @@ The system supports 3 roles: **`owner`**, **`manager`**, and **`cashier`**.
 
 ```mermaid
 flowchart TD
-    A[Milestone 7: Sales History & Receipts] --> B[Milestone 8: Restock Workflow]
-    B --> C[Milestone 9: Reports & Analytics]
-    C --> D[Milestone 10: Settings & Staff Management]
+    A[Milestone 8: Restock Workflow] --> B[Milestone 9: Reports & Analytics]
+    B --> C[Milestone 10: Settings & Staff Management]
 ```
 
-### Phase 1: Sales History & Receipts (`/sales`) — NEXT
-- **Backend Available:** `GET /api/sales` (paginated, date filters, payment_method filters), `GET /api/sales/{sale}`.
+### Phase 1: Restock Workflow (`/restock`) — NEXT
+- **Backend Available:** `POST /api/products/{product}/stock-adjustments`.
 - **Frontend To Build:**
-  1. `frontend/src/pages/Sales.jsx`: Transactions history table (Cashier sees own, Owner/Manager sees all with cashier name).
-  2. View Receipt Modal: Reuse `ReceiptModal.jsx` to view and reprint past receipts.
-  3. Filter controls: payment method (Cash, Card, Transfer), date range, search by receipt ID.
-  4. Styles: `frontend/src/styles/sales.css` (< 300 lines).
+  1. `frontend/src/pages/Restock.jsx`: Dedicated intake station for receiving incoming inventory shipments.
+  2. Quick item picker, intake batch table with incoming quantity inputs, supplier / batch note, and one-click bulk stock intake confirmation.
+  3. Styles: `frontend/src/styles/restock.css` (< 300 lines).
 
-### Phase 2: Restock Workflow (`/restock`)
-- Rapid stock intake UI for receiving bulk inventory shipments.
-
-### Phase 3: Owner Reports (`/reports`)
+### Phase 2: Owner Reports (`/reports`)
 - Date range sales summary, revenue graphs, payment method breakdown cards.
 
-### Phase 4: Settings & Staff Approval Management (`/settings`)
+### Phase 3: Settings & Staff Approval Management (`/settings`)
 - List pending staff sign-ups, approve/reject buttons, role assignment modal, and deactivate staff button.
 
 ---
@@ -138,4 +140,4 @@ flowchart TD
 1. Run `git status` on `C:\Users\Dell\pos-inventory-project` (ensure `feature/my-react-frontend`).
 2. Run `php artisan test` in `backend/` to verify backend integrity.
 3. Run `npm run lint` and `npm run build` in `frontend/`.
-4. Pick up the next step (**Phase 1: Sales History & Receipts**) by creating `frontend/src/pages/Sales.jsx` and hooking it into `App.jsx`.
+4. Pick up the next step (**Phase 1: Restock Workflow**) by creating `frontend/src/pages/Restock.jsx` and hooking it into `App.jsx`.
