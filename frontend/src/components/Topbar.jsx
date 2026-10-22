@@ -17,9 +17,9 @@ function Topbar({ user, onLogout, onNavigate }) {
 
   const today = new Date().toLocaleDateString('en-GB', {
     weekday: 'long',
-    year:    'numeric',
-    month:   'long',
-    day:     'numeric',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
   });
 
   const initials = (user?.name || user?.email || 'U')
@@ -32,7 +32,10 @@ function Topbar({ user, onLogout, onNavigate }) {
   return (
     <header className="topbar">
       {/* Left: search */}
-      <label className="topbar-search" aria-label="Search products, receipts, staff…">
+      <label
+        className="topbar-search"
+        aria-label="Search products, receipts, staff…"
+      >
         <Icon name="search" size={16} />
         <input
           type="search"
@@ -69,11 +72,17 @@ function Topbar({ user, onLogout, onNavigate }) {
           aria-label={`Signed in as ${user?.name || 'Staff'}. Click to sign out.`}
           title="Click to sign out"
         >
-          <div className="topbar-avatar" aria-hidden="true">{initials}</div>
+          <div className="topbar-avatar" aria-hidden="true">
+            {initials}
+          </div>
           <div className="topbar-user-info">
             <strong>{user?.name || user?.email}</strong>
             <small>
-              {user?.role === 'owner' ? 'Owner / Admin' : user?.role === 'manager' ? 'Manager' : 'Cashier'}
+              {user?.role === 'owner'
+                ? 'Owner / Admin'
+                : user?.role === 'manager'
+                  ? 'Manager'
+                  : 'Cashier'}
             </small>
           </div>
         </button>

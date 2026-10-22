@@ -40,7 +40,13 @@ function App() {
     <Routes>
       <Route
         path="/login"
-        element={user ? <Navigate to="/dashboard" replace /> : <Login onLogin={handleLogin} />}
+        element={
+          user ? (
+            <Navigate to="/dashboard" replace />
+          ) : (
+            <Login onLogin={handleLogin} />
+          )
+        }
       />
 
       <Route
@@ -72,11 +78,18 @@ function App() {
           }
         />
         {UPCOMING.map(([path, name]) => (
-          <Route key={path} path={path} element={<RoleRoute user={user} name={name} />} />
+          <Route
+            key={path}
+            path={path}
+            element={<RoleRoute user={user} name={name} />}
+          />
         ))}
       </Route>
 
-      <Route path="*" element={<Navigate to={user ? '/dashboard' : '/login'} replace />} />
+      <Route
+        path="*"
+        element={<Navigate to={user ? '/dashboard' : '/login'} replace />}
+      />
     </Routes>
   );
 }

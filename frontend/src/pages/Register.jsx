@@ -24,7 +24,9 @@ function Register() {
 
     try {
       await registerUser({ name, email, password, role });
-      setSuccess('Account created successfully. Please wait for the owner to approve your access.');
+      setSuccess(
+        'Account created successfully. Please wait for the owner to approve your access.'
+      );
       setName('');
       setEmail('');
       setPassword('');
@@ -33,7 +35,9 @@ function Register() {
       window.setTimeout(() => navigate('/login', { replace: true }), 1000);
     } catch (err) {
       if (err instanceof TypeError) {
-        setError('Could not reach the server. Check that Laravel is running and that CORS allows this frontend.');
+        setError(
+          'Could not reach the server. Check that Laravel is running and that CORS allows this frontend.'
+        );
       } else {
         setError(err.message || 'Something went wrong. Please try again.');
       }
@@ -48,7 +52,9 @@ function Register() {
         <div className="brand-panel-overlay" />
         <div className="brand-panel-content">
           <a className="brand" href="/" aria-label="CWG Retail home">
-            <span className="brand-icon" aria-hidden="true">C</span>
+            <span className="brand-icon" aria-hidden="true">
+              C
+            </span>
             <span className="brand-name">
               <strong>CWG</strong>
               <span>Retail Suite</span>
@@ -64,18 +70,23 @@ function Register() {
             <p className="eyebrow">NEW STAFF ACCOUNT</p>
             <h1>Request access to your store workspace.</h1>
             <p className="brand-description">
-              Create your staff account and wait for the owner to approve your role before you can sign in.
+              Create your staff account and wait for the owner to approve your
+              role before you can sign in.
             </p>
           </div>
 
-          <p className="brand-panel-footer">Built for better retail operations.</p>
+          <p className="brand-panel-footer">
+            Built for better retail operations.
+          </p>
         </div>
       </section>
 
       <section className="form-panel" aria-labelledby="register-title">
         <div className="login-container">
           <div className="mobile-brand">
-            <span className="brand-icon" aria-hidden="true">C</span>
+            <span className="brand-icon" aria-hidden="true">
+              C
+            </span>
             <span className="brand-name">
               <strong>CWG</strong>
               <span>Retail Suite</span>
@@ -185,11 +196,15 @@ function Register() {
             </div>
 
             {error && (
-              <p className="login-error" role="alert">{error}</p>
+              <p className="login-error" role="alert">
+                {error}
+              </p>
             )}
 
             {success && (
-              <p className="login-success" role="status">{success}</p>
+              <p className="login-success" role="status">
+                {success}
+              </p>
             )}
 
             <button className="login-button" type="submit" disabled={loading}>
@@ -207,7 +222,11 @@ function Register() {
 
           <footer className="login-footer">
             <span>Already have an account?</span>
-            <button type="button" className="link-button" onClick={() => navigate('/login')}>
+            <button
+              type="button"
+              className="link-button"
+              onClick={() => navigate('/login')}
+            >
               Sign in
             </button>
           </footer>

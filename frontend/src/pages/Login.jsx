@@ -214,7 +214,11 @@ function Login({ onLogin }) {
           <footer className="login-footer">
             <span>© {new Date().getFullYear()} CWG Retail Suite</span>
             <span>POS &amp; Inventory Management</span>
-            <button type="button" className="link-button" onClick={() => window.location.href = '/register'}>
+            <button
+              type="button"
+              className="link-button"
+              onClick={() => (window.location.href = '/register')}
+            >
               Create account
             </button>
           </footer>

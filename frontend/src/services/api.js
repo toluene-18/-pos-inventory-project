@@ -105,7 +105,11 @@ export async function loginUser(email, password) {
     }
 
     if (response.status === 403) {
-      throw new ApiError(data.message || 'Your account is awaiting approval.', 403, data);
+      throw new ApiError(
+        data.message || 'Your account is awaiting approval.',
+        403,
+        data
+      );
     }
 
     throw new ApiError(
@@ -129,7 +133,12 @@ export async function loginUser(email, password) {
   return data;
 }
 
-export async function registerUser({ name, email, password, role = 'cashier' }) {
+export async function registerUser({
+  name,
+  email,
+  password,
+  role = 'cashier',
+}) {
   let response;
 
   try {
@@ -139,7 +148,13 @@ export async function registerUser({ name, email, password, role = 'cashier' }) 
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ name, email, password, password_confirmation: password, role }),
+      body: JSON.stringify({
+        name,
+        email,
+        password,
+        password_confirmation: password,
+        role,
+      }),
     });
   } catch {
     throw new TypeError('Network request failed');
@@ -157,7 +172,11 @@ export async function registerUser({ name, email, password, role = 'cashier' }) 
   }
 
   if (!data.token || !data.user) {
-    throw new ApiError('The server returned an unexpected registration response.', 200, data);
+    throw new ApiError(
+      'The server returned an unexpected registration response.',
+      200,
+      data
+    );
   }
 
   sessionStorage.setItem('auth_token', data.token);
@@ -225,7 +244,11 @@ export async function createSale({ paymentMethod, items }) {
     });
     return data.sale;
   } catch (error) {
-    if (error instanceof ApiError && error.status === 422 && error.data?.errors) {
+    if (
+      error instanceof ApiError &&
+      error.status === 422 &&
+      error.data?.errors
+    ) {
       const first = Object.values(error.data.errors).flat()[0];
       if (first) throw new ApiError(first, 422, error.data);
     }
