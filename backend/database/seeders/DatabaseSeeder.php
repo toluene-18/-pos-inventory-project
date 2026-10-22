@@ -16,9 +16,47 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::firstOrCreate(
+        // 1. Primary Owner / Admin
+        User::updateOrCreate(
+            ['email' => 'owner@example.com'],
+            [
+                'name' => 'Chinedu Okafor',
+                'password' => 'password',
+                'role' => 'owner',
+                'status' => 'active',
+            ]
+        );
+
+        // 2. Store Manager
+        User::updateOrCreate(
+            ['email' => 'manager@example.com'],
+            [
+                'name' => 'Aisha Bello',
+                'password' => 'password',
+                'role' => 'manager',
+                'status' => 'active',
+            ]
+        );
+
+        // 3. Cashier
+        User::updateOrCreate(
+            ['email' => 'cashier@example.com'],
+            [
+                'name' => 'Test Cashier',
+                'password' => 'password',
+                'role' => 'cashier',
+                'status' => 'active',
+            ]
+        );
+
+        User::updateOrCreate(
             ['email' => 'test@example.com'],
-            ['name' => 'Test User']
+            [
+                'name' => 'Test User',
+                'password' => 'password',
+                'role' => 'cashier',
+                'status' => 'active',
+            ]
         );
         $products = [
             [
