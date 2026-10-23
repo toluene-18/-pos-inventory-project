@@ -1,5 +1,5 @@
 /* ================================================================
-   restock-history.css — Restock KPIs & History Table
+   restock-history.css — Restock KPIs, Toolbar Pills & History Table
    ================================================================ */
 
 /* 4 KPI cards */
@@ -99,7 +99,7 @@
   color: #94a3b8;
 }
 
-.adjustment-filter-bar {
+.adjustment-toolbar-grid {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -114,9 +114,9 @@
   background: #101418;
   border: 1px solid #232a32;
   border-radius: 8px;
-  padding: 7px 12px;
+  padding: 8px 12px;
   flex: 1;
-  min-width: 240px;
+  min-width: 260px;
   color: #94a3b8;
 }
 
@@ -138,10 +138,41 @@
   background: #101418;
   border: 1px solid #232a32;
   border-radius: 8px;
-  padding: 7px 12px;
+  padding: 8px 14px;
   color: #cbd5e1;
   font-size: 12.5px;
   outline: none;
+}
+
+/* Category Filter Pills */
+.adjustment-type-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.type-pill-btn {
+  padding: 5px 14px;
+  border-radius: 9999px;
+  border: 1px solid #232a32;
+  background: #101418;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.type-pill-btn:hover {
+  background: #161c22;
+  color: #e2e8f0;
+}
+
+.type-pill-btn--active {
+  background: #10b981;
+  border-color: #10b981;
+  color: #042f2e;
+  font-weight: 700;
 }
 
 /* History Table */
@@ -156,25 +187,49 @@
 
 .adjustment-table th {
   background: #101418;
-  padding: 11px 14px;
+  padding: 12px 14px;
   text-align: left;
   font-size: 11px;
   font-weight: 700;
-  color: #94a3b8;
+  color: #64748b;
   text-transform: uppercase;
+  letter-spacing: 0.05em;
   border-bottom: 1px solid #232a32;
 }
 
 .adjustment-table td {
-  padding: 12px 14px;
+  padding: 13px 14px;
   border-bottom: 1px solid #1c222a;
   font-size: 13px;
   color: #e2e8f0;
 }
 
-.adj-product-cell {
-  display: flex;
-  flex-direction: column;
+.adj-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.adj-pill--restock {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34d399;
+}
+
+.adj-pill--correction {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fbbf24;
+}
+
+.adj-pill--damage {
+  background: rgba(244, 63, 94, 0.15);
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  color: #fb7185;
 }
 
 .adj-product-name {
@@ -182,62 +237,49 @@
   color: #f8fafc;
 }
 
-.adj-product-sku {
-  font-size: 11px;
-  color: #64748b;
-  margin-top: 2px;
-}
-
-.adj-badge {
-  display: inline-block;
-  padding: 3px 8px;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.adj-badge--restock {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-}
-
-.adj-badge--correction {
-  background: rgba(245, 158, 11, 0.15);
-  color: #fbbf24;
-}
-
-.adj-badge--damage {
-  background: rgba(244, 63, 94, 0.15);
-  color: #fb7185;
-}
-
 .adj-qty {
   font-weight: 700;
-  font-size: 13.5px;
+  font-size: 13px;
 }
 
-.adj-movement {
-  color: #94a3b8;
-  font-size: 12.5px;
-}
-
-.adj-movement strong {
-  color: #f1f5f9;
+.adj-after {
+  color: #cbd5e1;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .adj-reason {
-  color: #cbd5e1;
+  color: #94a3b8;
   font-size: 12.5px;
-  max-width: 260px;
+  max-width: 280px;
   display: inline-block;
 }
 
-.adj-staff {
-  color: #94a3b8;
-  font-size: 12px;
+.adj-recorder-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.adj-date {
+.adj-avatar-mini {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #232a32;
+  color: #cbd5e1;
+  font-size: 10px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.adj-staff {
+  color: #cbd5e1;
+  font-size: 12.5px;
+}
+
+.adj-when {
   color: #64748b;
   font-size: 11.5px;
   white-space: nowrap;

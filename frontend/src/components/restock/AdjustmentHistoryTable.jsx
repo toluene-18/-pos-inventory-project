@@ -1,17 +1,32 @@
 import { useState, useMemo } from 'react';
 import Icon from '../ui/Icon';
 
+const TYPE_PILLS = [
+  { id: 'all', label: 'All' },
+  { id: 'restock', label: 'Restock' },
+  { id: 'correction', label: 'Correction' },
+  { id: 'damage', label: 'Damage' },
+];
+
 export default function AdjustmentHistoryTable({ adjustments = [] }) {
   const [search, setSearch] = useState('');
   const [selectedProduct, setSelectedProduct] = useState('all');
+  const [selectedType, setSelectedType] = useState('all');
   const [sortOrder, setSortOrder] = useState('newest');
 
   const productNames = useMemo(() => {
-    return Array.from(new Set(adjustments.map(a => a.productName || a.product?.name).filter(Boolean)));
+    return Array.from(
+      new Set(adjustments.map(a => a.productName || a.product?.name).filter(Boolean))
+    );
   }, [adjustments]);
 
   const filtered = useMemo(() => {
-    let list = adjustments.filter(item => {
+    const list = adjustments.filter(item => {
+      const type = (item.type || 'restock').toLowerCase();
+      if (selectedType !== 'all' && type !== selectedType) {
+        return false;
+      }
+
       const pName = (item.productName || item.product?.name || '').toLowerCase();
       const reason = (item.reason || '').toLowerCase();
       const staff = (item.staffName || item.user?.name || '').toLowerCase();
@@ -45,7 +60,7 @@ export default function AdjustmentHistoryTable({ adjustments = [] }) {
     });
 
     return list;
-  }, [adjustments, search, selectedProduct, sortOrder]);
+  }, [adjustments, search, selectedProduct, selectedType, sortOrder]);
 
   return (
     <div className="adjustment-history-card">
@@ -56,7 +71,7 @@ export default function AdjustmentHistoryTable({ adjustments = [] }) {
         </span>
       </div>
 
-      <div className="adjustment-filter-bar">
+      <div className="adjustment-toolbar-grid">
         <div className="adjustment-search-box">
           <Icon name="search" size={14} />
           <input
@@ -91,17 +106,30 @@ export default function AdjustmentHistoryTable({ adjustments = [] }) {
         </div>
       </div>
 
+      <div className="adjustment-type-pills">
+        {TYPE_PILLS.map(pill => (
+          <button
+            key={pill.id}
+            type="button"
+            className={`type-pill-btn ${selectedType === pill.id ? 'type-pill-btn--active' : ''}`}
+            onClick={() => setSelectedType(pill.id)}
+          >
+            {pill.label}
+          </button>
+        ))}
+      </div>
+
       <div className="adjustment-table-wrapper">
         <table className="adjustment-table">
           <thead>
             <tr>
-              <th>Product</th>
-              <th>Type</th>
-              <th>Change</th>
-              <th>Stock Before / After</th>
-              <th>Reason & Note</th>
-              <th>Staff</th>
-              <th>Date</th>
+              <th>TYPE</th>
+              <th>PRODUCT</th>
+              <th>CHANGE</th>
+              <th>STOCK AFTER</th>
+              <th>REASON</th>
+              <th>RECORDED BY</th>
+              <th>WHEN</th>
             </tr>
           </thead>
           <tbody>
@@ -114,28 +142,26 @@ export default function AdjustmentHistoryTable({ adjustments = [] }) {
             ) : (
               filtered.map(item => {
                 const pName = item.productName || item.product?.name || 'Product';
-                const sku = item.sku || item.product?.sku || 'SKU';
                 const type = (item.type || 'restock').toLowerCase();
                 const qty = item.quantityChange ?? item.quantity_change ?? 0;
-                const prev = item.previousStock ?? '—';
                 const next = item.newStock ?? '—';
-                const staff = item.staffName || item.user?.name || 'Staff';
+                const staff = item.staffName || item.user?.name || 'Chinedu Okafor';
+                const initials =
+                  item.staffInitials ||
+                  staff.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
                 const date = item.createdAt || new Date(item.created_at).toLocaleString('en-GB');
 
                 return (
                   <tr key={item.id}>
                     <td>
-                      <div className="adj-product-cell">
-                        <span className="adj-product-name">{pName}</span>
-                        <span className="adj-product-sku">{sku}</span>
-                      </div>
+                      <span className={`adj-pill adj-pill--${type}`}>
+                        {type === 'restock' && '+ Restock'}
+                        {type === 'correction' && '⇄ Correction'}
+                        {type === 'damage' && '! Damage'}
+                      </span>
                     </td>
                     <td>
-                      <span className={`adj-badge adj-badge--${type}`}>
-                        {type === 'restock' && 'Restock'}
-                        {type === 'correction' && 'Correction'}
-                        {type === 'damage' && 'Damage'}
-                      </span>
+                      <span className="adj-product-name">{pName}</span>
                     </td>
                     <td>
                       <span className={`adj-qty ${qty > 0 ? 'text-green' : 'text-rose'}`}>
@@ -143,18 +169,19 @@ export default function AdjustmentHistoryTable({ adjustments = [] }) {
                       </span>
                     </td>
                     <td>
-                      <span className="adj-movement">
-                        {prev} → <strong>{next}</strong>
-                      </span>
+                      <span className="adj-after">{next}</span>
                     </td>
                     <td>
                       <span className="adj-reason">{item.reason || 'Manual adjustment'}</span>
                     </td>
                     <td>
-                      <span className="adj-staff">{staff}</span>
+                      <div className="adj-recorder-cell">
+                        <span className="adj-avatar-mini">{initials}</span>
+                        <span className="adj-staff">{staff}</span>
+                      </div>
                     </td>
                     <td>
-                      <span className="adj-date">{date}</span>
+                      <span className="adj-when">{date}</span>
                     </td>
                   </tr>
                 );
