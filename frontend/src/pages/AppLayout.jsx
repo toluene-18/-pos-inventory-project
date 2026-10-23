@@ -9,7 +9,7 @@ import '../styles/dashboard.css';
  * AppLayout — authenticated shell (sidebar + topbar) around the routed page.
  * The active page comes from the URL, so refresh/back/forward all work.
  */
-function AppLayout({ user, onLogout }) {
+function AppLayout({ user, onLogout, onUserUpdated }) {
   const { pathname } = useLocation();
   const go = usePageNavigate();
   const activePage = pageByPath(pathname)?.name;
@@ -18,7 +18,7 @@ function AppLayout({ user, onLogout }) {
     <div className="app-layout">
       <Sidebar user={user} activePage={activePage} />
       <div className="app-main">
-        <Topbar user={user} onLogout={onLogout} onNavigate={go} />
+        <Topbar user={user} onLogout={onLogout} onNavigate={go} onUserUpdated={onUserUpdated} />
         <main className="app-content" id="main-content">
           <Outlet />
         </main>

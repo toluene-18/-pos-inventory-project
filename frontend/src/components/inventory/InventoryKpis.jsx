@@ -8,16 +8,16 @@ function formatCompactCost(val) {
   return `₦${num.toLocaleString()}`;
 }
 
-export default function InventoryKpis({ stats, isManagement }) {
-  const productCount = stats.productCount || 24;
-  const totalUnits = stats.totalUnits || 716;
-  const costValue = stats.stockValueCost || 905320;
-  const lowCount = stats.lowStockCount ?? 8;
-  const outCount = stats.outOfStockCount ?? 1;
+export default function InventoryKpis({ stats = {}, isManagement }) {
+  const productCount = stats.productCount ?? 0;
+  const totalUnits = stats.totalUnits ?? 0;
+  const costValue = stats.stockValueCost ?? 0;
+  const lowCount = stats.lowStockCount ?? 0;
+  const outCount = stats.outOfStockCount ?? 0;
   const attentionCount = lowCount + outCount;
 
   return (
-    <div className="inventory-kpi-grid">
+    <div className="inventory-kpis-grid">
       <div className="inv-kpi-card">
         <div className="inv-kpi-header">
           <span className="inv-kpi-label">PRODUCTS TRACKED</span>

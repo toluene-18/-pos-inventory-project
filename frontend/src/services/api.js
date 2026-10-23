@@ -212,3 +212,17 @@ export async function updateStaffStatus(userId, { role, status }) {
     body: JSON.stringify({ role, status }),
   });
 }
+
+export async function updateUserProfile({ name }) {
+  return apiRequest('/user/profile', {
+    method: 'PATCH',
+    body: JSON.stringify({ name }),
+  });
+}
+
+export async function changePassword({ current_password, new_password }) {
+  return apiRequest('/user/change-password', {
+    method: 'POST',
+    body: JSON.stringify({ current_password, new_password }),
+  });
+}

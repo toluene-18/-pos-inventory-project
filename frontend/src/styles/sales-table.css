@@ -1,0 +1,200 @@
+/* ================================================================
+   sales-table.css — Sales Table, Rows, Badges & Expanded Drawer
+   ================================================================ */
+
+.sales-table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow-x: auto;
+}
+
+.sales-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sales-table th {
+  background: var(--surface-2);
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.sales-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--text);
+  vertical-align: middle;
+}
+
+.sales-table tr:hover td {
+  background: var(--surface-hover);
+}
+
+.btn-toggle-expand {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.sales-receipt-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.sales-receipt-id {
+  font-weight: 700;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.sales-receipt-time {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 1px;
+}
+
+.sales-cashier-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sales-cashier-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sales-items-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.sales-items-count {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 12.5px;
+}
+
+.sales-items-desc {
+  font-size: 11px;
+  color: var(--text-dim);
+  max-width: 240px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sales-method-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sales-method-pill--cash {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+}
+
+.sales-method-pill--card {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+}
+
+.sales-method-pill--bank_transfer {
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+}
+
+.sales-total-amount {
+  font-weight: 700;
+  color: var(--text);
+  font-size: 13.5px;
+}
+
+.sales-action-btns {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.btn-sales-view {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn-sales-view:hover {
+  background: var(--surface);
+  border-color: var(--border-soft);
+}
+
+.btn-sales-print {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.btn-sales-print:hover {
+  color: var(--text);
+  border-color: var(--border-soft);
+}
+
+.sales-loading,
+.sales-empty {
+  padding: 48px 16px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.sales-empty svg {
+  margin-bottom: 8px;
+  color: var(--text-dim);
+}

@@ -116,4 +116,43 @@ class AuthController extends Controller
             'user' => $user->fresh(),
         ]);
     }
+
+    public function updateProfile(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+        ]);
+
+        $user = $request->user();
+        $user->update(['name' => $validated['name']]);
+
+        return response()->json([
+            'message' => 'Profile updated successfully.',
+            'user' => $user->fresh(),
+        ]);
+    }
+
+    public function changePassword(Request $request)
+    {
+        $validated = $request->validate([
+            'current_password' => ['required', 'string'],
+            'new_password' => ['required', 'string', 'min:6'],
+        ]);
+
+        $user = $request->user();
+
+        if (!Hash::check($validated['current_password'], $user->password)) {
+            return response()->json([
+                'message' => 'The provided current password does not match.',
+            ], 422);
+        }
+
+        $user->update([
+            'password' => Hash::make($validated['new_password']),
+        ]);
+
+        return response()->json([
+            'message' => 'Password changed successfully.',
+        ]);
+    }
 }

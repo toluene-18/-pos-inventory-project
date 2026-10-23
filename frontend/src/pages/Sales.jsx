@@ -1,62 +1,56 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import Icon from '../components/ui/Icon';
 import ReceiptViewModal from '../components/sales/ReceiptViewModal';
 import SalesKpis from '../components/sales/SalesKpis';
+import SalesTable from '../components/sales/SalesTable';
 import { getSales } from '../services/api';
-import { formatMoney, paymentLabel } from '../utils/dashboardStats';
 import '../styles/sales.css';
 
 function toYmd(date) {
   return date.toISOString().slice(0, 10);
 }
 
-export default function Sales({ user, onSessionExpired }) {
+export default function Sales({ user }) {
   const [sales, setSales] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [page, setPage] = useState(1);
-  const [pagination, setPagination] = useState({ current_page: 1, last_page: 1, total: 0 });
   const [paymentFilter, setPaymentFilter] = useState('all');
+  const [cashierFilter, setCashierFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('newest');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [timePreset, setTimePreset] = useState('all');
   const [search, setSearch] = useState('');
   const [viewingSale, setViewingSale] = useState(null);
+  const [expandedIds, setExpandedIds] = useState(new Set());
 
   const isManagement = ['owner', 'manager'].includes(user?.role);
 
   const fetchSales = useCallback(async () => {
     try {
       setLoading(true);
-      const params = { page };
+      const params = {};
       if (paymentFilter !== 'all') params.payment_method = paymentFilter;
       if (fromDate) params.from = fromDate;
       if (toDate) params.to = toDate;
 
       const res = await getSales(params);
       setSales(res.data || []);
-      setPagination({
-        current_page: res.current_page || 1,
-        last_page: res.last_page || 1,
-        total: res.total || 0,
-      });
       setError('');
     } catch (err) {
-      if (err.status === 401) onSessionExpired?.();
-      else setError(err.message || 'Failed to load sales history.');
+      setError(err.message || 'Failed to load sales history.');
     } finally {
       setLoading(false);
     }
-  }, [page, paymentFilter, fromDate, toDate, onSessionExpired]);
+  }, [paymentFilter, fromDate, toDate]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchSales();
   }, [fetchSales]);
 
   function handlePreset(preset) {
     setTimePreset(preset);
-    setPage(1);
     const now = new Date();
     if (preset === 'today') {
       const todayStr = toYmd(now);
@@ -78,32 +72,81 @@ export default function Sales({ user, onSessionExpired }) {
     }
   }
 
+  const cashiersList = useMemo(() => {
+    const names = new Set(sales.map(s => s.user?.name).filter(Boolean));
+    return ['all', ...Array.from(names)];
+  }, [sales]);
+
   const filteredSales = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return sales;
-    return sales.filter(s => {
-      const idStr = String(s.id);
-      const cashier = s.user?.name?.toLowerCase() || '';
-      return idStr.includes(q) || cashier.includes(q);
+    const result = sales.filter(s => {
+      if (cashierFilter !== 'all' && s.user?.name !== cashierFilter) return false;
+      if (!q) return true;
+      const receiptStr = `cwg-${String(s.id).padStart(5, '0')}`;
+      const cashierName = s.user?.name?.toLowerCase() || '';
+      const itemsMatch = (s.items || []).some(i => i.product?.name?.toLowerCase().includes(q));
+      return receiptStr.includes(q) || cashierName.includes(q) || itemsMatch;
     });
-  }, [sales, search]);
 
-  const summary = useMemo(() => {
-    const totalRev = filteredSales.reduce((sum, s) => sum + (Number(s.total) || 0), 0);
-    return { count: filteredSales.length, revenue: totalRev };
+    result.sort((a, b) => {
+      if (sortBy === 'oldest') return new Date(a.created_at) - new Date(b.created_at);
+      if (sortBy === 'highest') return (Number(b.total) || 0) - (Number(a.total) || 0);
+      if (sortBy === 'lowest') return (Number(a.total) || 0) - (Number(b.total) || 0);
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
+
+    return result;
+  }, [sales, search, cashierFilter, sortBy]);
+
+  const stats = useMemo(() => {
+    let rev = 0;
+    let units = 0;
+    let cashRev = 0;
+
+    for (const s of filteredSales) {
+      const val = Number(s.total) || 0;
+      rev += val;
+      if (s.payment_method === 'cash') cashRev += val;
+      for (const item of s.items || []) {
+        units += Number(item.quantity) || 0;
+      }
+    }
+
+    const count = filteredSales.length;
+    const avg = count > 0 ? rev / count : 0;
+    const cashPct = rev > 0 ? Math.round((cashRev / rev) * 100) : 0;
+
+    return { rev, count, avg, units, cashPct };
   }, [filteredSales]);
+
+  function toggleExpand(id) {
+    setExpandedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleExpandAll() {
+    if (expandedIds.size === filteredSales.length) {
+      setExpandedIds(new Set());
+    } else {
+      setExpandedIds(new Set(filteredSales.map(s => s.id)));
+    }
+  }
 
   return (
     <div className="sales-page">
-      <header className="sales-header">
+      <header className="sales-page-header">
         <div>
-          <h2>Sales Transactions</h2>
-          <p>
-            {isManagement
-              ? 'View and inspect store-wide transactions, receipts, and cashier settlements.'
-              : 'View and reprint receipts for transactions you processed.'}
-          </p>
+          <h2>Sales history</h2>
+          <p>Every transaction across the store, filtered by date, cashier and payment method.</p>
         </div>
+        <Link to="/pos" className="btn-new-sale">
+          <Icon name="plus" size={14} />
+          <span>New sale</span>
+        </Link>
       </header>
 
       {error && (
@@ -112,156 +155,98 @@ export default function Sales({ user, onSessionExpired }) {
         </div>
       )}
 
-      <SalesKpis summary={summary} totalTransactions={pagination.total} />
+      <SalesKpis
+        revenue={stats.rev}
+        transactionsCount={stats.count}
+        averageBasket={stats.avg}
+        unitsSold={stats.units}
+        cashPercent={stats.cashPct}
+        periodLabel={timePreset === 'all' ? 'All time' : timePreset}
+      />
 
-      <div className="sales-controls-card">
-        <div className="sales-preset-pills">
-          <button
-            type="button"
-            className={`preset-btn ${timePreset === 'all' ? 'preset-btn--active' : ''}`}
-            onClick={() => handlePreset('all')}
-          >
-            All Time
-          </button>
-          <button
-            type="button"
-            className={`preset-btn ${timePreset === 'today' ? 'preset-btn--active' : ''}`}
-            onClick={() => handlePreset('today')}
-          >
-            Today
-          </button>
-          <button
-            type="button"
-            className={`preset-btn ${timePreset === '7d' ? 'preset-btn--active' : ''}`}
-            onClick={() => handlePreset('7d')}
-          >
-            Last 7 Days
-          </button>
-          <button
-            type="button"
-            className={`preset-btn ${timePreset === '30d' ? 'preset-btn--active' : ''}`}
-            onClick={() => handlePreset('30d')}
-          >
-            Last 30 Days
-          </button>
-        </div>
+      <div className="sales-filter-card">
+        <div className="sales-filter-top-row">
+          <div className="sales-search-bar">
+            <Icon name="search" size={15} />
+            <input
+              type="text"
+              placeholder="Search receipt no., cashier or product..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </div>
 
-        <div className="sales-filter-row">
-          <input
-            type="search"
-            placeholder="Search by receipt ID or cashier..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="sales-search-input"
-          />
+          {isManagement && (
+            <select
+              value={cashierFilter}
+              onChange={e => setCashierFilter(e.target.value)}
+              className="sales-select-filter"
+            >
+              <option value="all">All cashiers</option>
+              {cashiersList.filter(c => c !== 'all').map(name => (
+                <option key={name} value={name}>{name}</option>
+              ))}
+            </select>
+          )}
 
           <select
             value={paymentFilter}
-            onChange={e => {
-              setPaymentFilter(e.target.value);
-              setPage(1);
-            }}
-            className="sales-select"
+            onChange={e => setPaymentFilter(e.target.value)}
+            className="sales-select-filter"
           >
-            <option value="all">All Payment Methods</option>
+            <option value="all">All methods</option>
             <option value="cash">Cash</option>
             <option value="card">Card</option>
-            <option value="bank_transfer">Transfer</option>
+            <option value="bank_transfer">Bank transfer</option>
+          </select>
+
+          <select
+            value={sortBy}
+            onChange={e => setSortBy(e.target.value)}
+            className="sales-select-filter"
+          >
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="highest">Highest total</option>
+            <option value="lowest">Lowest total</option>
           </select>
         </div>
-      </div>
 
-      <div className="sales-table-container">
-        {loading ? (
-          <div className="sales-loading">Loading transactions...</div>
-        ) : filteredSales.length === 0 ? (
-          <div className="sales-empty">
-            <Icon name="sales" size={32} />
-            <p>No sales found for the selected filters.</p>
-          </div>
-        ) : (
-          <table className="sales-table">
-            <thead>
-              <tr>
-                <th>Receipt #</th>
-                <th>Date & Time</th>
-                {isManagement && <th>Cashier</th>}
-                <th>Items Count</th>
-                <th>Payment Method</th>
-                <th>Total Amount</th>
-                <th className="text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredSales.map(s => {
-                const itemCount = (s.items || []).reduce((sum, i) => sum + (i.quantity || 0), 0);
-                const when = new Date(s.created_at).toLocaleString('en-GB', {
-                  dateStyle: 'medium',
-                  timeStyle: 'short',
-                });
-
-                return (
-                  <tr key={s.id}>
-                    <td>
-                      <span className="sales-receipt-badge">
-                        #CWG-{String(s.id).padStart(6, '0')}
-                      </span>
-                    </td>
-                    <td>{when}</td>
-                    {isManagement && (
-                      <td>
-                        <span className="sales-cashier-cell">
-                          {s.user?.name || s.user?.email || `Staff #${s.user_id}`}
-                        </span>
-                      </td>
-                    )}
-                    <td>{itemCount} {itemCount === 1 ? 'item' : 'items'}</td>
-                    <td>
-                      <span className={`sales-pay-pill sales-pay-pill--${s.payment_method}`}>
-                        {paymentLabel(s.payment_method)}
-                      </span>
-                    </td>
-                    <td>
-                      <strong className="sales-total-val">{formatMoney(s.total)}</strong>
-                    </td>
-                    <td className="text-right">
-                      <button
-                        type="button"
-                        className="btn btn-secondary btn-sm"
-                        onClick={() => setViewingSale(s)}
-                      >
-                        <Icon name="printer" size={14} /> View Receipt
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        )}
-      </div>
-
-      {pagination.last_page > 1 && (
-        <div className="sales-pagination">
-          <button
-            type="button"
-            className="btn btn-secondary btn-sm"
-            disabled={page <= 1}
-            onClick={() => setPage(p => Math.max(1, p - 1))}
-          >
-            ← Previous
-          </button>
-          <span>Page {pagination.current_page} of {pagination.last_page}</span>
-          <button
-            type="button"
-            className="btn btn-secondary btn-sm"
-            disabled={page >= pagination.last_page}
-            onClick={() => setPage(p => Math.min(pagination.last_page, p + 1))}
-          >
-            Next →
-          </button>
+        <div className="sales-date-pills">
+          {[
+            { id: 'today', label: 'Today' },
+            { id: '7d', label: '7 days' },
+            { id: '30d', label: '30 days' },
+            { id: 'all', label: 'All time' },
+          ].map(p => (
+            <button
+              key={p.id}
+              type="button"
+              className={`sales-date-pill ${timePreset === p.id ? 'sales-date-pill--active' : ''}`}
+              onClick={() => handlePreset(p.id)}
+            >
+              {p.label}
+            </button>
+          ))}
         </div>
-      )}
+      </div>
+
+      <div className="sales-table-subhead">
+        <span>SHOWING {filteredSales.length} OF {sales.length} TRANSACTIONS · ALL TIME</span>
+        <button type="button" className="sales-expand-all-btn" onClick={toggleExpandAll}>
+          {expandedIds.size === filteredSales.length ? '- Collapse all' : '+ Expand all'}
+        </button>
+      </div>
+
+      <div className="sales-table-wrap">
+        <SalesTable
+          sales={filteredSales}
+          loading={loading}
+          expandedIds={expandedIds}
+          onToggleExpand={toggleExpand}
+          onViewSale={setViewingSale}
+        />
+      </div>
 
       {viewingSale && (
         <ReceiptViewModal

@@ -56,7 +56,7 @@ function App() {
       <Route
         element={
           <ProtectedRoute user={user}>
-            <AppLayout user={user} onLogout={handleLogout} />
+            <AppLayout user={user} onLogout={handleLogout} onUserUpdated={setUser} />
           </ProtectedRoute>
         }
       >

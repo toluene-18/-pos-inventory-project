@@ -1,15 +1,15 @@
-﻿/* ================================================================
-   dashboard-home.css — DashboardHome page layout + widgets
+/* ================================================================
+   dashboard-home.css � DashboardHome page layout + widgets
    ================================================================ */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-/* ── Page grid ──────────────────────────────────────────────────── */
+/* -- Page grid ---------------------------------------------------- */
 .dash-home {
   display: grid;
   gap: 16px;
 }
 
-/* ── Welcome header ─────────────────────────────────────────────── */
+/* -- Welcome header ----------------------------------------------- */
 .dash-welcome {
   display: flex;
   align-items: flex-start;
@@ -52,7 +52,7 @@
   flex-shrink: 0;
 }
 
-/* ── Metric cards row ───────────────────────────────────────────── */
+/* -- Metric cards row --------------------------------------------- */
 .dash-metrics {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -126,7 +126,7 @@
   line-height: 1.4;
 }
 
-/* ── Middle row ─────────────────────────────────────────────────── */
+/* -- Middle row --------------------------------------------------- */
 .dash-middle {
   display: grid;
   grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);

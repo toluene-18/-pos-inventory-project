@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { getProducts, getSalesInRange } from '../services/api';
+import { getProducts, getSalesInRange, getStaff, updateStaffStatus } from '../services/api';
 import {
   buildLowStock,
   formatDateYmd,
@@ -9,7 +9,7 @@ import {
 } from '../utils/dashboardStats';
 
 const STORAGE_KEY = 'cwg-read-notifications';
-const REFRESH_MS = 60_000;
+const REFRESH_MS = 30_000;
 
 function loadRead() {
   try {
@@ -23,7 +23,7 @@ function saveRead(set) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify([...set].slice(-200)));
   } catch {
-    // storage unavailable — read state just won't persist
+    // storage unavailable
   }
 }
 
@@ -49,28 +49,40 @@ function toNotifications(products, sales) {
   return [...stock, ...recent];
 }
 
-/** useNotifications — low-stock + today's sales alerts with read tracking. */
-export default function useNotifications() {
+export default function useNotifications(user) {
   const [items, setItems] = useState([]);
+  const [pendingStaff, setPendingStaff] = useState([]);
   const [read, setRead] = useState(loadRead);
+
+  const isOwner = user?.role === 'owner';
 
   const refresh = useCallback(async () => {
     const today = formatDateYmd(new Date());
-    const [products, sales] = await Promise.allSettled([
+    const tasks = [
       getProducts(),
       getSalesInRange({ from: today, to: today }),
-    ]);
+    ];
+
+    if (isOwner) {
+      tasks.push(getStaff());
+    }
+
+    const [productsRes, salesRes, staffRes] = await Promise.allSettled(tasks);
+
     setItems(
       toNotifications(
-        products.status === 'fulfilled' ? products.value : [],
-        sales.status === 'fulfilled' ? sales.value.sales : []
+        productsRes.status === 'fulfilled' ? productsRes.value : [],
+        salesRes.status === 'fulfilled' ? salesRes.value.sales : []
       )
     );
-  }, []);
+
+    if (isOwner && staffRes && staffRes.status === 'fulfilled') {
+      const allStaff = Array.isArray(staffRes.value) ? staffRes.value : [];
+      setPendingStaff(allStaff.filter(s => s.status === 'pending'));
+    }
+  }, [isOwner]);
 
   useEffect(() => {
-    // Initial fetch + polling; setState happens after the await, not synchronously.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     refresh();
     const timer = setInterval(refresh, REFRESH_MS);
     return () => clearInterval(timer);
@@ -85,8 +97,20 @@ export default function useNotifications() {
     });
   }, [items]);
 
-  const withRead = items.map(item => ({ ...item, unread: !read.has(item.id) }));
-  const unreadCount = withRead.filter(item => item.unread).length;
+  const approveStaff = useCallback(async (userId) => {
+    await updateStaffStatus(userId, { status: 'active' });
+    setPendingStaff(prev => prev.filter(s => s.id !== userId));
+  }, []);
 
-  return { items: withRead, unreadCount, markAllRead, refresh };
+  const withRead = items.map(item => ({ ...item, unread: !read.has(item.id) }));
+  const unreadCount = withRead.filter(item => item.unread).length + pendingStaff.length;
+
+  return {
+    items: withRead,
+    unreadCount,
+    pendingStaff,
+    approveStaff,
+    markAllRead,
+    refresh,
+  };
 }

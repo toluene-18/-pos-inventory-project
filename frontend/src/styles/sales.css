@@ -1,23 +1,241 @@
 /* ================================================================
-   sales.css — Sales history table, filters, pagination, badges
+   sales.css — Readdy-matching Sales History UI (Page, KPIs, Filters)
    ================================================================ */
 
 .sales-page {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
+  width: 100%;
 }
 
-.sales-header h2 {
+.sales-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.sales-page-header h2 {
   margin: 0;
-  font-size: 22px;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.sales-page-header p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.btn-new-sale {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background: #10b981;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-new-sale:hover {
+  background: #0ea371;
+}
+
+/* KPI Cards 4-Column Grid */
+.sales-kpis-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 1024px) {
+  .sales-kpis-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .sales-kpis-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sales-kpi-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sales-kpi-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sales-kpi-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+
+.sales-kpi-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sales-kpi-badge--green {
+  background: rgba(16, 185, 129, 0.18);
+  color: #10b981;
+}
+
+.sales-kpi-badge--dark {
+  background: var(--surface-2);
+  color: var(--text-muted);
+}
+
+.sales-kpi-badge--amber {
+  background: rgba(245, 158, 11, 0.18);
+  color: #f59e0b;
+}
+
+.sales-kpi-val {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 10px 0 3px;
+  line-height: 1.1;
+}
+
+.sales-kpi-sub {
+  font-size: 11.5px;
+  color: var(--text-dim);
+}
+
+/* Filter Card */
+.sales-filter-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sales-filter-top-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.sales-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 12px;
+  flex: 1;
+  min-width: 260px;
+  color: var(--text-muted);
+}
+
+.sales-search-bar input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-size: 13px;
+  width: 100%;
+}
+
+.sales-select-filter {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 12.5px;
+  color: var(--text);
+  outline: none;
+  cursor: pointer;
+}
+
+.sales-date-pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.sales-date-pill {
+  padding: 4px 12px;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sales-date-pill:hover {
+  background: var(--surface-2);
   color: var(--text);
 }
 
-.sales-header p {
-  margin: 4px 0 0;
+.sales-date-pill--active {
+  background: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Table Subheader summary */
+.sales-table-subhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+  padding: 0 4px;
+}
+
+.sales-expand-all-btn {
+  background: transparent;
+  border: none;
   color: var(--text-muted);
-  font-size: 13px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sales-expand-all-btn:hover {
+  color: #10b981;
 }
 
 .sales-alert--error {
@@ -28,232 +246,6 @@
   background: var(--rose-soft);
   color: var(--rose);
   border: 1px solid var(--rose);
-  border-radius: var(--radius);
+  border-radius: 8px;
   font-size: 13px;
-}
-
-.sales-stat-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 14px;
-}
-
-.sales-stat-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  box-shadow: var(--shadow);
-}
-
-.sales-stat-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.sales-stat-icon--rev {
-  background: var(--green-soft);
-  color: var(--green);
-}
-
-.sales-stat-icon--count {
-  background: var(--violet-soft);
-  color: var(--violet);
-}
-
-.sales-stat-icon--basket {
-  background: rgba(59, 130, 246, 0.12);
-  color: #3b82f6;
-}
-
-.sales-stat-info small {
-  display: block;
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-bottom: 2px;
-}
-
-.sales-stat-info strong {
-  font-size: 18px;
-  color: var(--text);
-}
-
-.sales-controls-card {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  background: var(--surface);
-  padding: 14px 16px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-}
-
-.sales-preset-pills {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.preset-btn {
-  padding: 6px 14px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface-2);
-  color: var(--text-muted);
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.preset-btn:hover {
-  color: var(--text);
-}
-
-.preset-btn--active {
-  background: var(--green);
-  border-color: var(--green);
-  color: #fff;
-  font-weight: 600;
-}
-
-.sales-filter-row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.sales-search-input {
-  flex: 1;
-  min-width: 220px;
-  padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface-2);
-  color: var(--text);
-  font-size: 13px;
-}
-
-.sales-search-input:focus {
-  outline: none;
-  border-color: var(--green);
-}
-
-.sales-select {
-  padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface-2);
-  color: var(--text);
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.sales-table-container {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow-x: auto;
-  box-shadow: var(--shadow);
-}
-
-.sales-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-  font-size: 13px;
-}
-
-.sales-table th {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border);
-  color: var(--text-muted);
-  font-weight: 600;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: var(--surface-2);
-}
-
-.sales-table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border-soft);
-  color: var(--text);
-  vertical-align: middle;
-}
-
-.sales-table tr:last-child td {
-  border-bottom: none;
-}
-
-.sales-table tr:hover td {
-  background: var(--surface-2);
-}
-
-.sales-receipt-badge {
-  font-family: monospace;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.sales-cashier-cell {
-  font-weight: 500;
-  color: var(--text);
-}
-
-.sales-pay-pill {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 500;
-}
-
-.sales-pay-pill--cash {
-  background: var(--green-soft);
-  color: var(--green);
-}
-
-.sales-pay-pill--card {
-  background: var(--violet-soft);
-  color: var(--violet);
-}
-
-.sales-pay-pill--bank_transfer {
-  background: var(--amber-soft);
-  color: var(--amber);
-}
-
-.sales-total-val {
-  color: var(--green);
-  font-size: 14px;
-}
-
-.sales-pagination {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 0;
-  font-size: 13px;
-  color: var(--text-muted);
-}
-
-.sales-loading,
-.sales-empty {
-  padding: 48px 16px;
-  text-align: center;
-  color: var(--text-muted);
-}
-
-.sales-empty svg {
-  margin-bottom: 8px;
-  color: var(--text-dim);
 }

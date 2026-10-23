@@ -52,6 +52,46 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        $amina = User::updateOrCreate(
+            ['email' => 'amina@cwgretail.com'],
+            [
+                'name' => 'Amina Bello',
+                'password' => 'password',
+                'role' => 'cashier',
+                'status' => 'active',
+            ]
+        );
+
+        $tunde = User::updateOrCreate(
+            ['email' => 'tunde@cwgretail.com'],
+            [
+                'name' => 'Tunde Adeyemi',
+                'password' => 'password',
+                'role' => 'cashier',
+                'status' => 'active',
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'blessing@cwgretail.com'],
+            [
+                'name' => 'Blessing Okon',
+                'password' => 'password',
+                'role' => 'cashier',
+                'status' => 'pending',
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'ibrahim@cwgretail.com'],
+            [
+                'name' => 'Ibrahim Musa',
+                'password' => 'password',
+                'role' => 'cashier',
+                'status' => 'pending',
+            ]
+        );
+
         User::updateOrCreate(
             ['email' => 'test@example.com'],
             [
@@ -229,6 +269,7 @@ class DatabaseSeeder extends Seeder
             ],
         ];
 
+        $createdProducts = [];
         foreach ($products as $data) {
             $product = Product::create([
                 'name' => $data['name'],
@@ -245,6 +286,60 @@ class DatabaseSeeder extends Seeder
                 'quantity' => $data['quantity'],
                 'reorder_threshold' => $data['reorder_threshold'],
             ]);
+
+            $createdProducts[] = $product;
+        }
+
+        // 4. Seed 18 Realistic Sales matching Readdy Mockup (CWG-10245 ... CWG-10228)
+        $salesData = [
+            ['user' => $amina, 'method' => 'card', 'date' => '2026-09-15 13:06:00', 'items' => [[0, 2], [1, 1], [3, 3]]],
+            ['user' => $tunde, 'method' => 'cash', 'date' => '2026-09-15 11:20:00', 'items' => [[8, 2], [9, 1]]],
+            ['user' => $tunde, 'method' => 'card', 'date' => '2026-09-15 10:35:00', 'items' => [[3, 2], [2, 1]]],
+            ['user' => $amina, 'method' => 'bank_transfer', 'date' => '2026-09-15 08:48:00', 'items' => [[4, 2], [5, 2]]],
+            ['user' => $amina, 'method' => 'cash', 'date' => '2026-09-15 02:12:00', 'items' => [[3, 1], [0, 1], [1, 2]]],
+            ['user' => $amina, 'method' => 'cash', 'date' => '2026-09-14 17:22:00', 'items' => [[7, 4], [6, 4]]],
+            ['user' => $tunde, 'method' => 'bank_transfer', 'date' => '2026-09-14 11:55:00', 'items' => [[3, 2], [2, 3]]],
+            ['user' => $amina, 'method' => 'cash', 'date' => '2026-09-14 09:30:00', 'items' => [[0, 1], [7, 3]]],
+            ['user' => $tunde, 'method' => 'card', 'date' => '2026-09-13 16:15:00', 'items' => [[1, 2], [4, 2]]],
+            ['user' => $amina, 'method' => 'cash', 'date' => '2026-09-13 14:05:00', 'items' => [[10, 3], [11, 2]]],
+            ['user' => $tunde, 'method' => 'bank_transfer', 'date' => '2026-09-13 11:40:00', 'items' => [[2, 2], [5, 3]]],
+            ['user' => $amina, 'method' => 'card', 'date' => '2026-09-12 18:20:00', 'items' => [[0, 2], [3, 1], [8, 1]]],
+            ['user' => $amina, 'method' => 'cash', 'date' => '2026-09-12 15:10:00', 'items' => [[6, 3], [7, 2]]],
+            ['user' => $tunde, 'method' => 'card', 'date' => '2026-09-12 10:25:00', 'items' => [[1, 1], [2, 1], [4, 2]]],
+            ['user' => $amina, 'method' => 'cash', 'date' => '2026-09-11 16:50:00', 'items' => [[9, 2], [10, 2]]],
+            ['user' => $tunde, 'method' => 'bank_transfer', 'date' => '2026-09-11 13:15:00', 'items' => [[3, 2], [0, 1]]],
+            ['user' => $amina, 'method' => 'card', 'date' => '2026-09-10 17:40:00', 'items' => [[4, 3], [5, 2]]],
+            ['user' => $tunde, 'method' => 'cash', 'date' => '2026-09-10 12:00:00', 'items' => [[1, 2], [8, 3]]],
+        ];
+
+        foreach ($salesData as $idx => $s) {
+            $subtotal = 0;
+            $itemsToCreate = [];
+
+            foreach ($s['items'] as $itemPair) {
+                $p = $createdProducts[$itemPair[0]] ?? $createdProducts[0];
+                $qty = $itemPair[1];
+                $price = (float) $p->sell_price;
+                $line = round($price * $qty, 2);
+                $subtotal += $line;
+                $itemsToCreate[] = [
+                    'product_id' => $p->id,
+                    'quantity' => $qty,
+                    'unit_price' => $price,
+                    'line_total' => $line,
+                ];
+            }
+
+            $sale = Sale::create([
+                'user_id' => $s['user']->id,
+                'payment_method' => $s['method'],
+                'subtotal' => $subtotal,
+                'total' => $subtotal,
+                'created_at' => $s['date'],
+                'updated_at' => $s['date'],
+            ]);
+
+            $sale->items()->createMany($itemsToCreate);
         }
     }
 }

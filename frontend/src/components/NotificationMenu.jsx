@@ -6,10 +6,10 @@ import '../styles/notifications.css';
 
 const TYPE_ICON = { sale: 'money', low: 'alert', out: 'alert' };
 
-/** NotificationMenu — bell button with unread badge and dropdown list. */
-function NotificationMenu({ user, onNavigate }) {
+export default function NotificationMenu({ user, onNavigate }) {
   const [open, setOpen] = useState(false);
-  const { items, unreadCount, markAllRead } = useNotifications();
+  const [acceptingId, setAcceptingId] = useState(null);
+  const { items, unreadCount, pendingStaff, approveStaff, markAllRead } = useNotifications(user);
   const ref = useRef(null);
 
   useEffect(() => {
@@ -29,8 +29,18 @@ function NotificationMenu({ user, onNavigate }) {
 
   function openItem(item) {
     setOpen(false);
-    // Cashiers can't open Inventory — keep them where they are.
     if (canAccess(user, pageByName(item.target))) onNavigate?.(item.target);
+  }
+
+  async function handleAccept(staffId) {
+    try {
+      setAcceptingId(staffId);
+      await approveStaff(staffId);
+    } catch {
+      // Ignore
+    } finally {
+      setAcceptingId(null);
+    }
   }
 
   return (
@@ -51,7 +61,7 @@ function NotificationMenu({ user, onNavigate }) {
       {open && (
         <div className="notif-panel" role="dialog" aria-label="Notifications">
           <div className="notif-head">
-            <strong>Notifications</strong>
+            <strong>Notifications &amp; Requests</strong>
             {unreadCount > 0 && (
               <button type="button" className="notif-mark" onClick={markAllRead}>
                 Mark all read
@@ -59,7 +69,34 @@ function NotificationMenu({ user, onNavigate }) {
             )}
           </div>
 
-          {items.length === 0 ? (
+          {pendingStaff.length > 0 && (
+            <div className="notif-requests-block">
+              <div className="notif-requests-head">
+                <span>New User Requests</span>
+                <span className="notif-requests-count">{pendingStaff.length} pending</span>
+              </div>
+              <ul className="notif-requests-list">
+                {pendingStaff.map(staff => (
+                  <li key={staff.id} className="notif-request-item">
+                    <div className="notif-request-info">
+                      <strong>{staff.name}</strong>
+                      <small>{staff.email} · {staff.role || 'cashier'}</small>
+                    </div>
+                    <button
+                      type="button"
+                      className="notif-btn-accept"
+                      onClick={() => handleAccept(staff.id)}
+                      disabled={acceptingId === staff.id}
+                    >
+                      {acceptingId === staff.id ? 'Accepting...' : 'Accept'}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {items.length === 0 && pendingStaff.length === 0 ? (
             <p className="notif-empty">You're all caught up.</p>
           ) : (
             <ul className="notif-list">
@@ -86,5 +123,3 @@ function NotificationMenu({ user, onNavigate }) {
     </div>
   );
 }
-
-export default NotificationMenu;

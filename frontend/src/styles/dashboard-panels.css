@@ -1,5 +1,5 @@
-﻿/* ================================================================
-   dashboard-panels.css — activity, top products, low stock, responsive
+/* ================================================================
+   dashboard-panels.css � activity, top products, low stock, responsive
    ================================================================ */
 
 /* Activity panel */
@@ -88,7 +88,7 @@
   white-space: nowrap;
 }
 
-/* ── Bottom row ─────────────────────────────────────────────────── */
+/* -- Bottom row --------------------------------------------------- */
 .dash-bottom {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -96,7 +96,7 @@
   align-items: start;
 }
 
-/* ── Top products panel ─────────────────────────────────────────── */
+/* -- Top products panel ------------------------------------------- */
 .products-table {
   width: 100%;
   border-collapse: collapse;
@@ -154,7 +154,7 @@
   text-align: right;
 }
 
-/* ── Low stock panel ────────────────────────────────────────────── */
+/* -- Low stock panel ---------------------------------------------- */
 .lowstock-summary-banner {
   display: flex;
   align-items: center;
@@ -241,7 +241,7 @@
   border: 1px solid rgba(251,113,133,.25);
 }
 
-/* ── Responsive ─────────────────────────────────────────────────── */
+/* -- Responsive --------------------------------------------------- */
 @media (max-width: 1200px) {
   .dash-metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));

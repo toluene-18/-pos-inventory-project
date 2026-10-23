@@ -185,18 +185,12 @@
   color: var(--text-dim);
 }
 
-/* Filter controls bar */
-.inventory-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.inventory-toolbar-top {
+/* Toolbar & Filters */
+.inventory-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
@@ -209,7 +203,7 @@
   border-radius: 8px;
   padding: 7px 12px;
   flex: 1;
-  min-width: 260px;
+  min-width: 240px;
   color: var(--text-muted);
 }
 
@@ -227,6 +221,16 @@
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+}
+
+.inventory-select {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 12.5px;
+  color: var(--text);
+  outline: none;
 }
 
 .btn-select-attention {
