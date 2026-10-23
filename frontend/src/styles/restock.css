@@ -1,0 +1,279 @@
+/* ================================================================
+   restock.css — Stock intake and batch receiving station
+   ================================================================ */
+
+.restock-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.restock-header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: var(--text);
+}
+
+.restock-header p {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.restock-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  font-size: 13px;
+}
+
+.restock-alert--success {
+  background: var(--green-soft);
+  color: var(--green);
+  border: 1px solid var(--green);
+}
+
+.restock-alert--error {
+  background: var(--rose-soft);
+  color: var(--rose);
+  border: 1px solid var(--rose);
+}
+
+.restock-restricted {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.restock-restricted svg {
+  color: var(--rose);
+}
+
+.restock-intake-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.restock-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.restock-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.restock-card-head h3 {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text);
+}
+
+.restock-card-head svg {
+  color: var(--green);
+}
+
+.restock-fields-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.restock-fields-grid .full-width {
+  grid-column: 1 / -1;
+}
+
+.restock-fields-grid input {
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.restock-fields-grid input:focus {
+  outline: none;
+  border-color: var(--green);
+}
+
+.restock-picker-bar {
+  display: flex;
+  gap: 12px;
+}
+
+.restock-product-select {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.restock-product-select:focus {
+  outline: none;
+  border-color: var(--green);
+}
+
+.restock-empty-state {
+  padding: 40px 16px;
+  text-align: center;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+}
+
+.restock-empty-state svg {
+  color: var(--text-dim);
+}
+
+.restock-table-container {
+  overflow-x: auto;
+}
+
+.restock-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+.restock-table th {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--surface-2);
+}
+
+.restock-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-soft);
+  vertical-align: middle;
+}
+
+.restock-prod-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.restock-prod-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.restock-sku {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-family: monospace;
+}
+
+.restock-cat-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 11px;
+  text-transform: capitalize;
+}
+
+.restock-current-val {
+  color: var(--text);
+  font-size: 14px;
+}
+
+.restock-qty-input-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.restock-qty-input {
+  width: 90px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.restock-qty-input:focus {
+  outline: none;
+  border-color: var(--green);
+}
+
+.restock-unit-tag {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.restock-projected-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(34, 197, 94, 0.12);
+  color: #16a34a;
+  font-size: 12px;
+}
+
+.restock-projected-badge strong {
+  font-weight: 700;
+}
+
+.restock-summary-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.restock-summary-counts {
+  display: flex;
+  gap: 20px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.restock-summary-counts strong {
+  color: var(--green);
+  font-size: 15px;
+}

@@ -114,12 +114,24 @@ The system supports 3 roles: **`owner`**, **`manager`**, and **`cashier`**.
 - **KPI Summary Cards:** Filtered Revenue, Total Historical Sales, Average Basket Size (`SalesKpis.jsx`).
 - **Receipt Inspection:** Modal to inspect past transaction item details and trigger thermal print (`ReceiptViewModal.jsx`, `receipt-view-modal.css`).
 
+### Milestone 10: Restock Batch Receiving Station (`/restock`) — COMPLETE ✅
+- **Dedicated Supplier Intake Station:** Allows store managers and owners to log incoming vendor deliveries with supplier name, waybill/invoice reference, and driver delivery notes (`Restock.jsx`).
+- **Interactive Batch Intake Table:** Item selector dropdown, current on-hand indicator, incoming quantity input, live projected stock badge (`RestockBatchTable.jsx`).
+- **One-Click Bulk Inventory Application:** Sequentially applies incoming quantities to stock records with auto-generated audit trail entries (`Delivery: <Supplier> (Ref: <Waybill>)`), refreshing the catalogue automatically.
+- **Role Scoping:** Cashiers are cleanly restricted with an informative alert screen.
+- **Strict File Size:** `Restock.jsx` (212 lines), `RestockBatchTable.jsx` (106 lines), `restock.css` (239 lines).
+
+### Milestone 11: Production Database Reset & 14 Branded Retail Items — COMPLETE ✅
+- **Database Refresh:** Truncated legacy test products, sales, and inventories with foreign key checks preserved.
+- **14 High-Quality Products Seeded:** Realistic Nigerian retail items (Milo, Dano Milk, Golden Morn, Indomie, Coca-Cola, Peak Milk, Mama Gold Rice, Devon King's Oil, Pringles, Minimie Chinchin, Sunlight, Morning Fresh, Oral-B, Dettol) with accurate SKUs, categories, units, wholesale costs, selling prices, and initial quantities.
+- **Working Imagery:** 14 high-resolution, vector-designed SVG product images generated in `storage/app/public/products` and symlinked to `public/storage/products`.
+
 ---
 
 ## 4. Current Test & Build Verification
 
 - **Backend Test Suite:** `62 passed (189 assertions)` via `php artisan test`.
-- **Frontend Quality:** `eslint .` passes with 0 errors, production bundle `npm run build` succeeds cleanly in < 4s with 0 warnings.
+- **Frontend Quality:** `eslint .` passes with 0 errors, production bundle `npm run build` succeeds cleanly in 4.3s with 0 warnings.
 - **File Line Count Audit:** Every `.jsx`, `.js`, and `.css` file in `frontend/src/` is strictly **under 300 lines** (maximum is 258 lines in `ProductFormModal.jsx`).
 - **Git Branch:** `feature/my-react-frontend`.
 
@@ -129,18 +141,12 @@ The system supports 3 roles: **`owner`**, **`manager`**, and **`cashier`**.
 
 ```mermaid
 flowchart TD
-    A[Milestone 10: Restock Batch Receiving Station] --> B[Milestone 11: Reports & Analytics Deep Dive]
+    A[Milestone 11: Reports & Analytics Deep Dive]
 ```
 
-### Phase 1: Restock Batch Receiving Station (`/restock`) — NEXT
-- **Backend Available:** `POST /api/products/{product}/stock-adjustments`.
-- **Frontend To Build:**
-  1. `frontend/src/pages/Restock.jsx`: Dedicated intake station for receiving incoming multi-product supplier shipments.
-  2. Quick item picker, intake batch table with incoming quantity inputs, supplier / delivery note, and one-click bulk stock intake confirmation.
-  3. Styles: `frontend/src/styles/restock.css` (< 300 lines).
-
-### Phase 2: Owner Reports (`/reports`)
+### Phase 1: Owner Reports & Analytics (`/reports`) — NEXT
 - Date range sales summary, revenue graphs, payment method breakdown cards.
+- Export sales and inventory reports to CSV/PDF.
 
 ---
 
