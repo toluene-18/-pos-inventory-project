@@ -10,6 +10,16 @@ use Illuminate\Validation\ValidationException;
 
 class StockAdjustmentController extends Controller
 {
+    public function index()
+    {
+        $adjustments = StockAdjustment::with(['product:id,name,sku,unit', 'user:id,name'])
+            ->latest()
+            ->take(100)
+            ->get();
+
+        return response()->json($adjustments);
+    }
+
     public function store(Request $request, Product $product)
     {
         $validated = $request->validate([

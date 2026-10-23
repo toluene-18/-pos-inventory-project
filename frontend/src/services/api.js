@@ -112,6 +112,10 @@ export async function deactivateProduct(id) {
   return apiRequest(`/products/${id}`, { method: 'DELETE' });
 }
 
+export async function getStockAdjustments() {
+  return apiRequest('/stock-adjustments');
+}
+
 export async function adjustStock(productId, { type, quantity, reason }) {
   try {
     return await apiRequest(`/products/${productId}/stock-adjustments`, {

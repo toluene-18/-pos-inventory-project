@@ -10,15 +10,14 @@ import Inventory from './pages/Inventory';
 import Sales from './pages/Sales';
 import Settings from './pages/Settings';
 import Restock from './pages/Restock';
+import Reports from './pages/Reports';
 import ProtectedRoute from './routes/ProtectedRoute';
 import RoleRoute from './routes/RoleRoute';
 import usePageNavigate from './hooks/usePageNavigate';
 import { clearAuth, getStoredUser } from './services/api';
 
 /** Pages without a real screen yet — RoleRoute shows a placeholder or "restricted". */
-const UPCOMING = [
-  ['/reports', 'Reports'],
-];
+const UPCOMING = [];
 
 function App() {
   const navigate = useNavigate();
@@ -114,6 +113,14 @@ function App() {
           element={
             <RoleRoute user={user} name="Restock">
               <Restock user={user} onSessionExpired={handleLogout} />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/reports"
+          element={
+            <RoleRoute user={user} name="Reports">
+              <Reports user={user} onSessionExpired={handleLogout} />
             </RoleRoute>
           }
         />

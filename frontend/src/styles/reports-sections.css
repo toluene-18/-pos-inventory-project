@@ -1,0 +1,265 @@
+/* ================================================================
+   reports-sections.css — Category Donut & Top Products
+   ================================================================ */
+
+.reports-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 960px) {
+  .reports-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.reports-section-card {
+  background: #14191f;
+  border: 1px solid #232a32;
+  border-radius: 12px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.reports-section-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.reports-section-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.reports-section-head h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.reports-section-head p {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: #94a3b8;
+}
+
+.top-products-badge {
+  margin-left: auto;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Category Donut & Bars */
+.category-breakdown-body {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 24px;
+  align-items: center;
+}
+
+@media (max-width: 600px) {
+  .category-breakdown-body {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+}
+
+.donut-chart-side {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.donut-svg {
+  width: 160px;
+  height: 160px;
+}
+
+.donut-center-label {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  pointer-events: none;
+}
+
+.donut-center-sub {
+  font-size: 10px;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 0.05em;
+}
+
+.donut-center-val {
+  font-size: 13px;
+  font-weight: 800;
+  color: #f8fafc;
+  margin-top: 2px;
+}
+
+.category-bars-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.cat-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cat-row-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12.5px;
+}
+
+.cat-name-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cat-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.cat-name {
+  color: #e2e8f0;
+  font-weight: 500;
+}
+
+.cat-numbers {
+  display: flex;
+  gap: 10px;
+}
+
+.cat-amount {
+  color: #f1f5f9;
+  font-weight: 600;
+}
+
+.cat-percent {
+  color: #94a3b8;
+  font-size: 11.5px;
+}
+
+.cat-progress-track {
+  height: 5px;
+  border-radius: 9999px;
+  background: #101418;
+  overflow: hidden;
+}
+
+.cat-progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+/* Top Products Ranked List */
+.top-products-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.top-product-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.top-product-rank {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #1c232a;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.top-product-rank--gold {
+  background: #f59e0b;
+  color: #0f172a;
+}
+
+.top-product-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.top-product-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12.5px;
+}
+
+.top-product-name {
+  color: #f8fafc;
+  font-weight: 500;
+}
+
+.top-product-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.top-product-units {
+  color: #94a3b8;
+  font-size: 11.5px;
+}
+
+.top-product-revenue {
+  color: #10b981;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.top-product-bar-track {
+  height: 5px;
+  border-radius: 9999px;
+  background: #101418;
+  overflow: hidden;
+}
+
+.top-product-bar-fill {
+  height: 100%;
+  background: #10b981;
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}

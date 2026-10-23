@@ -1,32 +1,52 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import Icon from '../components/ui/Icon';
-import RestockBatchTable from '../components/restock/RestockBatchTable';
-import { getProducts, adjustStock } from '../services/api';
+import StockChangeForm from '../components/restock/StockChangeForm';
+import RestockKpis from '../components/restock/RestockKpis';
+import AdjustmentHistoryTable from '../components/restock/AdjustmentHistoryTable';
+import { getProducts, adjustStock, getStockAdjustments } from '../services/api';
+import { INITIAL_ADJUSTMENTS } from '../components/restock/restockData';
 import '../styles/restock.css';
+import '../styles/restock-form.css';
+import '../styles/restock-history.css';
 
 export default function Restock({ user, onSessionExpired }) {
   const [products, setProducts] = useState([]);
+  const [adjustments, setAdjustments] = useState(() => {
+    try {
+      const saved = localStorage.getItem('cwg_adjustments_history');
+      return saved ? JSON.parse(saved) : INITIAL_ADJUSTMENTS;
+    } catch {
+      return INITIAL_ADJUSTMENTS;
+    }
+  });
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
-  const [supplierName, setSupplierName] = useState('');
-  const [waybillRef, setWaybillRef] = useState('');
-  const [notes, setNotes] = useState('');
-  const [batch, setBatch] = useState([]);
-  const [selectedProductId, setSelectedProductId] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   const isManagement = ['owner', 'manager'].includes(user?.role);
 
-  const fetchCatalogue = useCallback(async () => {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await getProducts();
-      setProducts(data);
+      const [prodsData, adjData] = await Promise.allSettled([
+        getProducts(),
+        getStockAdjustments(),
+      ]);
+
+      if (prodsData.status === 'fulfilled' && Array.isArray(prodsData.value)) {
+        setProducts(prodsData.value);
+      }
+
+      if (adjData.status === 'fulfilled' && Array.isArray(adjData.value) && adjData.value.length > 0) {
+        setAdjustments(adjData.value);
+      }
       setError('');
     } catch (err) {
       if (err.status === 401) onSessionExpired?.();
-      else setError(err.message || 'Failed to load products for restock.');
+      else setError(err.message || 'Failed to load stock data.');
     } finally {
       setLoading(false);
     }
@@ -34,73 +54,68 @@ export default function Restock({ user, onSessionExpired }) {
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchCatalogue();
-  }, [fetchCatalogue]);
+    loadData();
+  }, [loadData]);
 
-  const availableProducts = useMemo(() => {
-    const inBatchIds = new Set(batch.map(b => b.product.id));
-    return products.filter(p => !inBatchIds.has(p.id));
-  }, [products, batch]);
-
-  function handleAddProduct(prodId) {
-    if (!prodId) return;
-    const target = products.find(p => String(p.id) === String(prodId));
-    if (!target) return;
-    setBatch(prev => [...prev, { product: target, quantity: 10 }]);
-    setSelectedProductId('');
-  }
-
-  function handleUpdateQuantity(productId, newQty) {
-    setBatch(prev =>
-      prev.map(item =>
-        item.product.id === productId ? { ...item, quantity: Math.max(1, newQty) } : item
-      )
-    );
-  }
-
-  function handleRemoveItem(productId) {
-    setBatch(prev => prev.filter(item => item.product.id !== productId));
-  }
-
-  const batchSummary = useMemo(() => {
-    const totalUnits = batch.reduce((sum, b) => sum + (b.quantity || 0), 0);
-    return { count: batch.length, totalUnits };
-  }, [batch]);
-
-  async function handleConfirmRestock(e) {
-    e.preventDefault();
-    if (batch.length === 0) {
-      setError('Please add at least one product to the receiving batch.');
-      return;
-    }
-
+  async function handleStockChange({
+    productId,
+    product,
+    mode,
+    quantity,
+    reason,
+    currentStock,
+    projectedStock,
+  }) {
     setSubmitting(true);
     setError('');
 
-    const auditReason = `Delivery: ${supplierName || 'General Supplier'} (Ref: ${
-      waybillRef || 'Direct Intake'
-    })${notes ? ' - ' + notes : ''}`;
-
     try {
-      for (const item of batch) {
-        await adjustStock(item.product.id, {
-          type: 'increase',
-          quantity: item.quantity,
-          reason: auditReason,
-        });
-      }
+      const backendType = mode === 'damage' ? 'decrease' : 'increase';
+      const changeAmount = mode === 'correction' ? projectedStock - currentStock : quantity;
+      const actualType = changeAmount >= 0 ? 'increase' : 'decrease';
+
+      await adjustStock(productId, {
+        type: mode === 'correction' ? actualType : backendType,
+        quantity: Math.abs(changeAmount) || 1,
+        reason: `${mode.toUpperCase()}: ${reason}`,
+      });
+
+      const newEntry = {
+        id: `adj-${Date.now()}`,
+        productName: product.name,
+        sku: product.sku,
+        unit: product.unit || 'units',
+        type: mode,
+        typeLabel: mode.charAt(0).toUpperCase() + mode.slice(1),
+        quantityChange: mode === 'damage' ? -quantity : changeAmount,
+        previousStock: currentStock,
+        newStock: projectedStock,
+        reason,
+        staffName: user?.name || 'Chinedu Okafor',
+        createdAt: new Date().toLocaleString('en-GB', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+        }),
+        timestamp: Date.now(),
+      };
+
+      setAdjustments(prev => {
+        const updated = [newEntry, ...prev];
+        localStorage.setItem('cwg_adjustments_history', JSON.stringify(updated));
+        return updated;
+      });
 
       setStatusMessage(
-        `Successfully received ${batchSummary.totalUnits} units across ${batchSummary.count} products into inventory!`
+        `Successfully logged ${mode} for ${product.name}: stock updated from ${currentStock} to ${projectedStock}.`
       );
-      setBatch([]);
-      setSupplierName('');
-      setWaybillRef('');
-      setNotes('');
-      await fetchCatalogue();
       setTimeout(() => setStatusMessage(''), 5000);
+      await loadData();
     } catch (err) {
-      setError(err.message || 'Failed to process restock batch.');
+      setError(err.message || 'Failed to record stock adjustment.');
     } finally {
       setSubmitting(false);
     }
@@ -111,7 +126,7 @@ export default function Restock({ user, onSessionExpired }) {
       <div className="restock-restricted">
         <Icon name="alert" size={32} />
         <h3>Access Restricted</h3>
-        <p>Only store owners and managers are permitted to receive stock deliveries.</p>
+        <p>Only store owners and managers are permitted to access Restock & Adjustments.</p>
       </div>
     );
   }
@@ -120,115 +135,49 @@ export default function Restock({ user, onSessionExpired }) {
     <div className="restock-page">
       <header className="restock-header">
         <div>
-          <h2>Stock Receiving & Delivery Intake</h2>
-          <p>Register incoming inventory shipments, verify quantities, and apply bulk restock updates.</p>
+          <h2>Restock & Adjustments</h2>
+          <p>
+            Log deliveries, correct miscounts and record damages against any product — every change is
+            captured in the history below.
+          </p>
+        </div>
+
+        <div className="restock-header-actions">
+          <Link to="/inventory" className="restock-nav-btn">
+            <Icon name="inventory" size={15} />
+            <span>View inventory</span>
+          </Link>
+          <Link to="/products" className="restock-nav-btn">
+            <Icon name="pos" size={15} />
+            <span>Products</span>
+          </Link>
         </div>
       </header>
 
       {statusMessage && (
         <div className="restock-alert restock-alert--success" role="status">
-          <Icon name="check" size={16} /> {statusMessage}
+          <Icon name="check" size={16} />
+          <span>{statusMessage}</span>
         </div>
       )}
 
       {error && (
         <div className="restock-alert restock-alert--error" role="alert">
-          <Icon name="alert" size={16} /> {error}
+          <Icon name="alert" size={16} />
+          <span>{error}</span>
         </div>
       )}
 
-      <form onSubmit={handleConfirmRestock} className="restock-intake-form">
-        <div className="restock-card">
-          <div className="restock-card-head">
-            <Icon name="inventory" size={18} />
-            <h3>Delivery & Supplier Information</h3>
-          </div>
-          <div className="restock-fields-grid">
-            <div className="form-group">
-              <label htmlFor="restock-supplier">Supplier / Vendor Name</label>
-              <input
-                id="restock-supplier"
-                type="text"
-                placeholder="e.g. Nestlé Direct Distribution Ltd"
-                value={supplierName}
-                onChange={e => setSupplierName(e.target.value)}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="restock-waybill">Invoice / Waybill Reference #</label>
-              <input
-                id="restock-waybill"
-                type="text"
-                placeholder="e.g. WB-2026-9042"
-                value={waybillRef}
-                onChange={e => setWaybillRef(e.target.value)}
-              />
-            </div>
-            <div className="form-group full-width">
-              <label htmlFor="restock-notes">Delivery Remarks / Driver Notes</label>
-              <input
-                id="restock-notes"
-                type="text"
-                placeholder="e.g. Pallet 4 inspected; batch expiry verified 2028"
-                value={notes}
-                onChange={e => setNotes(e.target.value)}
-              />
-            </div>
-          </div>
-        </div>
+      <StockChangeForm
+        products={products}
+        onSubmit={handleStockChange}
+        submitting={submitting}
+        loading={loading}
+      />
 
-        <div className="restock-card">
-          <div className="restock-card-head">
-            <Icon name="plus" size={18} />
-            <h3>Add Items to Intake Batch</h3>
-          </div>
-          <div className="restock-picker-bar">
-            <select
-              value={selectedProductId}
-              onChange={e => {
-                setSelectedProductId(e.target.value);
-                handleAddProduct(e.target.value);
-              }}
-              disabled={loading || availableProducts.length === 0}
-              className="restock-product-select"
-            >
-              <option value="">
-                {availableProducts.length === 0
-                  ? 'All products are in batch'
-                  : 'Select a product to add to this intake batch...'}
-              </option>
-              {availableProducts.map(p => (
-                <option key={p.id} value={p.id}>
-                  {p.name} ({p.sku}) — Current: {p.inventory?.quantity ?? 0} {p.unit || 'units'}
-                </option>
-              ))}
-            </select>
-          </div>
+      <RestockKpis adjustments={adjustments} />
 
-          <RestockBatchTable
-            batch={batch}
-            onUpdateQty={handleUpdateQuantity}
-            onRemoveItem={handleRemoveItem}
-          />
-
-          {batch.length > 0 && (
-            <div className="restock-summary-bar">
-              <div className="restock-summary-counts">
-                <span>Products in Batch: <strong>{batchSummary.count}</strong></span>
-                <span>Total Units Being Received: <strong>+{batchSummary.totalUnits}</strong></span>
-              </div>
-              <button
-                type="submit"
-                className="btn btn-primary"
-                disabled={submitting}
-              >
-                <Icon name="check" size={16} />
-                {submitting ? 'Applying Intake...' : `Receive & Apply Intake (+${batchSummary.totalUnits} units)`}
-              </button>
-            </div>
-          )}
-        </div>
-      </form>
+      <AdjustmentHistoryTable adjustments={adjustments} />
     </div>
   );
 }

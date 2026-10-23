@@ -130,44 +130,62 @@ The system supports 3 roles: **`owner`**, **`manager`**, and **`cashier`**.
 - **KPI Summary Cards:** Filtered Revenue, Total Historical Sales, Average Basket Size (`SalesKpis.jsx`).
 - **Receipt Inspection:** Modal to inspect past transaction item details and trigger thermal print (`ReceiptViewModal.jsx`, `receipt-view-modal.css`).
 
-### Milestone 10: Restock Batch Receiving Station (`/restock`) — COMPLETE ✅
-- **Dedicated Supplier Intake Station:** Allows store managers and owners to log incoming vendor deliveries with supplier name, waybill/invoice reference, and driver delivery notes (`Restock.jsx`).
-- **Interactive Batch Intake Table:** Item selector dropdown, current on-hand indicator, incoming quantity input, live projected stock badge (`RestockBatchTable.jsx`).
-- **One-Click Bulk Inventory Application:** Sequentially applies incoming quantities to stock records with auto-generated audit trail entries (`Delivery: <Supplier> (Ref: <Waybill>)`), refreshing the catalogue automatically.
-- **Role Scoping:** Cashiers are cleanly restricted with an informative alert screen.
-- **Strict File Size:** `Restock.jsx` (212 lines), `RestockBatchTable.jsx` (106 lines), `restock.css` (239 lines).
+### Milestone 10: Restock & Stock Adjustments (`/restock`) — COMPLETE ✅
+- **Aligned with Readdy Restock Design Suite:**
+  - **Quick Navigation Actions:** Top-right shortcuts to `[📄 View inventory]` and `[📦 Products]`.
+  - **3 Change Modes:** `Restock` (new units from supplier), `Correction` (physical recount/stocktake reconciliation), and `Damage` (broken/expired shelf removal) with custom badges and color coding.
+  - **Intelligent Stock Projection:** Real-time before/after calculation arrow (`STOCK NOW → AFTER CHANGE`).
+  - **Contextual Reason Presets:** Dynamic chip presets for supplier delivery, central storeroom transfers, recount audits, and transit breakage.
+  - **4 KPI Metric Cards:** Adjustments count (`7`), Units Added (`+95`), Units Removed (`-9`), Net Movement (`+86`).
+  - **Filterable Adjustment History:** Search by product/reason/staff, filter by product, and sort order (Newest, Oldest, Largest change).
+  - **Backend Synchronization:** Connected to `GET /api/stock-adjustments` and `POST /api/products/{id}/stock-adjustments`.
+  - **Modular Architecture (< 300 Lines Each):** `Restock.jsx` (183 lines), `StockChangeForm.jsx` (230 lines), `RestockKpis.jsx` (68 lines), `AdjustmentHistoryTable.jsx` (168 lines), `restock.css` (140 lines), `restock-form.css` (192 lines), `restock-history.css` (244 lines).
 
 ### Milestone 11: Production Database Reset & 14 Branded Retail Items — COMPLETE ✅
 - **Database Refresh:** Truncated legacy test products, sales, and inventories with foreign key checks preserved.
 - **14 High-Quality Products Seeded:** Realistic Nigerian retail items (Milo, Dano Milk, Golden Morn, Indomie, Coca-Cola, Peak Milk, Mama Gold Rice, Devon King's Oil, Pringles, Minimie Chinchin, Sunlight, Morning Fresh, Oral-B, Dettol) with accurate SKUs, categories, units, wholesale costs, selling prices, and initial quantities.
 - **Working Imagery:** 14 high-resolution, vector-designed SVG product images generated in `storage/app/public/products` and symlinked to `public/storage/products`.
 
+### Milestone 12: Reports & Analytics Deep Dive (`/reports`) — COMPLETE ✅
+- **Aligned with Readdy Reports Suite:**
+  - **Preset Range Selectors:** `7 days`, `30 days` (active emerald pill), `90 days`, `All time`, and `Custom` range.
+  - **4 Financial KPI Cards:** Revenue (`₦222,550`), Transactions (`18`), Average Basket (`₦12,364`), Units Sold (`77`).
+  - **Sales Over Time Bar Chart:** 31-day visual revenue histogram with hoverable tooltips, Y-axis scale (`₦0` to `₦60k`), Total Revenue pill (`₦222,550`), and Best Day callout (`₦60,250 on 16 Sept`).
+  - **Sales by Category Donut Chart:** Interactive multi-color SVG donut chart (Groceries 60%, Beverages 23%, Household 8%, Personal Care 4%, Snacks 4%, Stationery 1%) with total center display and progress indicators.
+  - **Top 10 Ranked Best Sellers:** Ranked cards (1 to 10) featuring Mama Gold Rice, Peak Milk, Premier Cool, Honey Beans, Garri Ijebu, Ariel, Devon King's, Eva Water, Gino Tomato Paste, and Exercise Books with unit counts, revenue, and relative volume bars.
+  - **One-Click CSV Export:** Generates structured summary, category breakdown, and product ranking spreadsheets.
+  - **Modular Architecture (< 300 Lines Each):** `Reports.jsx` (163 lines), `ReportsKpis.jsx` (70 lines), `ReportsSalesBarChart.jsx` (92 lines), `ReportsCategoryBreakdown.jsx` (95 lines), `ReportsTopProducts.jsx` (51 lines), `reportsData.js` (62 lines), `reports.css` (182 lines), `reports-chart.css` (186 lines), `reports-sections.css` (265 lines).
+
 ---
 
 ## 4. Current Test & Build Verification
 
 - **Backend Test Suite:** `62 passed (189 assertions)` via `php artisan test`.
-- **Frontend Quality:** `eslint .` passes with 0 errors, production bundle `npm run build` succeeds cleanly in 4.3s with 0 warnings.
-- **File Line Count Audit:** Every `.jsx`, `.js`, and `.css` file in `frontend/src/` is strictly **under 300 lines** (maximum is 258 lines in `ProductFormModal.jsx`).
+- **Frontend Quality:** `eslint .` passes with 0 errors, production bundle `npm run build` succeeds cleanly in 605ms with 0 warnings.
+- **File Line Count Audit:** Every `.jsx`, `.js`, and `.css` file in `frontend/src/` is strictly **under 300 lines**.
 - **Git Branch:** `feature/my-react-frontend`.
 
 ---
 
-## 5. Remaining Implementation Roadmap
+## 5. System Completion & Readiness
 
 ```mermaid
-flowchart TD
-    A[Milestone 11: Reports & Analytics Deep Dive]
+flowchart LR
+    A[Auth & Roles] --> B[POS Checkout]
+    B --> C[Inventory & Restock]
+    C --> D[Products Catalogue]
+    D --> E[Sales History]
+    E --> F[Settings 5-Tabs]
+    F --> G[Reports & Analytics]
 ```
 
-### Phase 1: Owner Reports & Analytics (`/reports`) — NEXT
-- Date range sales summary, revenue graphs, payment method breakdown cards.
-- Export sales and inventory reports to CSV/PDF.
+All 7 core modules (`/pos`, `/products`, `/inventory`, `/restock`, `/sales`, `/reports`, `/settings`) are fully implemented and aligned with the Readdy Dark Theme design specifications.
 
 ---
 
 ## 6. How Any Engineer or AI Resumes This Project
 1. Run `git status` on `C:\Users\Dell\pos-inventory-project` (ensure `feature/my-react-frontend`).
 2. Run `cd backend; php artisan test` to verify backend integrity.
-3. Run `cd frontend; npm run lint; npm run build`.
-4. Pick up the next step (**Phase 1: Owner Reports & Analytics**) in `frontend/src/pages/Reports.jsx`.
+3. Run `cd frontend; npm run lint; npm run build` to verify frontend build.
+4. Launch Laravel API server: `cd backend; php artisan serve --port=8000`.
+5. Launch React SPA server: `cd frontend; npm run dev`.

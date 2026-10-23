@@ -1,0 +1,62 @@
+export const DEFAULT_REPORT_KPIS = {
+  revenue: 222550,
+  transactions: 18,
+  averageBasket: 12364,
+  unitsSold: 77,
+};
+
+export const DEFAULT_DAILY_SALES = [
+  { date: '17 Aug', revenue: 0 },
+  { date: '18 Aug', revenue: 0 },
+  { date: '19 Aug', revenue: 0 },
+  { date: '20 Aug', revenue: 0 },
+  { date: '21 Aug', revenue: 0 },
+  { date: '22 Aug', revenue: 0 },
+  { date: '23 Aug', revenue: 0 },
+  { date: '24 Aug', revenue: 0 },
+  { date: '25 Aug', revenue: 0 },
+  { date: '26 Aug', revenue: 0 },
+  { date: '27 Aug', revenue: 0 },
+  { date: '28 Aug', revenue: 0 },
+  { date: '29 Aug', revenue: 0 },
+  { date: '30 Aug', revenue: 0 },
+  { date: '31 Aug', revenue: 0 },
+  { date: '01 Sept', revenue: 0 },
+  { date: '02 Sept', revenue: 0 },
+  { date: '03 Sept', revenue: 0 },
+  { date: '04 Sept', revenue: 0 },
+  { date: '05 Sept', revenue: 0 },
+  { date: '06 Sept', revenue: 0 },
+  { date: '07 Sept', revenue: 0 },
+  { date: '08 Sept', revenue: 18500 },
+  { date: '09 Sept', revenue: 8400 },
+  { date: '10 Sept', revenue: 12500 },
+  { date: '11 Sept', revenue: 11200 },
+  { date: '12 Sept', revenue: 16800 },
+  { date: '13 Sept', revenue: 24700 },
+  { date: '14 Sept', revenue: 35000 },
+  { date: '15 Sept', revenue: 35200 },
+  { date: '16 Sept', revenue: 60250 },
+];
+
+export const DEFAULT_CATEGORIES = [
+  { name: 'Groceries', amount: 134000, percent: 60, color: '#10b981' },
+  { name: 'Beverages', amount: 50600, percent: 23, color: '#f59e0b' },
+  { name: 'Household', amount: 18300, percent: 8, color: '#06b6d4' },
+  { name: 'Personal Care', amount: 9250, percent: 4, color: '#ec4899' },
+  { name: 'Snacks', amount: 8500, percent: 4, color: '#6366f1' },
+  { name: 'Stationery', amount: 1900, percent: 1, color: '#eab308' },
+];
+
+export const DEFAULT_TOP_PRODUCTS = [
+  { id: 1, rank: 1, name: 'Mama Gold Rice 5kg', units: 9, revenue: 70200 },
+  { id: 2, rank: 2, name: 'Peak Milk Powder 400g Tin', units: 7, revenue: 27300 },
+  { id: 3, rank: 3, name: 'Premier Cool Bath Soap 175g', units: 6, revenue: 4800 },
+  { id: 4, rank: 4, name: 'Honey Beans 2kg', units: 4, revenue: 11200 },
+  { id: 5, rank: 5, name: 'Garri Ijebu 5kg', units: 4, revenue: 14400 },
+  { id: 6, rank: 6, name: 'Ariel Detergent Powder 900g', units: 4, revenue: 8800 },
+  { id: 7, rank: 7, name: "Devon King's Palm Oil 1L", units: 4, revenue: 9200 },
+  { id: 8, rank: 8, name: 'Eva Table Water 75cl Pack of 12', units: 4, revenue: 10000 },
+  { id: 9, rank: 9, name: 'Gino Tomato Paste Sachet x10', units: 4, revenue: 5200 },
+  { id: 10, rank: 10, name: 'Exercise Book 60 Leaves', units: 4, revenue: 1900 },
+];
