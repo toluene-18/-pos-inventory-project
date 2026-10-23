@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import Icon from '../ui/Icon';
 import { formatMoney } from '../../utils/dashboardStats';
 import { stockOf, stockStatus } from '../../hooks/useProducts';
+import { resolveProductImage } from '../../utils/imageUrl';
 
 const STATUS_LABEL = { in: 'In stock', low: 'Low stock', out: 'Out of stock' };
 const PALETTE = ['green', 'amber', 'violet', 'rose', 'sky'];
@@ -10,12 +12,13 @@ function toneFor(category = '') {
   return PALETTE[sum % PALETTE.length];
 }
 
-function initials(name) {
-  return name.split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+function initials(name = '') {
+  return name.split(/\s+/).slice(0, 2).map(w => w[0] || '').join('').toUpperCase() || 'CW';
 }
 
-/** ProductTile — one product card. Uses image_path when present, else a tinted monogram. */
+/** ProductTile — one product card. Uses image_path when present with fallback to monogram. */
 function ProductTile({ product, inCart, onAdd }) {
+  const [imgError, setImgError] = useState(false);
   const status = stockStatus(product);
   const qty = stockOf(product);
   const disabled = status === 'out' || inCart >= qty;
@@ -29,8 +32,13 @@ function ProductTile({ product, inCart, onAdd }) {
       aria-label={`Add ${product.name}, ${formatMoney(product.sell_price)}, ${qty} in stock`}
     >
       <div className={`pos-tile-media tone-${toneFor(product.category)}`}>
-        {product.image_path ? (
-          <img src={product.image_path} alt="" loading="lazy" />
+        {product.image_path && !imgError ? (
+          <img
+            src={resolveProductImage(product.image_path)}
+            alt=""
+            loading="lazy"
+            onError={() => setImgError(true)}
+          />
         ) : (
           <span className="pos-tile-mono">{initials(product.name)}</span>
         )}

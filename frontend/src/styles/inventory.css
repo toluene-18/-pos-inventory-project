@@ -91,6 +91,23 @@
   }
 }
 
+@media (max-width: 580px) {
+  .inventory-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+  .inventory-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .inventory-toolbar-top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .inventory-search-wrap {
+    min-width: 100%;
+  }
+}
+
 .inv-kpi-card {
   background: #14191f;
   border: 1px solid #232a32;
@@ -194,15 +211,7 @@
   flex-wrap: wrap;
 }
 
-.inv-select {
-  background: #101418;
-  border: 1px solid #28313b;
-  border-radius: 8px;
-  padding: 8px 14px;
-  color: #cbd5e1;
-  font-size: 12.5px;
-  outline: none;
-}
+
 
 .btn-select-attention {
   display: inline-flex;

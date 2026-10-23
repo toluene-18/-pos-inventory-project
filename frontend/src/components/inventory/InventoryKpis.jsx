@@ -1,5 +1,13 @@
 import Icon from '../ui/Icon';
 
+function formatCompactCost(val) {
+  const num = Number(val) || 0;
+  if (num >= 1_000_000_000) return `₦${(num / 1_000_000_000).toFixed(2).replace(/\.00$/, '')}B`;
+  if (num >= 1_000_000) return `₦${(num / 1_000_000).toFixed(2).replace(/\.00$/, '')}M`;
+  if (num >= 1_000) return `₦${Math.round(num / 1_000)}k`;
+  return `₦${num.toLocaleString()}`;
+}
+
 export default function InventoryKpis({ stats, isManagement }) {
   const productCount = stats.productCount || 24;
   const totalUnits = stats.totalUnits || 716;
@@ -41,7 +49,7 @@ export default function InventoryKpis({ stats, isManagement }) {
             </div>
           </div>
           <div className="inv-kpi-val">
-            ₦{costValue >= 1000 ? `${Math.round(costValue / 1000)}k` : costValue}
+            {formatCompactCost(costValue)}
           </div>
           <div className="inv-kpi-sub">
             ₦{Number(costValue).toLocaleString()} at purchase price

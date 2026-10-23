@@ -9,6 +9,7 @@ import {
   updateProduct,
   deactivateProduct,
 } from '../services/api';
+import { formatCategory } from '../utils/categories';
 import '../styles/products.css';
 
 export default function Products({ user, onSessionExpired }) {
@@ -171,7 +172,7 @@ export default function Products({ user, onSessionExpired }) {
           >
             {categories.map(c => (
               <option key={c} value={c}>
-                {c === 'all' ? 'All Categories' : c.replace('_', ' ').toUpperCase()}
+                {formatCategory(c)}
               </option>
             ))}
           </select>

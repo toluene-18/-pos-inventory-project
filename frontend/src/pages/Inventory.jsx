@@ -5,6 +5,7 @@ import StockAdjustModal from '../components/inventory/StockAdjustModal';
 import InventoryKpis from '../components/inventory/InventoryKpis';
 import InventoryTable from '../components/inventory/InventoryTable';
 import { getProducts, adjustStock } from '../services/api';
+import { formatCategory } from '../utils/categories';
 import '../styles/inventory.css';
 import '../styles/inventory-modal.css';
 import '../styles/inventory-table.css';
@@ -207,7 +208,7 @@ export default function Inventory({ user, onSessionExpired }) {
             >
               <option value="all">All categories</option>
               {categories.filter(c => c !== 'all').map(c => (
-                <option key={c} value={c}>{c}</option>
+                <option key={c} value={c}>{formatCategory(c)}</option>
               ))}
             </select>
 

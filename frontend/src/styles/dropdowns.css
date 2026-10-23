@@ -7,6 +7,7 @@ select,
 .filter-select,
 .stock-select,
 .custom-dropdown {
+  color-scheme: dark;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -42,15 +43,10 @@ select:focus,
   color: #f8fafc;
 }
 
-select option {
+select option,
+.inv-select option {
   background-color: #14191f;
   color: #f1f5f9;
-  padding: 10px 12px;
+  padding: 10px 14px;
   font-size: 13px;
-}
-
-select option:checked,
-select option:hover {
-  background-color: #1a232b;
-  color: #10b981;
 }

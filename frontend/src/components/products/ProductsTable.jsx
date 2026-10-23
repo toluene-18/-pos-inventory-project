@@ -1,5 +1,7 @@
 import Icon from '../ui/Icon';
 import { formatMoney } from '../../utils/dashboardStats';
+import ProductThumbnail from '../ui/ProductThumbnail';
+import { formatCategory } from '../../utils/categories';
 import '../../styles/products-grid.css';
 
 export default function ProductsTable({
@@ -36,13 +38,9 @@ export default function ProductsTable({
           return (
             <div key={p.id} className="prod-grid-card">
               <div className="prod-grid-thumb-wrap">
-                {p.image_path ? (
-                  <img src={p.image_path} alt="" className="prod-grid-img" />
-                ) : (
-                  <div className="prod-grid-mono">{p.name.slice(0, 2).toUpperCase()}</div>
-                )}
+                <ProductThumbnail src={p.image_path} name={p.name} className="prod-grid-img" />
                 <span className="prod-grid-cat">
-                  {p.category ? p.category.replace('_', ' ') : 'General'}
+                  {formatCategory(p.category)}
                 </span>
               </div>
               <div className="prod-grid-content">
@@ -103,13 +101,7 @@ export default function ProductsTable({
             <tr key={p.id}>
               <td>
                 <div className="product-thumb-cell">
-                  {p.image_path ? (
-                    <img src={p.image_path} alt="" className="table-thumb" />
-                  ) : (
-                    <span className="table-thumb-mono">
-                      {p.name.slice(0, 2).toUpperCase()}
-                    </span>
-                  )}
+                  <ProductThumbnail src={p.image_path} name={p.name} className="table-thumb" />
                   <div className="product-name-meta">
                     <strong>{p.name}</strong>
                     <span className="product-sku-tag">{p.sku}</span>
@@ -118,7 +110,7 @@ export default function ProductsTable({
               </td>
               <td>
                 <span className="product-cat-pill">
-                  {p.category ? p.category.replace('_', ' ') : 'General'}
+                  {formatCategory(p.category)}
                 </span>
               </td>
               {isManagement && (
