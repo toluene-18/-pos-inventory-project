@@ -1,0 +1,212 @@
+/* ================================================================
+   settings.css — CWG Settings Layout & Navigation Sidebar
+   ================================================================ */
+
+.settings-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.settings-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #f8fafc;
+  letter-spacing: -0.02em;
+}
+
+.settings-header p {
+  margin: 6px 0 0;
+  color: #94a3b8;
+  font-size: 13.5px;
+}
+
+.settings-saved-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #34d399;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.settings-toast-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #10b981;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Two-column layout */
+.settings-body-layout {
+  display: grid;
+  grid-template-columns: 290px 1fr;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+@media (max-width: 900px) {
+  .settings-body-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Sidebar navigation cards */
+.settings-nav-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.settings-nav-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #232a32;
+  background: #161b20;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  width: 100%;
+}
+
+.settings-nav-card:hover {
+  background: #1c232a;
+  border-color: #2e3742;
+}
+
+.settings-nav-card-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #222932;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.18s ease;
+}
+
+.settings-nav-card-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.settings-nav-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f1f5f9;
+  line-height: 1.3;
+}
+
+.settings-nav-card-sub {
+  font-size: 11.5px;
+  color: #94a3b8;
+  margin-top: 3px;
+  line-height: 1.35;
+}
+
+/* Active tab state: Emerald green hero accent */
+.settings-nav-card--active {
+  background: #10b981;
+  border-color: #10b981;
+}
+
+.settings-nav-card--active:hover {
+  background: #0ea371;
+  border-color: #0ea371;
+}
+
+.settings-nav-card--active .settings-nav-card-icon {
+  background: rgba(0, 0, 0, 0.14);
+  color: #042f2e;
+}
+
+.settings-nav-card--active .settings-nav-card-title {
+  color: #042f2e;
+  font-weight: 700;
+}
+
+.settings-nav-card--active .settings-nav-card-sub {
+  color: #064e3b;
+  font-weight: 500;
+}
+
+/* Main panel wrapper */
+.settings-main-content {
+  min-width: 0;
+  width: 100%;
+}
+
+.settings-panel {
+  background: #161b20;
+  border: 1px solid #232a32;
+  border-radius: 14px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.settings-panel-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #232a32;
+}
+
+.panel-title-with-icon {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.settings-panel-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #202730;
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.settings-panel-head h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.settings-panel-head p {
+  margin: 4px 0 0;
+  color: #94a3b8;
+  font-size: 13px;
+  line-height: 1.4;
+}

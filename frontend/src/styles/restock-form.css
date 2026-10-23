@@ -1,0 +1,192 @@
+.stock-mode-card {
+  background: #101418;
+  border: 1px solid #232a32;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.stock-mode-card:hover {
+  background: #161c22;
+  border-color: #2f3844;
+}
+
+.stock-mode-card--active {
+  background: #131c19;
+  border-color: #10b981;
+  box-shadow: 0 0 0 1px #10b981;
+}
+
+.stock-mode-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stock-mode-badge--restock {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.stock-mode-badge--correction {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.stock-mode-badge--damage {
+  background: rgba(244, 63, 94, 0.15);
+  color: #f43f5e;
+}
+
+.stock-mode-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.stock-mode-desc {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 3px;
+  line-height: 1.35;
+}
+
+/* Form layout */
+.stock-form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.stock-form-row {
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  gap: 16px;
+}
+
+@media (max-width: 640px) {
+  .stock-form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-icon svg {
+  position: absolute;
+  left: 12px;
+  color: #64748b;
+  pointer-events: none;
+}
+
+.input-with-icon select {
+  padding-left: 36px;
+  width: 100%;
+}
+
+.reason-chips-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.reason-chip-btn {
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid #28313b;
+  background: #101418;
+  color: #94a3b8;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.reason-chip-btn:hover,
+.reason-chip-btn--active {
+  background: #18221e;
+  border-color: #10b981;
+  color: #10b981;
+}
+
+/* Projection and confirm button */
+.stock-form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #232a32;
+  flex-wrap: wrap;
+}
+
+.stock-projection-box {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.projection-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.projection-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.projection-val {
+  font-size: 18px;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.projection-val--active {
+  color: #10b981;
+}
+
+.projection-arrow {
+  color: #64748b;
+  font-size: 16px;
+}
+
+.btn-confirm-restock {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 8px;
+  background: #10b981;
+  color: #042f2e;
+  font-size: 13.5px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-confirm-restock:hover:not(:disabled) {
+  background: #0ea371;
+}
+
+.btn-confirm-restock:disabled {
+  background: #1f272f;
+  color: #64748b;
+  cursor: not-allowed;
+}

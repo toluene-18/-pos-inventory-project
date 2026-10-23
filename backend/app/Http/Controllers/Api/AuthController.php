@@ -65,10 +65,28 @@ class AuthController extends Controller
         ]);
     }
 
+    public function listStaff(Request $request)
+    {
+        $users = User::select([
+            'id',
+            'name',
+            'email',
+            'role',
+            'status',
+            'created_at',
+            'approved_at',
+            'approved_by',
+        ])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json($users);
+    }
+
     public function approveStaff(Request $request, User $user)
     {
         $request->validate([
-            'role' => ['required', 'string', 'in:owner,manager,cashier'],
+            'role' => ['sometimes', 'string', 'in:owner,manager,cashier'],
             'status' => ['required', 'string', 'in:active,inactive,pending'],
         ]);
 
@@ -78,12 +96,20 @@ class AuthController extends Controller
             ], 403);
         }
 
-        $user->update([
-            'role' => $request->input('role'),
+        $data = [
             'status' => $request->input('status'),
-            'approved_by' => $request->user()->id,
-            'approved_at' => now(),
-        ]);
+        ];
+
+        if ($request->has('role')) {
+            $data['role'] = $request->input('role');
+        }
+
+        if ($request->input('status') === 'active' && ! $user->approved_at) {
+            $data['approved_by'] = $request->user()->id;
+            $data['approved_at'] = now();
+        }
+
+        $user->update($data);
 
         return response()->json([
             'message' => 'Staff account updated.',

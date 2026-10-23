@@ -1,0 +1,200 @@
+/* ================================================================
+   inventory-modal.css — Stock adjustment modal and controls
+   ================================================================ */
+
+.adjust-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.adjust-modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.adjust-modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.adjust-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.adjust-modal-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--green-soft);
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.adjust-modal-title h3 {
+  margin: 0;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.adjust-modal-title p {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.adjust-modal-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.adjust-modal-close:hover {
+  color: var(--text);
+}
+
+.adjust-form {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.adjust-type-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: var(--surface-2);
+  padding: 4px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.toggle-btn--increase {
+  background: var(--green);
+  color: #fff;
+  font-weight: 600;
+}
+
+.toggle-btn--decrease {
+  background: var(--rose);
+  color: #fff;
+  font-weight: 600;
+}
+
+.adjust-stock-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.adjust-stock-preview small {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.adjust-stock-preview strong {
+  font-size: 16px;
+}
+
+.adjust-arrow {
+  font-size: 18px;
+  color: var(--text-dim);
+}
+
+.text-green {
+  color: var(--green);
+}
+
+.text-amber {
+  color: var(--amber);
+}
+
+.btn-danger {
+  background: var(--rose);
+  color: #fff;
+  border: none;
+}
+
+.btn-danger:hover {
+  opacity: 0.9;
+}
+
+.adjust-form textarea {
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 13px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.adjust-form textarea:focus {
+  outline: none;
+  border-color: var(--green);
+}
+
+.adjust-form-error {
+  margin: 16px 20px 0;
+  padding: 10px 14px;
+  background: var(--rose-soft);
+  color: var(--rose);
+  border: 1px solid var(--rose);
+  border-radius: var(--radius);
+  font-size: 13px;
+}
+
+.adjust-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}

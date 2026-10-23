@@ -5,20 +5,19 @@ import Register from './pages/Register';
 import AppLayout from './pages/AppLayout';
 import DashboardHome from './pages/DashboardHome';
 import PointOfSale from './pages/PointOfSale';
+import Products from './pages/Products';
+import Inventory from './pages/Inventory';
+import Sales from './pages/Sales';
+import Settings from './pages/Settings';
+import Restock from './pages/Restock';
+import Reports from './pages/Reports';
 import ProtectedRoute from './routes/ProtectedRoute';
 import RoleRoute from './routes/RoleRoute';
 import usePageNavigate from './hooks/usePageNavigate';
 import { clearAuth, getStoredUser } from './services/api';
 
 /** Pages without a real screen yet — RoleRoute shows a placeholder or "restricted". */
-const UPCOMING = [
-  ['/sales', 'Sales'],
-  ['/inventory', 'Inventory'],
-  ['/products', 'Products'],
-  ['/restock', 'Restock'],
-  ['/reports', 'Reports'],
-  ['/settings', 'Settings'],
-];
+const UPCOMING = [];
 
 function App() {
   const navigate = useNavigate();
@@ -74,6 +73,54 @@ function App() {
           element={
             <RoleRoute user={user} name="Point of Sale">
               <PointOfSale user={user} onSessionExpired={handleLogout} />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/products"
+          element={
+            <RoleRoute user={user} name="Products">
+              <Products user={user} onSessionExpired={handleLogout} />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/inventory"
+          element={
+            <RoleRoute user={user} name="Inventory">
+              <Inventory user={user} onSessionExpired={handleLogout} />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/sales"
+          element={
+            <RoleRoute user={user} name="Sales">
+              <Sales user={user} onSessionExpired={handleLogout} />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <RoleRoute user={user} name="Settings">
+              <Settings user={user} onSessionExpired={handleLogout} />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/restock"
+          element={
+            <RoleRoute user={user} name="Restock">
+              <Restock user={user} onSessionExpired={handleLogout} />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/reports"
+          element={
+            <RoleRoute user={user} name="Reports">
+              <Reports user={user} onSessionExpired={handleLogout} />
             </RoleRoute>
           }
         />

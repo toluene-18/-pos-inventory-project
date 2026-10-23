@@ -1,0 +1,225 @@
+import { useState, useEffect, useCallback } from 'react';
+import { getStaff } from '../../services/api';
+import {
+  DEFAULT_PROFILE,
+  DEFAULT_STAFF,
+  DEFAULT_PREFERENCES,
+  DEFAULT_RECEIPT_CONFIG,
+  INITIAL_ACTIVITY_LOG,
+} from './settingsData';
+
+export function useSettingsData(user, onSessionExpired) {
+  const [toastMsg, setToastMsg] = useState('');
+
+  const [profile, setProfile] = useState(() => {
+    try {
+      const saved = localStorage.getItem('cwg_store_profile');
+      return saved ? JSON.parse(saved) : DEFAULT_PROFILE;
+    } catch {
+      return DEFAULT_PROFILE;
+    }
+  });
+
+  const [staff, setStaff] = useState(() => {
+    try {
+      const saved = localStorage.getItem('cwg_staff_roster');
+      return saved ? JSON.parse(saved) : DEFAULT_STAFF;
+    } catch {
+      return DEFAULT_STAFF;
+    }
+  });
+
+  const [preferences, setPreferences] = useState(() => {
+    try {
+      const saved = localStorage.getItem('cwg_preferences');
+      return saved ? JSON.parse(saved) : DEFAULT_PREFERENCES;
+    } catch {
+      return DEFAULT_PREFERENCES;
+    }
+  });
+
+  const [receiptConfig, setReceiptConfig] = useState(() => {
+    try {
+      const saved = localStorage.getItem('cwg_receipt_config');
+      return saved ? JSON.parse(saved) : DEFAULT_RECEIPT_CONFIG;
+    } catch {
+      return DEFAULT_RECEIPT_CONFIG;
+    }
+  });
+
+  const [activityLog, setActivityLog] = useState(() => {
+    try {
+      const saved = localStorage.getItem('cwg_activity_log');
+      return saved ? JSON.parse(saved) : INITIAL_ACTIVITY_LOG;
+    } catch {
+      return INITIAL_ACTIVITY_LOG;
+    }
+  });
+
+  const fetchBackendStaff = useCallback(async () => {
+    try {
+      const data = await getStaff();
+      if (Array.isArray(data) && data.length > 0) {
+        setStaff(prev => {
+          const merged = [...prev];
+          data.forEach(d => {
+            const idx = merged.findIndex(m => m.email === d.email || m.id === d.id);
+            if (idx >= 0) {
+              merged[idx] = { ...merged[idx], ...d };
+            } else {
+              merged.push({ ...d, lastActive: d.lastActive || 'Active recently' });
+            }
+          });
+          localStorage.setItem('cwg_staff_roster', JSON.stringify(merged));
+          return merged;
+        });
+      }
+    } catch (err) {
+      if (err.status === 401) onSessionExpired?.();
+    }
+  }, [onSessionExpired]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchBackendStaff();
+  }, [fetchBackendStaff]);
+
+  function showToast(msg) {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(''), 4000);
+  }
+
+  function appendActivity(category, badge, title, detail) {
+    const actorName = user?.name || 'Chinedu Okafor';
+    const initials = actorName
+      .split(' ')
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(w => w[0])
+      .join('')
+      .toUpperCase();
+
+    const newEvent = {
+      id: `evt-${Date.now()}`,
+      category,
+      badge,
+      title,
+      detail,
+      actor: actorName,
+      actorInitials: initials,
+      timeAgo: 'Just now',
+      timestamp: new Date().toLocaleString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      }),
+      createdAt: Date.now(),
+    };
+
+    setActivityLog(prev => {
+      const updated = [newEvent, ...prev];
+      localStorage.setItem('cwg_activity_log', JSON.stringify(updated));
+      return updated;
+    });
+  }
+
+  function handleProfileChange(newProfile) {
+    setProfile(newProfile);
+    localStorage.setItem('cwg_store_profile', JSON.stringify(newProfile));
+    appendActivity('profile', 'Profile updated', 'Updated store profile details', `${newProfile.name}`);
+    showToast('Store profile updated successfully.');
+  }
+
+  function handlePreferencesChange(newPrefs) {
+    const oldThreshold = preferences.defaultThreshold;
+    setPreferences(newPrefs);
+    localStorage.setItem('cwg_preferences', JSON.stringify(newPrefs));
+    if (newPrefs.defaultThreshold !== oldThreshold) {
+      appendActivity(
+        'threshold',
+        'Threshold changed',
+        `Default reorder threshold changed from ${oldThreshold} to ${newPrefs.defaultThreshold}`,
+        `New products will start alerting at ${newPrefs.defaultThreshold} units`
+      );
+    }
+    showToast('Preferences updated.');
+  }
+
+  function handleReceiptChange(newReceipt) {
+    setReceiptConfig(newReceipt);
+    localStorage.setItem('cwg_receipt_config', JSON.stringify(newReceipt));
+    appendActivity(
+      'receipt',
+      'Receipt updated',
+      'Updated receipt basics & format settings',
+      `Currency: ${newReceipt.currencySymbol} • Paper: ${newReceipt.paperWidth}`
+    );
+    showToast('Receipt configuration saved.');
+  }
+
+  function handleSaveStaffMember(member) {
+    setStaff(prev => {
+      const exists = prev.some(s => s.id === member.id);
+      const updated = exists
+        ? prev.map(s => (s.id === member.id ? { ...s, ...member } : s))
+        : [...prev, { ...member, id: Date.now(), lastActive: 'Added just now' }];
+      localStorage.setItem('cwg_staff_roster', JSON.stringify(updated));
+      return updated;
+    });
+
+    const isExisting = staff.some(s => s.id === member.id);
+    appendActivity(
+      'staff',
+      isExisting ? 'Staff updated' : 'Staff added',
+      isExisting ? `Updated ${member.name}'s account` : `Added ${member.name} as ${member.role}`,
+      `${member.email} — ${member.role.toUpperCase()} access`
+    );
+    showToast(`Staff member ${member.name} saved.`);
+  }
+
+  function handleToggleStaffStatus(id) {
+    const target = staff.find(s => s.id === id);
+    if (!target) return;
+    const nextStatus = target.status === 'active' ? 'inactive' : 'active';
+    setStaff(prev => {
+      const updated = prev.map(s => (s.id === id ? { ...s, status: nextStatus } : s));
+      localStorage.setItem('cwg_staff_roster', JSON.stringify(updated));
+      return updated;
+    });
+    appendActivity(
+      'staff',
+      'Access changed',
+      nextStatus === 'inactive' ? `Deactivated ${target.name}` : `Reactivated ${target.name}`,
+      `Account is now ${nextStatus}`
+    );
+    showToast(`Status for ${target.name} changed to ${nextStatus}.`);
+  }
+
+  function handleApplyThresholdToAll() {
+    appendActivity(
+      'threshold',
+      'Threshold applied',
+      `Applied reorder threshold ${preferences.defaultThreshold} to 14 products`,
+      'Bulk update across the whole catalogue from Preferences'
+    );
+    showToast(`Applied threshold ${preferences.defaultThreshold} across 14 inventory products.`);
+  }
+
+  return {
+    profile,
+    staff,
+    preferences,
+    receiptConfig,
+    activityLog,
+    toastMsg,
+    handleProfileChange,
+    handlePreferencesChange,
+    handleReceiptChange,
+    handleSaveStaffMember,
+    handleToggleStaffStatus,
+    handleApplyThresholdToAll,
+  };
+}

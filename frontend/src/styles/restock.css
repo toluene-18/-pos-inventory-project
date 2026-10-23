@@ -1,0 +1,140 @@
+/* ================================================================
+   restock.css — Restock & Adjustments Page and Form Styling
+   ================================================================ */
+
+.restock-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.restock-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.restock-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #f8fafc;
+  letter-spacing: -0.02em;
+}
+
+.restock-header p {
+  margin: 6px 0 0;
+  color: #94a3b8;
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+
+.restock-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.restock-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #28313b;
+  background: #161b20;
+  color: #cbd5e1;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.restock-nav-btn:hover {
+  background: #1f252d;
+  border-color: #384350;
+  color: #f8fafc;
+}
+
+/* Alert banners */
+.restock-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+.restock-alert--success {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #10b981;
+}
+
+.restock-alert--error {
+  background: rgba(244, 63, 94, 0.12);
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  color: #fb7185;
+}
+
+/* Record a stock change card */
+.stock-change-card {
+  background: #14191f;
+  border: 1px solid #232a32;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.stock-change-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.stock-change-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stock-change-head h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.stock-change-head p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+/* 3 Mode buttons */
+.stock-mode-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 800px) {
+  .stock-mode-selector {
+    grid-template-columns: 1fr;
+  }
+}
+
