@@ -10,6 +10,7 @@ import { useSettingsData } from '../components/settings/useSettingsData';
 import '../styles/settings.css';
 import '../styles/settings-tabs.css';
 import '../styles/settings-staff.css';
+import '../styles/settings-receipt.css';
 import '../styles/settings-activity.css';
 
 export default function Settings({ user, onSessionExpired }) {
@@ -27,6 +28,7 @@ export default function Settings({ user, onSessionExpired }) {
     handleReceiptChange,
     handleSaveStaffMember,
     handleToggleStaffStatus,
+    handleDeleteStaffMember,
     handleApplyThresholdToAll,
   } = useSettingsData(user, onSessionExpired);
 
@@ -84,6 +86,7 @@ export default function Settings({ user, onSessionExpired }) {
               currentUser={user}
               onSaveMember={handleSaveStaffMember}
               onToggleStatus={handleToggleStaffStatus}
+              onDeleteMember={handleDeleteStaffMember}
             />
           )}
 

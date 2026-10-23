@@ -1,0 +1,201 @@
+/* ================================================================
+   settings-receipt.css — Receipt Basics Tab & Live Thermal Preview
+   ================================================================ */
+
+.receipt-basics-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+@media (max-width: 900px) {
+  .receipt-basics-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.receipt-controls-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.receipt-toggles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.receipt-toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.toggle-text {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text);
+}
+
+.toggle-text strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.toggle-text small {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+/* Thermal Paper Live Preview */
+.receipt-preview-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.receipt-preview-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.receipt-preview-title small {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+.receipt-thermal-paper {
+  background: #fbfbf9;
+  color: #1e293b;
+  border-radius: 8px;
+  padding: 24px 20px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  border-top: 5px solid #10b981;
+  line-height: 1.4;
+}
+
+.rcp-paper-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #10b981;
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+  letter-spacing: 1px;
+}
+
+.rcp-paper-name {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
+  text-align: center;
+  color: #0f172a;
+}
+
+.rcp-paper-addr,
+.rcp-paper-tel {
+  margin: 2px 0;
+  font-size: 11px;
+  text-align: center;
+  color: #475569;
+}
+
+.rcp-paper-custom-header,
+.rcp-paper-custom-footer {
+  margin: 10px 0;
+  font-size: 11.5px;
+  text-align: center;
+  color: #334155;
+  font-style: italic;
+}
+
+.rcp-paper-meta-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #475569;
+  margin: 2px 0;
+}
+
+.rcp-paper-divider {
+  border-bottom: 1.5px dashed #94a3b8;
+  margin: 10px 0;
+}
+
+.rcp-paper-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 6px 0;
+}
+
+.rcp-paper-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-size: 11.5px;
+}
+
+.rcp-item-left strong {
+  display: block;
+  font-size: 11.5px;
+  color: #0f172a;
+}
+
+.rcp-item-left small {
+  display: block;
+  font-size: 10.5px;
+  color: #64748b;
+}
+
+.rcp-item-right {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.rcp-paper-totals {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 6px 0;
+}
+
+.rcp-tot-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: #475569;
+}
+
+.rcp-tot-final {
+  font-size: 13.5px;
+  color: #0f172a;
+  border-top: 1px solid #cbd5e1;
+  padding-top: 4px;
+  margin-top: 4px;
+}

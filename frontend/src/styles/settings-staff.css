@@ -189,6 +189,12 @@
   background: #64748b;
 }
 
+.staff-actions-wrap {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+}
 .staff-actions-cell {
   display: flex;
   justify-content: flex-end;

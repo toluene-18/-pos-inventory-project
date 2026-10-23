@@ -7,6 +7,7 @@ export default function StaffAccessTab({
   currentUser,
   onSaveMember,
   onToggleStatus,
+  onDeleteMember,
 }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
@@ -133,23 +134,41 @@ export default function StaffAccessTab({
                       {isActive ? 'Active' : 'Inactive'}
                     </span>
                   </td>
-                  <td className="text-right staff-actions-cell">
-                    <button
-                      type="button"
-                      className="btn-action"
-                      onClick={() => handleOpenEdit(member)}
-                    >
-                      <Icon name="edit" size={13} /> Edit
-                    </button>
-                    {!isYou && (
+                  <td className="text-right">
+                    <div className="staff-actions-wrap">
                       <button
                         type="button"
-                        className="btn-action btn-action--danger"
-                        onClick={() => onToggleStatus(member)}
+                        className="btn-action"
+                        onClick={() => handleOpenEdit(member)}
+                        title="Edit staff member"
                       >
-                        <Icon name="trash" size={13} /> {isActive ? 'Deactivate' : 'Reactivate'}
+                        <Icon name="edit" size={13} /> Edit
                       </button>
-                    )}
+                      {!isYou && (
+                        <>
+                          <button
+                            type="button"
+                            className="btn-action"
+                            onClick={() => onToggleStatus(member.id)}
+                            title={isActive ? 'Deactivate staff account' : 'Reactivate staff account'}
+                          >
+                            <Icon name="refresh" size={12} /> {isActive ? 'Deactivate' : 'Activate'}
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-action btn-action--danger"
+                            onClick={() => {
+                              if (window.confirm(`Are you sure you want to permanently delete "${member.name}" from the staff roster?`)) {
+                                onDeleteMember?.(member.id);
+                              }
+                            }}
+                            title="Delete staff account"
+                          >
+                            <Icon name="trash" size={12} /> Delete
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </td>
                 </tr>
               );

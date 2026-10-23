@@ -1,64 +1,7 @@
-/* 4. Receipt Basics Tab & Live Thermal Preview */
-.receipt-basics-layout {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 24px;
-}
-.thermal-receipt-preview {
-  background: #fbfbf9;
-  color: #1e293b;
-  border-radius: 8px;
-  padding: 24px 20px;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-  border-top: 5px solid #10b981;
-}
-.receipt-tear-line {
-  border-bottom: 2px dashed #94a3b8;
-  margin: 12px 0;
-}
-.receipt-header-center {
-  text-align: center;
-  margin-bottom: 12px;
-}
-.receipt-store-title {
-  font-weight: bold;
-  font-size: 14px;
-}
-.receipt-items-table {
-  width: 100%;
-  margin: 12px 0;
-}
-.receipt-items-table th {
-  text-align: left;
-  border-bottom: 1px solid #cbd5e1;
-  padding-bottom: 4px;
-}
-.receipt-items-table td {
-  padding: 3px 0;
-}
-.receipt-totals-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 2px 0;
-}
-.receipt-barcode {
-  display: flex;
-  justify-content: center;
-  gap: 3px;
-  margin: 16px 0 8px;
-  height: 32px;
-}
-.barcode-bar {
-  width: 2px;
-  background: #0f172a;
-}
-.barcode-bar--wide {
-  width: 5px;
-}
+/* ================================================================
+   settings-activity.css — Activity Log Tab & Event Stream
+   ================================================================ */
 
-/* 5. Activity Log Tab */
 .activity-filters-row {
   display: flex;
   justify-content: space-between;
@@ -66,11 +9,14 @@
   gap: 16px;
   flex-wrap: wrap;
 }
+
 .activity-category-pills,
 .activity-time-pills {
   display: flex;
   gap: 6px;
+  flex-wrap: wrap;
 }
+
 .activity-filter-pill,
 .activity-time-pill {
   padding: 5px 12px;
@@ -80,20 +26,23 @@
   color: var(--text-muted);
   font-size: 12px;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.15s ease;
 }
+
 .activity-filter-pill--active {
-  background: #10b981;
-  color: #042f2e;
-  border-color: #10b981;
+  background: var(--green);
+  color: #ffffff;
+  border-color: var(--green);
   font-weight: 600;
 }
+
 .activity-time-pill--active {
-  background: #e2e8f0;
-  color: #0f172a;
-  border-color: #e2e8f0;
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border-soft);
   font-weight: 600;
 }
+
 .activity-search-box {
   display: flex;
   align-items: center;
@@ -104,6 +53,7 @@
   padding: 6px 12px;
   color: var(--text-muted);
 }
+
 .activity-search-box input {
   background: transparent;
   border: none;
@@ -111,11 +61,13 @@
   color: var(--text);
   font-size: 12.5px;
 }
+
 .activity-stream {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
+
 .activity-event-card {
   display: flex;
   gap: 14px;
@@ -124,6 +76,7 @@
   border: 1px solid var(--border);
   border-radius: 10px;
 }
+
 .activity-event-badge-icon {
   width: 34px;
   height: 34px;
@@ -133,70 +86,80 @@
   justify-content: center;
   flex-shrink: 0;
 }
+
 .activity-event-badge-icon--staff {
   background: rgba(16, 185, 129, 0.15);
   color: #10b981;
 }
+
 .activity-event-badge-icon--threshold {
   background: rgba(245, 158, 11, 0.15);
   color: #f59e0b;
 }
-.activity-event-badge-icon--profile {
+
+.activity-event-badge-icon--receipt {
   background: rgba(59, 130, 246, 0.15);
   color: #3b82f6;
 }
-.activity-event-badge-icon--receipt {
-  background: rgba(168, 85, 247, 0.15);
-  color: #a855f7;
+
+.activity-event-badge-icon--profile {
+  background: rgba(139, 92, 246, 0.15);
+  color: #8b5cf6;
 }
+
 .activity-event-content {
   flex: 1;
+  min-width: 0;
 }
-.activity-event-headline {
+
+.activity-event-header {
   display: flex;
-  align-items: center;
+  justify-content: space-between;
+  align-items: flex-start;
   gap: 8px;
 }
-.activity-event-title {
+
+.activity-event-header strong {
   font-size: 13.5px;
-  font-weight: 600;
   color: var(--text);
 }
-.activity-status-tag {
-  font-size: 10.5px;
-  padding: 2px 7px;
-  border-radius: 4px;
-  font-weight: 600;
+
+.activity-event-time {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
 }
-.activity-status-tag--staff {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-}
-.activity-status-tag--threshold {
-  background: rgba(245, 158, 11, 0.15);
-  color: #fbbf24;
-}
+
 .activity-event-detail {
-  margin: 4px 0 8px;
   font-size: 12px;
   color: var(--text-muted);
+  margin: 4px 0 0;
 }
-.activity-event-meta {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  color: #64748b;
-}
-.activity-actor-avatar {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #232a32;
-  color: #cbd5e1;
-  font-size: 9px;
-  font-weight: 700;
+
+.activity-event-actor {
   display: inline-flex;
   align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.actor-avatar-sm {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--green-soft);
+  color: var(--green);
+  font-weight: 700;
+  font-size: 9px;
+  display: flex;
+  align-items: center;
   justify-content: center;
+}
+
+.activity-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-muted);
 }

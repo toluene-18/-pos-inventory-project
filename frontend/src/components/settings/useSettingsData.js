@@ -198,6 +198,23 @@ export function useSettingsData(user, onSessionExpired) {
     showToast(`Status for ${target.name} changed to ${nextStatus}.`);
   }
 
+  function handleDeleteStaffMember(id) {
+    const target = staff.find(s => s.id === id);
+    if (!target) return;
+    setStaff(prev => {
+      const updated = prev.filter(s => s.id !== id);
+      localStorage.setItem('cwg_staff_roster', JSON.stringify(updated));
+      return updated;
+    });
+    appendActivity(
+      'staff',
+      'Staff removed',
+      `Deleted ${target.name}'s account`,
+      `Removed ${target.name} (${target.email}) from roster`
+    );
+    showToast(`Staff member "${target.name}" removed from roster.`);
+  }
+
   function handleApplyThresholdToAll() {
     appendActivity(
       'threshold',
@@ -220,6 +237,7 @@ export function useSettingsData(user, onSessionExpired) {
     handleReceiptChange,
     handleSaveStaffMember,
     handleToggleStaffStatus,
+    handleDeleteStaffMember,
     handleApplyThresholdToAll,
   };
 }
