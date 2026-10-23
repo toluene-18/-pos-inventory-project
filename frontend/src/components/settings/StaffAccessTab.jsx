@@ -29,18 +29,23 @@ export default function StaffAccessTab({
 
   return (
     <div className="settings-panel">
-      <div className="settings-panel-head">
+      <div className="settings-panel-head settings-panel-head--spread">
         <div className="panel-title-with-icon">
           <span className="settings-panel-icon">
             <Icon name="users" size={18} />
           </span>
           <div>
             <h3>Staff & access</h3>
-            <p>Owners run the store; cashiers ring up sales and see only their own receipts.</p>
+            <p>Owners run the store, cashiers ring up sales and see only their own receipts.</p>
           </div>
         </div>
-        <button type="button" className="btn btn-primary" onClick={handleOpenCreate}>
-          <Icon name="plus" size={15} /> Add staff
+        <button
+          type="button"
+          className="btn btn-primary btn-add-staff-end"
+          onClick={handleOpenCreate}
+        >
+          <Icon name="plus" size={15} />
+          <span>Add staff</span>
         </button>
       </div>
 
@@ -99,6 +104,7 @@ export default function StaffAccessTab({
           <tbody>
             {staff.map(member => {
               const isYou = member.email === currentUser?.email || member.id === currentUser?.id;
+              const isOwner = member.role === 'owner';
               const initials = (member.name || 'ST')
                 .split(' ')
                 .filter(Boolean)
@@ -144,7 +150,8 @@ export default function StaffAccessTab({
                       >
                         <Icon name="edit" size={13} /> Edit
                       </button>
-                      {!isYou && (
+
+                      {!isOwner && (
                         <>
                           <button
                             type="button"
@@ -158,7 +165,7 @@ export default function StaffAccessTab({
                             type="button"
                             className="btn-action btn-action--danger"
                             onClick={() => {
-                              if (window.confirm(`Are you sure you want to permanently delete "${member.name}" from the staff roster?`)) {
+                              if (window.confirm(`Are you sure you want to remove "${member.name}" from the staff roster?`)) {
                                 onDeleteMember?.(member.id);
                               }
                             }}
@@ -175,9 +182,6 @@ export default function StaffAccessTab({
             })}
           </tbody>
         </table>
-        <div className="staff-table-footer-note">
-          Adding a staff member registers them in this roster. Login accounts stay linked to the seed logins until the Laravel API is wired in.
-        </div>
       </div>
 
       <StaffModal

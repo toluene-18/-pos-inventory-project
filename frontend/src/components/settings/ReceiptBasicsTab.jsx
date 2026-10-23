@@ -1,12 +1,34 @@
+import { useState, useEffect } from 'react';
 import Icon from '../ui/Icon';
 
 export default function ReceiptBasicsTab({ receiptConfig, profile, onChange }) {
+  const [draft, setDraft] = useState(receiptConfig);
+  const [hasChanges, setHasChanges] = useState(false);
+
+  useEffect(() => {
+    setDraft(receiptConfig);
+    setHasChanges(false);
+  }, [receiptConfig]);
+
   function handleToggle(field) {
-    onChange({ ...receiptConfig, [field]: !receiptConfig[field] });
+    setDraft(prev => {
+      const next = { ...prev, [field]: !prev[field] };
+      setHasChanges(true);
+      return next;
+    });
   }
 
   function handleField(field, val) {
-    onChange({ ...receiptConfig, [field]: val });
+    setDraft(prev => {
+      const next = { ...prev, [field]: val };
+      setHasChanges(true);
+      return next;
+    });
+  }
+
+  function handleSave() {
+    onChange(draft);
+    setHasChanges(false);
   }
 
   const monogram = (profile?.name || 'CW')
@@ -36,7 +58,7 @@ export default function ReceiptBasicsTab({ receiptConfig, profile, onChange }) {
               <label htmlFor="rcp-currency">CURRENCY</label>
               <select
                 id="rcp-currency"
-                value={receiptConfig.currency}
+                value={draft.currency}
                 onChange={e => handleField('currency', e.target.value)}
               >
                 <option value="₦ NGN — Nigerian Naira">₦ NGN — Nigerian Naira</option>
@@ -50,7 +72,7 @@ export default function ReceiptBasicsTab({ receiptConfig, profile, onChange }) {
               <label htmlFor="rcp-tz">TIMEZONE</label>
               <select
                 id="rcp-tz"
-                value={receiptConfig.timezone}
+                value={draft.timezone}
                 onChange={e => handleField('timezone', e.target.value)}
               >
                 <option value="West Africa Time — Lagos (GMT+1)">West Africa Time — Lagos (GMT+1)</option>
@@ -63,7 +85,7 @@ export default function ReceiptBasicsTab({ receiptConfig, profile, onChange }) {
               <input
                 id="rcp-header"
                 type="text"
-                value={receiptConfig.headerText}
+                value={draft.headerText}
                 onChange={e => handleField('headerText', e.target.value)}
                 placeholder="Thank you for shopping with us!"
               />
@@ -75,7 +97,7 @@ export default function ReceiptBasicsTab({ receiptConfig, profile, onChange }) {
               <input
                 id="rcp-footer"
                 type="text"
-                value={receiptConfig.footerText}
+                value={draft.footerText}
                 onChange={e => handleField('footerText', e.target.value)}
                 placeholder="Goods sold in good condition are not returnable. God bless you."
               />
@@ -94,7 +116,7 @@ export default function ReceiptBasicsTab({ receiptConfig, profile, onChange }) {
               </div>
               <button
                 type="button"
-                className={`switch-toggle ${receiptConfig.showLogo ? 'switch-toggle--on' : ''}`}
+                className={`switch-toggle ${draft.showLogo ? 'switch-toggle--on' : ''}`}
                 onClick={() => handleToggle('showLogo')}
                 aria-label="Toggle logo"
               >
@@ -112,7 +134,7 @@ export default function ReceiptBasicsTab({ receiptConfig, profile, onChange }) {
               </div>
               <button
                 type="button"
-                className={`switch-toggle ${receiptConfig.showSku ? 'switch-toggle--on' : ''}`}
+                className={`switch-toggle ${draft.showSku ? 'switch-toggle--on' : ''}`}
                 onClick={() => handleToggle('showSku')}
                 aria-label="Toggle item codes"
               >
@@ -130,13 +152,25 @@ export default function ReceiptBasicsTab({ receiptConfig, profile, onChange }) {
               </div>
               <button
                 type="button"
-                className={`switch-toggle ${receiptConfig.showVat ? 'switch-toggle--on' : ''}`}
+                className={`switch-toggle ${draft.showVat ? 'switch-toggle--on' : ''}`}
                 onClick={() => handleToggle('showVat')}
                 aria-label="Toggle VAT line"
               >
                 <span className="switch-toggle-thumb" />
               </button>
             </div>
+          </div>
+
+          <div className="settings-form-actions" style={{ marginTop: '20px' }}>
+            <button
+              type="button"
+              className="btn-save-settings"
+              onClick={handleSave}
+            >
+              <Icon name="check" size={16} />
+              <span>Save receipt settings</span>
+            </button>
+            {hasChanges && <span className="unsaved-changes-hint">You have unsaved changes</span>}
           </div>
         </div>
 
@@ -148,15 +182,15 @@ export default function ReceiptBasicsTab({ receiptConfig, profile, onChange }) {
           </div>
 
           <div className="receipt-thermal-paper">
-            {receiptConfig.showLogo && (
+            {draft.showLogo && (
               <div className="rcp-paper-logo">{monogram}</div>
             )}
             <h4 className="rcp-paper-name">{profile?.name?.toUpperCase() || 'CWG PROVISIONS STORE'}</h4>
             <p className="rcp-paper-addr">{profile?.address}, {profile?.city}, {profile?.state}</p>
             <p className="rcp-paper-tel">Tel: {profile?.phone}</p>
 
-            {receiptConfig.headerText && (
-              <p className="rcp-paper-custom-header">{receiptConfig.headerText}</p>
+            {draft.headerText && (
+              <p className="rcp-paper-custom-header">{draft.headerText}</p>
             )}
 
             <div className="rcp-paper-meta-row">
@@ -174,7 +208,7 @@ export default function ReceiptBasicsTab({ receiptConfig, profile, onChange }) {
               <div className="rcp-paper-item">
                 <div className="rcp-item-left">
                   <strong>Nestlé Milo 500g Tin</strong>
-                  {receiptConfig.showSku && <small className="rcp-sku">NES-MILO-500</small>}
+                  {draft.showSku && <small className="rcp-sku">NES-MILO-500</small>}
                   <small>1 × ₦4,500</small>
                 </div>
                 <div className="rcp-item-right">₦4,500</div>
@@ -182,7 +216,7 @@ export default function ReceiptBasicsTab({ receiptConfig, profile, onChange }) {
               <div className="rcp-paper-item">
                 <div className="rcp-item-left">
                   <strong>Coca-Cola 50cl PET</strong>
-                  {receiptConfig.showSku && <small className="rcp-sku">COK-50-PET</small>}
+                  {draft.showSku && <small className="rcp-sku">COK-50-PET</small>}
                   <small>2 × ₦450</small>
                 </div>
                 <div className="rcp-item-right">₦900</div>
@@ -196,7 +230,7 @@ export default function ReceiptBasicsTab({ receiptConfig, profile, onChange }) {
                 <span>Subtotal</span>
                 <span>₦5,400</span>
               </div>
-              {receiptConfig.showVat && (
+              {draft.showVat && (
                 <div className="rcp-tot-row">
                   <span>VAT (7.5%)</span>
                   <span>₦405</span>
@@ -204,12 +238,12 @@ export default function ReceiptBasicsTab({ receiptConfig, profile, onChange }) {
               )}
               <div className="rcp-tot-row rcp-tot-final">
                 <strong>TOTAL</strong>
-                <strong>₦{receiptConfig.showVat ? '5,805' : '5,400'}</strong>
+                <strong>₦{draft.showVat ? '5,805' : '5,400'}</strong>
               </div>
             </div>
 
-            {receiptConfig.footerText && (
-              <p className="rcp-paper-custom-footer">{receiptConfig.footerText}</p>
+            {draft.footerText && (
+              <p className="rcp-paper-custom-footer">{draft.footerText}</p>
             )}
           </div>
         </div>

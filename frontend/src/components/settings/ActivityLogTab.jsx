@@ -1,6 +1,21 @@
 import { useState, useMemo } from 'react';
 import Icon from '../ui/Icon';
 
+function formatRelativeTime(timestamp) {
+  if (!timestamp) return 'Recently';
+  const diffMs = Date.now() - Number(timestamp);
+  const diffSec = Math.floor(diffMs / 1000);
+  if (diffSec < 60) return 'Just now';
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `${diffMin}m ago`;
+  const diffHours = Math.floor(diffMin / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 30) return `${diffDays}d ago`;
+  const diffMonths = Math.floor(diffDays / 30);
+  return `${diffMonths}mo ago`;
+}
+
 export default function ActivityLogTab({ activityLog = [] }) {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [timeFilter, setTimeFilter] = useState('all');
@@ -181,10 +196,10 @@ export default function ActivityLogTab({ activityLog = [] }) {
                 </div>
                 {event.detail && <p className="activity-event-detail">{event.detail}</p>}
                 <div className="activity-event-meta">
-                  <span className="activity-actor-avatar">{event.actorInitials || 'CO'}</span>
+                  <span className="activity-actor-avatar">{event.actorInitials || 'AA'}</span>
                   <span className="activity-actor-name">{event.actor}</span>
                   <span className="activity-meta-dot">•</span>
-                  <span className="activity-time-ago">{event.timeAgo}</span>
+                  <span className="activity-time-ago">{formatRelativeTime(event.createdAt)}</span>
                   <span className="activity-meta-dot">•</span>
                   <span className="activity-timestamp">{event.timestamp}</span>
                 </div>

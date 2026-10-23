@@ -35,27 +35,43 @@ export async function apiRequest(path, options = {}) {
 }
 
 export async function loginUser(email, password) {
-  const response = await fetch(`${API_BASE_URL}/login`, {
-    method: 'POST',
-    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
-  });
-  const data = await readJson(response);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-  if (!response.ok) {
-    if (response.status === 401) throw new ApiError('Invalid email or password.', 401, data);
-    if (response.status === 403) {
-      throw new ApiError(data.message || 'Your account is awaiting approval.', 403, data);
+  try {
+    const response = await fetch(`${API_BASE_URL}/login`, {
+      method: 'POST',
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+      signal: controller.signal,
+    });
+    const data = await readJson(response);
+
+    if (!response.ok) {
+      if (response.status === 401) throw new ApiError('Invalid email or password.', 401, data);
+      if (response.status === 403) {
+        throw new ApiError(data.message || 'Your account is awaiting approval.', 403, data);
+      }
+      throw new ApiError(data.message || `Login failed (HTTP ${response.status}).`, response.status, data);
     }
-    throw new ApiError(data.message || `Login failed (HTTP ${response.status}).`, response.status, data);
-  }
 
-  if (!data.token || !data.user) {
-    throw new ApiError('Unexpected login response from server.', 200, data);
-  }
+    if (!data.token || !data.user) {
+      throw new ApiError('Unexpected login response from server.', 200, data);
+    }
 
-  saveAuth(data.token, data.user);
-  return data;
+    saveAuth(data.token, data.user);
+    return data;
+  } catch (err) {
+    if (err.name === 'AbortError') {
+      throw new ApiError(
+        'Sign in timed out. The server took too long to respond. Please check that MySQL and the backend service are running.',
+        408
+      );
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 export async function registerUser({ name, email, password, role = 'cashier' }) {

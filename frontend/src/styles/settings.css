@@ -1,11 +1,11 @@
 /* ================================================================
-   settings.css — CWG Settings Layout & Navigation Sidebar
+   settings.css — CWG Settings Page Core Layout & Navigation
    ================================================================ */
 
 .settings-page {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
   width: 100%;
 }
 
@@ -14,6 +14,7 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 16px;
+  flex-wrap: wrap;
 }
 
 .settings-header h2 {
@@ -44,17 +45,25 @@
   white-space: nowrap;
 }
 
+/* Floating bottom-center toast notification popup — never pushes layout down */
 .settings-toast-banner {
-  display: flex;
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 16px;
-  border-radius: 8px;
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 10px 22px;
+  border-radius: 9999px;
+  background: var(--surface);
+  border: 1px solid #10b981;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 0 16px rgba(16, 185, 129, 0.2);
   color: #10b981;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
+  z-index: 1200;
+  animation: toastFloat 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Two-column layout */
@@ -71,11 +80,11 @@
   }
 }
 
-/* Sidebar navigation cards */
+/* Left sidebar navigation */
 .settings-nav-sidebar {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .settings-nav-card {
@@ -86,28 +95,44 @@
   border-radius: 12px;
   border: 1px solid var(--border);
   background: var(--surface);
+  color: var(--text);
   text-align: left;
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: all 0.15s ease;
   width: 100%;
 }
 
 .settings-nav-card:hover {
-  background: var(--surface-hover);
   border-color: var(--border-soft);
+  background: var(--surface-hover);
+}
+
+.settings-nav-card--active {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.settings-nav-card--active .settings-nav-card-icon {
+  background: #10b981;
+  color: #042f2e;
+}
+
+.settings-nav-card--active .settings-nav-card-title {
+  color: #10b981;
+  font-weight: 700;
 }
 
 .settings-nav-card-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
   background: var(--surface-2);
   color: var(--text-muted);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: all 0.18s ease;
+  transition: all 0.15s ease;
 }
 
 .settings-nav-card-text {
@@ -126,39 +151,13 @@
   font-size: 11.5px;
   color: var(--text-muted);
   margin-top: 3px;
-  line-height: 1.35;
+  line-height: 1.4;
 }
 
-/* Active tab state: Emerald green hero accent */
-.settings-nav-card--active {
-  background: #10b981;
-  border-color: #10b981;
-}
-
-.settings-nav-card--active:hover {
-  background: #0ea371;
-  border-color: #0ea371;
-}
-
-.settings-nav-card--active .settings-nav-card-icon {
-  background: rgba(0, 0, 0, 0.14);
-  color: #042f2e;
-}
-
-.settings-nav-card--active .settings-nav-card-title {
-  color: #042f2e;
-  font-weight: 700;
-}
-
-.settings-nav-card--active .settings-nav-card-sub {
-  color: #064e3b;
-  font-weight: 500;
-}
-
-/* Main panel wrapper */
+/* Right main content area */
 .settings-main-content {
+  flex: 1;
   min-width: 0;
-  width: 100%;
 }
 
 .settings-panel {
@@ -168,28 +167,20 @@
   padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 22px;
 }
 
 .settings-panel-head {
   display: flex;
   align-items: flex-start;
-  gap: 14px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
-}
-
-.panel-title-with-icon {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
+  gap: 12px;
 }
 
 .settings-panel-icon {
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background: var(--surface-2);
+  background: rgba(16, 185, 129, 0.15);
   color: #10b981;
   display: flex;
   align-items: center;
@@ -205,8 +196,63 @@
 }
 
 .settings-panel-head p {
-  margin: 4px 0 0;
+  margin: 3px 0 0;
+  font-size: 12.5px;
   color: var(--text-muted);
-  font-size: 13px;
-  line-height: 1.4;
+}
+
+/* Common form styles */
+.settings-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 680px) {
+  .settings-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.settings-form-grid .full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.form-group input,
+.form-group select {
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 13.5px;
+  transition: all 0.15s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.15);
+}
+
+.field-hint {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 2px;
 }

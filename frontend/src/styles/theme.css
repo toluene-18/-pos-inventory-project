@@ -94,9 +94,11 @@ body {
   color: var(--text-muted);
 }
 
-[data-theme='light'] input,
-[data-theme='light'] select,
-[data-theme='light'] textarea,
+[data-theme='light'] .app-main input,
+[data-theme='light'] .app-main select,
+[data-theme='light'] .app-main textarea,
+[data-theme='light'] .product-modal input,
+[data-theme='light'] .product-modal select,
 [data-theme='light'] .inv-select,
 [data-theme='light'] .pref-threshold-box {
   background-color: #ffffff;

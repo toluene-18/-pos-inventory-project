@@ -1,5 +1,5 @@
 /* ================================================================
-   products.css — Products Page, Readdy Header, Toolbar & Filters
+   products.css — Products Catalogue Page Header, Toolbar & Alerts
    ================================================================ */
 
 .products-page {
@@ -9,13 +9,13 @@
   width: 100%;
 }
 
-/* Readdy-style Header */
+/* Header matching Readdy Screenshot */
 .products-header-readdy {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
   gap: 16px;
+  flex-wrap: wrap;
 }
 
 .products-title-group {
@@ -25,16 +25,16 @@
 }
 
 .products-title-badge {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   background: var(--green);
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.28);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 .products-title-group h2 {
@@ -91,7 +91,7 @@
   padding: 6px 14px;
   border-radius: 9999px;
   border: 1px solid var(--border);
-  background: var(--surface);
+  background: transparent;
   color: var(--text-muted);
   font-size: 12.5px;
   font-weight: 500;
@@ -142,23 +142,31 @@
   width: 100%;
 }
 
+/* Floating bottom-center toast notification popup */
 .product-alert {
-  display: flex;
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-radius: var(--radius);
+  gap: 10px;
+  padding: 10px 22px;
+  border-radius: 9999px;
+  background: var(--surface);
   font-size: 13px;
+  font-weight: 600;
+  z-index: 1200;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  animation: toastFloat 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .product-alert--success {
-  background: var(--green-soft);
-  color: var(--green);
-  border: 1px solid var(--green);
+  color: #10b981;
+  border: 1px solid #10b981;
 }
 
 .product-alert--error {
-  background: var(--rose-soft);
   color: var(--rose);
   border: 1px solid var(--rose);
 }

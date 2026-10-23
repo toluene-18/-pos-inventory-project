@@ -27,7 +27,7 @@
 
 .inventory-header p {
   margin: 6px 0 0;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 13.5px;
 }
 
@@ -48,73 +48,90 @@
   color: var(--text);
   font-size: 13px;
   font-weight: 500;
-  cursor: pointer;
   text-decoration: none;
   transition: all 0.15s ease;
 }
 
 .inv-btn-secondary:hover {
-  background: var(--surface-hover);
-  color: var(--text);
+  background: var(--surface);
+  border-color: var(--border-soft);
 }
 
 .inv-btn-primary {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 18px;
+  gap: 8px;
+  padding: 8px 16px;
   border-radius: 8px;
   border: none;
   background: #10b981;
-  color: #042f2e;
+  color: #ffffff;
   font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
+  font-weight: 600;
   text-decoration: none;
-  transition: background 0.15s ease;
+  transition: all 0.15s ease;
 }
 
 .inv-btn-primary:hover {
   background: #0ea371;
 }
 
-/* 4 KPI Cards */
-.inventory-kpi-grid {
+.inventory-alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.inventory-alert--error {
+  background: var(--rose-soft);
+  color: var(--rose);
+  border: 1px solid var(--rose);
+}
+
+/* KPI Cards Grid */
+.inventory-kpis-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 14px;
 }
 
-@media (max-width: 900px) {
-  .inventory-kpi-grid {
+@media (max-width: 1024px) {
+  .inventory-kpis-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 580px) {
-  .inventory-kpi-grid {
+@media (max-width: 540px) {
+  .inventory-kpis-grid {
     grid-template-columns: 1fr;
-  }
-  .inventory-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .inventory-toolbar-top {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .inventory-search-wrap {
-    min-width: 100%;
   }
 }
 
 .inv-kpi-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 16px 18px;
   display: flex;
   flex-direction: column;
+  position: relative;
+  transition: border-color 0.15s ease;
+}
+
+.inv-kpi-card--clickable {
+  cursor: pointer;
+}
+
+.inv-kpi-card--clickable:hover {
+  border-color: var(--border-soft);
+}
+
+.inv-kpi-card--active {
+  border-color: #10b981;
+  box-shadow: 0 0 0 1px #10b981;
 }
 
 .inv-kpi-header {
@@ -126,7 +143,8 @@
 .inv-kpi-label {
   font-size: 10.5px;
   font-weight: 700;
-  color: #94a3b8;
+  text-transform: uppercase;
+  color: var(--text-muted);
   letter-spacing: 0.05em;
 }
 
@@ -141,7 +159,7 @@
 
 .inv-kpi-icon--gray {
   background: var(--surface-2);
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .inv-kpi-icon--green {
@@ -164,7 +182,7 @@
 
 .inv-kpi-sub {
   font-size: 11.5px;
-  color: #64748b;
+  color: var(--text-dim);
 }
 
 /* Filter controls bar */
@@ -192,7 +210,7 @@
   padding: 7px 12px;
   flex: 1;
   min-width: 260px;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .inventory-search-wrap input {
@@ -211,8 +229,6 @@
   flex-wrap: wrap;
 }
 
-
-
 .btn-select-attention {
   display: inline-flex;
   align-items: center;
@@ -221,7 +237,7 @@
   border-radius: 8px;
   border: 1px solid rgba(245, 158, 11, 0.3);
   background: rgba(245, 158, 11, 0.1);
-  color: #fbbf24;
+  color: #f59e0b;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -244,7 +260,7 @@
   border-radius: 9999px;
   border: 1px solid var(--border);
   background: var(--surface);
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
@@ -252,14 +268,14 @@
 }
 
 .inv-tab:hover {
-  background: var(--surface-hover);
-  color: #e2e8f0;
+  background: var(--surface-2);
+  color: var(--text);
 }
 
 .inv-tab--active {
   background: #10b981;
   border-color: #10b981;
-  color: #042f2e;
+  color: #ffffff;
   font-weight: 700;
 }
 
@@ -269,9 +285,9 @@
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  background: #0d1713;
-  border: 1px solid rgba(16, 185, 129, 0.45);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 16px rgba(16, 185, 129, 0.15);
+  background: var(--surface);
+  border: 1px solid #10b981;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 0 16px rgba(16, 185, 129, 0.15);
   border-radius: 9999px;
   padding: 10px 22px;
   display: inline-flex;

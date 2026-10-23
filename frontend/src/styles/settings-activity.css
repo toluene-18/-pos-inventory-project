@@ -2,12 +2,57 @@
    settings-activity.css — Activity Log Tab & Event Stream
    ================================================================ */
 
+.activity-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.activity-kpi-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.activity-kpi-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.activity-kpi-icon--gray { background: var(--surface-2); color: var(--text-muted); }
+.activity-kpi-icon--green { background: var(--green-soft); color: var(--green); }
+.activity-kpi-icon--amber { background: var(--amber-soft); color: var(--amber); }
+
+.activity-kpi-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.activity-kpi-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
 .activity-filters-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
+  margin-bottom: 18px;
 }
 
 .activity-category-pills,
@@ -39,8 +84,15 @@
 .activity-time-pill--active {
   background: var(--surface);
   color: var(--text);
-  border-color: var(--border-soft);
+  border-color: var(--border);
   font-weight: 600;
+}
+
+.activity-time-and-search {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .activity-search-box {
@@ -75,11 +127,16 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 10px;
+  transition: border-color 0.15s ease;
+}
+
+.activity-event-card:hover {
+  border-color: var(--border-hover, var(--border));
 }
 
 .activity-event-badge-icon {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -87,79 +144,97 @@
   flex-shrink: 0;
 }
 
-.activity-event-badge-icon--staff {
-  background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
-}
-
-.activity-event-badge-icon--threshold {
-  background: rgba(245, 158, 11, 0.15);
-  color: #f59e0b;
-}
-
-.activity-event-badge-icon--receipt {
-  background: rgba(59, 130, 246, 0.15);
-  color: #3b82f6;
-}
-
-.activity-event-badge-icon--profile {
-  background: rgba(139, 92, 246, 0.15);
-  color: #8b5cf6;
-}
+.activity-event-badge-icon--staff { background: var(--green-soft); color: var(--green); }
+.activity-event-badge-icon--threshold { background: var(--amber-soft); color: var(--amber); }
+.activity-event-badge-icon--receipt { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+.activity-event-badge-icon--profile { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
 
 .activity-event-content {
   flex: 1;
   min-width: 0;
 }
 
-.activity-event-header {
+.activity-event-headline {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 8px;
+  align-items: center;
+  gap: 10px;
 }
 
-.activity-event-header strong {
+.activity-event-title {
   font-size: 13.5px;
+  font-weight: 600;
   color: var(--text);
 }
 
-.activity-event-time {
+.activity-status-tag {
   font-size: 11px;
-  color: var(--text-muted);
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 9999px;
   white-space: nowrap;
 }
 
+.activity-status-tag--staff { background: var(--green-soft); color: var(--green); }
+.activity-status-tag--threshold { background: var(--amber-soft); color: var(--amber); }
+.activity-status-tag--receipt { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+.activity-status-tag--profile { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+
 .activity-event-detail {
-  font-size: 12px;
+  font-size: 12.5px;
   color: var(--text-muted);
   margin: 4px 0 0;
 }
 
-.activity-event-actor {
-  display: inline-flex;
+.activity-event-meta {
+  display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   margin-top: 8px;
-  font-size: 11px;
-  color: var(--text-dim);
+  font-size: 11.5px;
+  color: var(--text-muted);
+  flex-wrap: wrap;
 }
 
-.actor-avatar-sm {
-  width: 20px;
-  height: 20px;
+.activity-actor-avatar {
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background: var(--green-soft);
   color: var(--green);
   font-weight: 700;
-  font-size: 9px;
-  display: flex;
+  font-size: 9.5px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  margin-right: 2px;
 }
 
-.activity-empty {
+.activity-actor-name {
+  font-weight: 500;
+  color: var(--text);
+}
+
+.activity-meta-dot {
+  color: var(--text-dim);
+}
+
+.activity-time-ago {
+  color: var(--text-muted);
+}
+
+.activity-timestamp {
+  color: var(--text-dim);
+}
+
+.activity-stream-empty {
   padding: 40px 20px;
   text-align: center;
   color: var(--text-muted);
+}
+
+@media (max-width: 900px) {
+  .activity-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }

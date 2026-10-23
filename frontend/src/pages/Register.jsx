@@ -1,9 +1,18 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../services/api';
+import { humanizeErrorMessage } from '../utils/errorMessage';
 import '../styles/login-brand.css';
 import '../styles/login-form.css';
 import '../styles/login-responsive.css';
+
+function formatStateCountry(rawState) {
+  if (!rawState) return 'Lagos, Nigeria';
+  const cleaned = rawState.replace(/\bstate\b/gi, '').trim();
+  if (!cleaned) return 'Lagos, Nigeria';
+  const capitalized = cleaned.charAt(0).toUpperCase() + cleaned.slice(1).toLowerCase();
+  return `${capitalized}, Nigeria`;
+}
 
 function Register() {
   const navigate = useNavigate();
@@ -15,6 +24,19 @@ function Register() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  const storeProfile = useMemo(() => {
+    try {
+      const saved = localStorage.getItem('cwg_store_profile');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  }, []);
+
+  const locationDisplay = useMemo(() => {
+    return formatStateCountry(storeProfile?.state);
+  }, [storeProfile]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -34,13 +56,7 @@ function Register() {
 
       window.setTimeout(() => navigate('/login', { replace: true }), 1000);
     } catch (err) {
-      if (err instanceof TypeError) {
-        setError(
-          'Could not reach the server. Check that Laravel is running and that CORS allows this frontend.'
-        );
-      } else {
-        setError(err.message || 'Something went wrong. Please try again.');
-      }
+      setError(humanizeErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -56,14 +72,14 @@ function Register() {
               C
             </span>
             <span className="brand-name">
-              <strong>CWG</strong>
-              <span>Retail Suite</span>
+              <strong>{storeProfile?.name?.split(' ')[0] || 'CWG'}</strong>
+              <span>{storeProfile?.name?.split(' ').slice(1).join(' ') || 'Retail Suite'}</span>
             </span>
           </a>
 
           <div className="location-pill">
             <span className="location-dot" />
-            Lagos, Nigeria
+            {locationDisplay}
           </div>
 
           <div className="brand-message">
@@ -73,8 +89,21 @@ function Register() {
               Create your staff account and wait for the owner to approve your
               role before you can sign in.
             </p>
+            <div className="store-stats">
+              <div className="stat">
+                <strong>Real-time</strong>
+                <span>Stock visibility</span>
+              </div>
+              <div className="stat">
+                <strong>Secure</strong>
+                <span>Staff access</span>
+              </div>
+              <div className="stat">
+                <strong>One place</strong>
+                <span>Sales and inventory</span>
+              </div>
+            </div>
           </div>
-
           <p className="brand-panel-footer">
             Built for better retail operations.
           </p>
@@ -88,87 +117,89 @@ function Register() {
               C
             </span>
             <span className="brand-name">
-              <strong>CWG</strong>
-              <span>Retail Suite</span>
+              <strong>CWG</strong> Retail Suite
             </span>
           </div>
 
-          <div className="login-heading">
-            <p className="eyebrow">CREATE ACCOUNT</p>
-            <h2 id="register-title">Set up your staff profile</h2>
-            <p>Choose your role and wait for the owner’s approval.</p>
+          <div className="form-header">
+            <p className="eyebrow">STAFF ONBOARDING</p>
+            <h2 id="register-title">Create your account</h2>
+            <p className="form-subtitle">
+              Enter your details to request access to this store.
+            </p>
           </div>
 
-          <form onSubmit={handleSubmit}>
+          <form className="login-form" onSubmit={handleSubmit} noValidate>
             <div className="form-group">
-              <label htmlFor="name">Full name</label>
+              <label htmlFor="reg-name">Full name</label>
               <div className="input-wrap">
+                <span className="input-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                </span>
                 <input
-                  id="name"
-                  name="name"
+                  id="reg-name"
                   type="text"
-                  placeholder="Jane Doe"
                   value={name}
                   onChange={event => setName(event.target.value)}
+                  placeholder="e.g. Aisha Bello"
+                  autoComplete="name"
                   required
                 />
               </div>
             </div>
 
             <div className="form-group">
-              <label htmlFor="email">Email address</label>
+              <label htmlFor="reg-email">Staff email address</label>
               <div className="input-wrap">
                 <span className="input-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none">
-                    <rect x="3.5" y="5.5" width="17" height="13" rx="2" />
-                    <path d="m4.5 7 7.5 5.5L19.5 7" />
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2Z" />
+                    <polyline points="22,6 12,13 2,6" />
                   </svg>
                 </span>
                 <input
-                  id="email"
-                  name="email"
+                  id="reg-email"
                   type="email"
-                  autoComplete="username"
-                  placeholder="you@cwgretail.com"
                   value={email}
                   onChange={event => setEmail(event.target.value)}
+                  placeholder="name@cwgretail.com"
+                  autoComplete="email"
                   required
                 />
               </div>
             </div>
 
             <div className="form-group">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="reg-password">Password</label>
               <div className="input-wrap">
                 <span className="input-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none">
-                    <rect x="5" y="10" width="14" height="10" rx="2" />
-                    <path d="M8 10V7a4 4 0 0 1 8 0v3" />
-                    <path d="M12 14v2" />
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                   </svg>
                 </span>
                 <input
-                  id="password"
-                  name="password"
+                  id="reg-password"
                   type={showPassword ? 'text' : 'password'}
-                  autoComplete="new-password"
-                  placeholder="Create a password"
                   value={password}
                   onChange={event => setPassword(event.target.value)}
+                  placeholder="At least 8 characters"
+                  autoComplete="new-password"
                   required
                 />
                 <button
-                  className="password-toggle"
                   type="button"
-                  onClick={() => setShowPassword(visible => !visible)}
+                  className="password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? (
                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path d="m3 3 18 18" />
-                      <path d="M10.6 10.7a2 2 0 0 0 2.7 2.7" />
-                      <path d="M9.9 5.2A10.8 10.8 0 0 1 12 5c5.5 0 9 7 9 7a15 15 0 0 1-3.1 3.8" />
-                      <path d="M6.2 6.2C3.9 7.8 3 12 3 12s3.5 7 9 7a9 9 0 0 0 3-.5" />
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                      <line x1="1" y1="1" x2="23" y2="23" />
                     </svg>
                   ) : (
                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -181,16 +212,18 @@ function Register() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="role">Requested role</label>
+              <label htmlFor="reg-role">Requested Role</label>
               <div className="input-wrap">
                 <select
-                  id="role"
-                  name="role"
+                  id="reg-role"
                   value={role}
                   onChange={event => setRole(event.target.value)}
+                  className="role-select"
+                  style={{ background: 'transparent', border: 'none', color: '#f7f7f2', width: '100%' }}
                 >
-                  <option value="cashier">Cashier</option>
-                  <option value="manager">Manager</option>
+                  <option value="cashier" style={{ background: '#1c1d18', color: '#fff' }}>Cashier — Point of Sale</option>
+                  <option value="manager" style={{ background: '#1c1d18', color: '#fff' }}>Manager — Inventory &amp; Reports</option>
+                  <option value="owner" style={{ background: '#1c1d18', color: '#fff' }}>Owner — Full Administrative Access</option>
                 </select>
               </div>
             </div>

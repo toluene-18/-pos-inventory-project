@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import Icon from '../ui/Icon';
 
 export default function PreferencesTab({
@@ -7,14 +8,29 @@ export default function PreferencesTab({
   onChange,
   onApplyThresholdToAll,
 }) {
+  const [draft, setDraft] = useState(preferences);
+  const [hasChanges, setHasChanges] = useState(false);
   const presets = [5, 10, 15, 20, 25, 30];
 
+  useEffect(() => {
+    setDraft(preferences);
+    setHasChanges(false);
+  }, [preferences]);
+
   function setThreshold(val) {
-    onChange({ ...preferences, defaultThreshold: Math.max(1, Number(val) || 1) });
+    const nextVal = Math.max(1, Number(val) || 1);
+    setDraft(prev => ({ ...prev, defaultThreshold: nextVal }));
+    setHasChanges(true);
   }
 
   function toggleAlerts() {
-    onChange({ ...preferences, lowStockAlerts: !preferences.lowStockAlerts });
+    setDraft(prev => ({ ...prev, lowStockAlerts: !prev.lowStockAlerts }));
+    setHasChanges(true);
+  }
+
+  function handleSave() {
+    onChange(draft);
+    setHasChanges(false);
   }
 
   return (
@@ -37,7 +53,7 @@ export default function PreferencesTab({
               id="pref-threshold-input"
               type="number"
               min="1"
-              value={preferences.defaultThreshold}
+              value={draft.defaultThreshold}
               onChange={e => setThreshold(e.target.value)}
               className="pref-threshold-box"
             />
@@ -46,7 +62,7 @@ export default function PreferencesTab({
                 <button
                   key={val}
                   type="button"
-                  className={`preset-pill ${preferences.defaultThreshold === val ? 'preset-pill--active' : ''}`}
+                  className={`preset-pill ${draft.defaultThreshold === val ? 'preset-pill--active' : ''}`}
                   onClick={() => setThreshold(val)}
                 >
                   {val}
@@ -54,7 +70,7 @@ export default function PreferencesTab({
               ))}
             </div>
             <p className="pref-explain-text">
-              When you add a product, raising its stock below this number flips it to a <span className="text-amber font-semibold">Low Stock</span> badge and surfaces it in alerts.
+              When you add a product, falling below this number marks it with a <span className="text-amber font-semibold">Low Stock</span> badge and surfaces it in alerts.
             </p>
           </div>
 
@@ -65,7 +81,7 @@ export default function PreferencesTab({
                 <Icon name="bell" size={20} />
               </span>
               <p>
-                <strong>{lowStockCount} products</strong> currently sit at or below {preferences.defaultThreshold} units and would show as low or out of stock.
+                <strong>{lowStockCount} products</strong> currently sit at or below {draft.defaultThreshold} units and would show as low or out of stock.
               </p>
             </div>
           </div>
@@ -96,13 +112,25 @@ export default function PreferencesTab({
         <div className="panel-right-toggle">
           <button
             type="button"
-            className={`switch-toggle ${preferences.lowStockAlerts ? 'switch-toggle--on' : ''}`}
+            className={`switch-toggle ${draft.lowStockAlerts ? 'switch-toggle--on' : ''}`}
             onClick={toggleAlerts}
             aria-label="Toggle low stock alerts"
           >
             <span className="switch-toggle-thumb" />
           </button>
         </div>
+      </div>
+
+      <div className="settings-form-actions" style={{ marginTop: '20px' }}>
+        <button
+          type="button"
+          className="btn-save-settings"
+          onClick={handleSave}
+        >
+          <Icon name="check" size={16} />
+          <span>Save preferences</span>
+        </button>
+        {hasChanges && <span className="unsaved-changes-hint">You have unsaved changes</span>}
       </div>
     </div>
   );

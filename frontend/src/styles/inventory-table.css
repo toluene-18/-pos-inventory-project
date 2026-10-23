@@ -20,7 +20,7 @@
   text-align: left;
   font-size: 11px;
   font-weight: 700;
-  color: #64748b;
+  color: var(--text-dim);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   border-bottom: 1px solid var(--border);
@@ -59,43 +59,55 @@
   height: 14px;
 }
 
-/* Product cell */
+.th-right,
+.td-right {
+  text-align: right;
+}
+
+.th-center,
+.td-center {
+  text-align: center;
+}
+
+/* Product column with packshot image */
 .inv-prod-cell {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.inv-prod-thumb {
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
+.inv-prod-img {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
   background: var(--surface-2);
+  border: 1px solid var(--border);
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
   flex-shrink: 0;
 }
 
-.inv-prod-thumb img {
+.inv-prod-img img {
   width: 100%;
   height: 100%;
   object-fit: contain;
 }
 
-.inv-prod-thumb span {
-  font-size: 11px;
+.inv-prod-monogram {
+  font-size: 13px;
   font-weight: 700;
   color: #10b981;
 }
 
-.inv-prod-meta {
+.inv-prod-details {
   display: flex;
   flex-direction: column;
 }
 
 .inv-prod-name {
+  font-size: 13.5px;
   font-weight: 600;
   color: var(--text);
   line-height: 1.3;
@@ -103,13 +115,13 @@
 
 .inv-prod-sku {
   font-size: 11px;
-  color: #64748b;
+  color: var(--text-dim);
   margin-top: 1px;
 }
 
 .inv-cat-text {
   font-size: 12.5px;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 /* Status pills */
@@ -133,7 +145,7 @@
 .inv-status-pill--low {
   background: rgba(245, 158, 11, 0.12);
   border: 1px solid rgba(245, 158, 11, 0.3);
-  color: #fbbf24;
+  color: #f59e0b;
 }
 
 .inv-status-pill--low .status-dot {
@@ -153,7 +165,7 @@
 .inv-status-pill--ok {
   background: rgba(16, 185, 129, 0.12);
   border: 1px solid rgba(16, 185, 129, 0.3);
-  color: #34d399;
+  color: #10b981;
 }
 
 .inv-status-pill--ok .status-dot {
@@ -166,7 +178,7 @@
 }
 
 .inv-threshold-val {
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .inv-cost-val,
@@ -177,7 +189,7 @@
 
 .inv-stockval {
   font-size: 12.5px;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-weight: 500;
 }
 
@@ -188,7 +200,7 @@
   border-radius: 50%;
   border: 1px solid var(--border);
   background: var(--surface-2);
-  color: #94a3b8;
+  color: var(--text-muted);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -199,12 +211,12 @@
 .inv-action-btn-circle:hover {
   background: #10b981;
   border-color: #10b981;
-  color: #042f2e;
+  color: #ffffff;
 }
 
 .inventory-loading,
 .inventory-empty {
   padding: 48px 24px;
   text-align: center;
-  color: #94a3b8;
+  color: var(--text-muted);
 }

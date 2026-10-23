@@ -80,7 +80,6 @@ export function useSettingsData(user, onSessionExpired) {
   }, [onSessionExpired]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchBackendStaff();
   }, [fetchBackendStaff]);
 
@@ -90,7 +89,7 @@ export function useSettingsData(user, onSessionExpired) {
   }
 
   function appendActivity(category, badge, title, detail) {
-    const actorName = user?.name || 'Chinedu Okafor';
+    const actorName = user?.name || 'Ayanbisi AbdulRahman';
     const initials = actorName
       .split(' ')
       .filter(Boolean)
@@ -129,8 +128,14 @@ export function useSettingsData(user, onSessionExpired) {
   function handleProfileChange(newProfile) {
     setProfile(newProfile);
     localStorage.setItem('cwg_store_profile', JSON.stringify(newProfile));
-    appendActivity('profile', 'Profile updated', 'Updated store profile details', `${newProfile.name}`);
-    showToast('Store profile updated successfully.');
+    const loc = [newProfile.city, newProfile.state].filter(Boolean).join(', ');
+    appendActivity(
+      'profile',
+      'Profile updated',
+      'Updated store profile details',
+      `${newProfile.name}${loc ? ` • ${loc}` : ''}`
+    );
+    showToast('Store profile saved successfully.');
   }
 
   function handlePreferencesChange(newPrefs) {
@@ -142,10 +147,10 @@ export function useSettingsData(user, onSessionExpired) {
         'threshold',
         'Threshold changed',
         `Default reorder threshold changed from ${oldThreshold} to ${newPrefs.defaultThreshold}`,
-        `New products will start alerting at ${newPrefs.defaultThreshold} units`
+        `New products will alert at ${newPrefs.defaultThreshold} units`
       );
     }
-    showToast('Preferences updated.');
+    showToast('Preferences saved successfully.');
   }
 
   function handleReceiptChange(newReceipt) {
@@ -155,9 +160,9 @@ export function useSettingsData(user, onSessionExpired) {
       'receipt',
       'Receipt updated',
       'Updated receipt basics & format settings',
-      `Currency: ${newReceipt.currencySymbol} • Paper: ${newReceipt.paperWidth}`
+      `Currency: ${newReceipt.currency || '₦ NGN'} • Header/Footer updated`
     );
-    showToast('Receipt configuration saved.');
+    showToast('Receipt configuration saved successfully.');
   }
 
   function handleSaveStaffMember(member) {

@@ -81,9 +81,26 @@ class ProductController extends Controller
             'cost_price' => 'sometimes|required|numeric|min:0',
             'sell_price' => 'sometimes|required|numeric|min:0',
             'image_path' => 'nullable|string|max:1000',
+            'current_stock' => 'nullable|integer|min:0',
+            'reorder_threshold' => 'nullable|integer|min:0',
         ]);
 
         $product->update($validated);
+
+        if ($request->has('current_stock') || $request->has('reorder_threshold')) {
+            $invUpdates = [];
+            if ($request->has('current_stock')) {
+                $invUpdates['quantity'] = (int) $request->input('current_stock');
+            }
+            if ($request->has('reorder_threshold')) {
+                $invUpdates['reorder_threshold'] = (int) $request->input('reorder_threshold');
+            }
+            if ($product->inventory) {
+                $product->inventory->update($invUpdates);
+            } else {
+                $product->inventory()->create($invUpdates);
+            }
+        }
 
         return response()->json(
             $product->fresh()->load('inventory'),

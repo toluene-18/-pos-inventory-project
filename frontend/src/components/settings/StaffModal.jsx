@@ -1,20 +1,35 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Icon from '../ui/Icon';
 
 export default function StaffModal({ member, isOpen, onClose, onSave }) {
   const isEditing = Boolean(member);
   const [formData, setFormData] = useState({
-    name: member?.name || '',
-    email: member?.email || '',
-    role: member?.role || 'cashier',
-    status: member?.status || 'active',
+    name: '',
+    email: '',
+    role: 'cashier',
+    status: 'active',
   });
+
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({
+        id: member?.id,
+        name: member?.name || '',
+        email: member?.email || '',
+        role: member?.role || 'cashier',
+        status: member?.status || 'active',
+      });
+    }
+  }, [member, isOpen]);
 
   if (!isOpen) return null;
 
   function handleSubmit(e) {
     e.preventDefault();
-    onSave(formData, member?.id);
+    onSave({
+      ...formData,
+      id: member?.id || formData.id || Date.now(),
+    });
     onClose();
   }
 

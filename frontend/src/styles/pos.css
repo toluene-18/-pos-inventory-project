@@ -18,10 +18,17 @@
   align-items: start;
 }
 
-/* ── Search + chips ─────────────────────────────────────────────── */
+/* ── Search + scan button + chips ─────────────────────────────── */
 .pos-search { display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px; }
 
+.pos-search-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
 .pos-search-input {
+  flex: 1;
   display: flex; align-items: center; gap: 10px;
   padding: 0 12px; height: 44px;
   border: 1px solid var(--border); border-radius: 10px;
@@ -36,6 +43,29 @@
 .pos-search-input kbd {
   padding: 1px 6px; border: 1px solid var(--border); border-radius: 4px;
   font-size: 10px; color: var(--text-dim); font-family: inherit;
+}
+
+.pos-scan-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .15s ease;
+}
+.pos-scan-btn:hover {
+  border-color: var(--green);
+  color: var(--green);
+  background: var(--green-soft);
 }
 
 .pos-chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -84,7 +114,7 @@
 
 .pos-tile-media {
   position: relative; display: grid; place-items: center; aspect-ratio: 4 / 3;
-  background: var(--tone-bg); color: var(--tone-fg);
+  background: var(--surface-2); color: var(--tone-fg);
 }
 .pos-tile-media img { width: 100%; height: 100%; object-fit: cover; }
 .pos-tile-mono { font-size: 30px; font-weight: 700; letter-spacing: .02em; opacity: .9; }
@@ -137,4 +167,5 @@
 }
 @media (max-width: 520px) {
   .pos-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .pos-search-row { flex-direction: column; align-items: stretch; }
 }

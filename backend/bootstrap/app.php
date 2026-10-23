@@ -19,5 +19,13 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (\Throwable $e, \Illuminate\Http\Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                if ($e instanceof \Illuminate\Database\QueryException || $e instanceof \PDOException) {
+                    return response()->json([
+                        'message' => 'Unable to connect to the database server. Please ensure the MySQL database service is running and try again.',
+                    ], 503);
+                }
+            }
+        });
     })->create();

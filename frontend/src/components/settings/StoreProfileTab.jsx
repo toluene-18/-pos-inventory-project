@@ -1,11 +1,30 @@
+import { useState, useEffect } from 'react';
 import Icon from '../ui/Icon';
 
 export default function StoreProfileTab({ profile, onChange }) {
+  const [draft, setDraft] = useState(profile);
+  const [hasChanges, setHasChanges] = useState(false);
+
+  useEffect(() => {
+    setDraft(profile);
+    setHasChanges(false);
+  }, [profile]);
+
   function handleChange(field, value) {
-    onChange({ ...profile, [field]: value });
+    setDraft(prev => {
+      const next = { ...prev, [field]: value };
+      setHasChanges(true);
+      return next;
+    });
   }
 
-  const monogram = (profile.name || 'CW')
+  function handleSave(e) {
+    e?.preventDefault();
+    onChange(draft);
+    setHasChanges(false);
+  }
+
+  const monogram = (draft.name || 'CW')
     .split(' ')
     .filter(Boolean)
     .slice(0, 2)
@@ -28,19 +47,19 @@ export default function StoreProfileTab({ profile, onChange }) {
       <div className="store-preview-card">
         <div className="store-preview-avatar">{monogram}</div>
         <div className="store-preview-info">
-          <h4>{profile.name || 'Store Name'}</h4>
-          <p>{profile.tagline || 'Everyday groceries, drinks and household essentials for the neighbourhood.'}</p>
-          <small>{profile.address}, {profile.city}</small>
+          <h4>{draft.name || 'Store Name'}</h4>
+          <p>{draft.tagline || 'Everyday groceries, drinks and household essentials for the neighbourhood.'}</p>
+          <small>{draft.address}{draft.city ? `, ${draft.city}` : ''}{draft.state ? `, ${draft.state}` : ''}</small>
         </div>
       </div>
 
-      <div className="settings-form-grid">
+      <form onSubmit={handleSave} className="settings-form-grid">
         <div className="form-group full-width">
           <label htmlFor="cfg-store-name">STORE NAME</label>
           <input
             id="cfg-store-name"
             type="text"
-            value={profile.name}
+            value={draft.name}
             onChange={e => handleChange('name', e.target.value)}
             placeholder="CWG Provisions Store"
           />
@@ -51,7 +70,7 @@ export default function StoreProfileTab({ profile, onChange }) {
           <input
             id="cfg-tagline"
             type="text"
-            value={profile.tagline}
+            value={draft.tagline}
             onChange={e => handleChange('tagline', e.target.value)}
             placeholder="Everyday groceries, drinks and household essentials for the neighbourhood."
           />
@@ -63,7 +82,7 @@ export default function StoreProfileTab({ profile, onChange }) {
           <input
             id="cfg-address"
             type="text"
-            value={profile.address}
+            value={draft.address}
             onChange={e => handleChange('address', e.target.value)}
             placeholder="12 Ogui Road, by Amaechi Junction"
           />
@@ -74,7 +93,7 @@ export default function StoreProfileTab({ profile, onChange }) {
           <input
             id="cfg-city"
             type="text"
-            value={profile.city}
+            value={draft.city}
             onChange={e => handleChange('city', e.target.value)}
             placeholder="Enugu"
           />
@@ -85,9 +104,9 @@ export default function StoreProfileTab({ profile, onChange }) {
           <input
             id="cfg-state"
             type="text"
-            value={profile.state}
+            value={draft.state}
             onChange={e => handleChange('state', e.target.value)}
-            placeholder="Enugu State"
+            placeholder="Ogun State"
           />
         </div>
 
@@ -96,7 +115,7 @@ export default function StoreProfileTab({ profile, onChange }) {
           <input
             id="cfg-phone"
             type="text"
-            value={profile.phone}
+            value={draft.phone}
             onChange={e => handleChange('phone', e.target.value)}
             placeholder="+234 803 456 7788"
           />
@@ -107,7 +126,7 @@ export default function StoreProfileTab({ profile, onChange }) {
           <input
             id="cfg-email"
             type="email"
-            value={profile.email}
+            value={draft.email}
             onChange={e => handleChange('email', e.target.value)}
             placeholder="hello@cwgretail.com"
           />
@@ -118,13 +137,24 @@ export default function StoreProfileTab({ profile, onChange }) {
           <input
             id="cfg-hours"
             type="text"
-            value={profile.openingHours}
+            value={draft.openingHours}
             onChange={e => handleChange('openingHours', e.target.value)}
             placeholder="Mon – Sat, 7:00am – 9:00pm"
           />
           <span className="field-hint">Shown to customers on the receipt footer if you use it.</span>
         </div>
-      </div>
+
+        <div className="settings-form-actions full-width">
+          <button
+            type="submit"
+            className="btn-save-settings"
+          >
+            <Icon name="check" size={16} />
+            <span>Save store profile</span>
+          </button>
+          {hasChanges && <span className="unsaved-changes-hint">You have unsaved changes</span>}
+        </div>
+      </form>
     </div>
   );
 }

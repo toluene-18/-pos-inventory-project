@@ -27,7 +27,7 @@
 
 .reports-header p {
   margin: 6px 0 0;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 13.5px;
 }
 
@@ -49,21 +49,21 @@
   border-radius: 9999px;
   border: 1px solid var(--border);
   background: var(--surface);
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 12.5px;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .range-pill-btn:hover {
-  background: var(--surface-hover);
+  background: var(--surface-2);
   color: var(--text);
 }
 
 .range-pill-btn--active {
   background: #10b981;
   border-color: #10b981;
-  color: #042f2e;
+  color: #ffffff;
   font-weight: 700;
 }
 
@@ -74,78 +74,122 @@
 }
 
 .date-indicator-pill {
-  padding: 6px 14px;
-  border-radius: 9999px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  color: var(--text);
-  font-size: 12px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 12px;
 }
 
-.btn-export {
+.reports-export-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 7px 16px;
+  padding: 8px 16px;
   border-radius: 8px;
-  background: #10b981;
-  color: #042f2e;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
   font-size: 13px;
-  font-weight: 700;
-  border: none;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: all 0.15s ease;
 }
 
-.btn-export:hover {
+.reports-export-btn:hover {
+  background: var(--surface-2);
+  border-color: var(--border-soft);
+}
+
+.reports-primary-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background: #10b981;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.reports-primary-btn:hover {
   background: #0ea371;
 }
 
-/* 4 KPI Cards */
-.reports-kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
+/* Alert / Error Banners */
+.reports-alert {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-@media (max-width: 900px) {
-  .reports-kpi-grid {
+.reports-alert--error {
+  background: var(--rose-soft);
+  color: var(--rose);
+  border: 1px solid var(--rose);
+}
+
+/* KPI Cards Row */
+.reports-kpis-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 1024px) {
+  .reports-kpis-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .reports-kpis-grid {
+    grid-template-columns: 1fr;
   }
 }
 
 .reports-kpi-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 18px 20px;
   display: flex;
   flex-direction: column;
 }
 
-.reports-kpi-header {
+.reports-kpi-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .reports-kpi-label {
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 700;
-  color: #94a3b8;
-  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
 }
 
 .reports-kpi-badge {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 9999px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 4px;
 }
 
 .reports-kpi-badge--green {
@@ -164,8 +208,9 @@
 }
 
 .reports-kpi-badge--gray {
-  background: #1e242c;
-  color: #94a3b8;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
 }
 
 .reports-kpi-value {
@@ -178,5 +223,5 @@
 
 .reports-kpi-sub {
   font-size: 12px;
-  color: #64748b;
+  color: var(--text-dim);
 }

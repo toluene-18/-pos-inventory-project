@@ -1,28 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Icon from '../ui/Icon';
-import ProductImageUploader from './ProductImageUploader';
-import { formatMoney } from '../../utils/dashboardStats';
+import { PRODUCT_PAGE_CATEGORIES } from '../../utils/categories';
+import { humanizeErrorMessage } from '../../utils/errorMessage';
 import '../../styles/products-modal.css';
 
-const CATEGORIES = [
-  'groceries',
-  'beverages',
-  'snacks',
-  'household',
-  'personal_care',
-  'dairy_breakfast',
-  'stationery',
-];
-
 const UNITS = [
-  { value: 'piece', label: 'Piece / Item' },
-  { value: 'bag', label: 'Bag' },
-  { value: 'tin', label: 'Tin / Can' },
-  { value: 'pack', label: 'Pack' },
-  { value: 'bottle', label: 'Bottle' },
-  { value: 'carton', label: 'Carton' },
-  { value: 'kg', label: 'Kilogram (kg)' },
-  { value: 'litre', label: 'Litre (L)' },
+  { value: 'bag', label: 'bag' },
+  { value: 'tin', label: 'tin' },
+  { value: 'bottle', label: 'bottle' },
+  { value: 'pack', label: 'pack' },
+  { value: 'carton', label: 'carton' },
+  { value: 'piece', label: 'piece' },
+  { value: 'sachet', label: 'sachet' },
+  { value: 'roll', label: 'roll' },
+  { value: 'kg', label: 'kg' },
+  { value: 'litre', label: 'litre' },
 ];
 
 function getInitialState(product) {
@@ -30,7 +22,7 @@ function getInitialState(product) {
     return {
       name: product.name || '',
       sku: product.sku || '',
-      category: product.category || 'groceries',
+      category: product.category || 'grains_staples',
       unit: product.unit || 'piece',
       cost_price: product.cost_price ?? '',
       sell_price: product.sell_price ?? '',
@@ -42,7 +34,7 @@ function getInitialState(product) {
   return {
     name: '',
     sku: '',
-    category: 'groceries',
+    category: 'grains_staples',
     unit: 'piece',
     cost_price: '',
     sell_price: '',
@@ -58,13 +50,19 @@ export default function ProductFormModal({ product, isOpen, onClose, onSave }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    if (isOpen) {
+      setFormData(getInitialState(product));
+      setError('');
+    }
+  }, [product, isOpen]);
+
   if (!isOpen) return null;
 
   const cost = parseFloat(formData.cost_price) || 0;
   const sell = parseFloat(formData.sell_price) || 0;
   const profit = sell - cost;
   const marginPercent = sell > 0 ? Math.round((profit / sell) * 100) : 0;
-  const hasMarginData = formData.cost_price !== '' && formData.sell_price !== '' && sell > 0;
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -80,17 +78,14 @@ export default function ProductFormModal({ product, isOpen, onClose, onSave }) {
         cost_price: parseFloat(formData.cost_price),
         sell_price: parseFloat(formData.sell_price),
         image_path: formData.image_path || null,
+        current_stock: parseInt(formData.current_stock, 10) || 0,
+        reorder_threshold: parseInt(formData.reorder_threshold, 10) || 0,
       };
-
-      if (!isEditing) {
-        payload.current_stock = parseInt(formData.current_stock, 10) || 0;
-        payload.reorder_threshold = parseInt(formData.reorder_threshold, 10) || 0;
-      }
 
       await onSave(payload, product?.id);
       onClose();
     } catch (err) {
-      setError(err.message || 'Failed to save product.');
+      setError(humanizeErrorMessage(err));
     } finally {
       setSubmitting(false);
     }
@@ -100,13 +95,13 @@ export default function ProductFormModal({ product, isOpen, onClose, onSave }) {
     <div className="product-modal-backdrop" role="dialog" aria-modal="true">
       <div className="product-modal">
         <div className="product-modal-head">
-          <div className="product-modal-title">
-            <span className="product-modal-icon">
-              <Icon name="products" size={18} />
-            </span>
-            <h3>{isEditing ? 'Edit Product' : 'Add New Product'}</h3>
-          </div>
-          <button type="button" className="product-modal-close" onClick={onClose}>
+          <h3>{isEditing ? 'Edit product' : 'Add product'}</h3>
+          <button
+            type="button"
+            className="product-modal-close"
+            onClick={onClose}
+            aria-label="Close modal"
+          >
             <Icon name="x" size={16} />
           </button>
         </div>
@@ -118,40 +113,40 @@ export default function ProductFormModal({ product, isOpen, onClose, onSave }) {
         )}
 
         <form onSubmit={handleSubmit} className="product-form">
-          <div className="form-group">
-            <label htmlFor="prod-name">Product Name *</label>
+          <div className="form-group full-width">
+            <label htmlFor="prod-name">Product name</label>
             <input
               id="prod-name"
               type="text"
               required
               value={formData.name}
               onChange={e => setFormData({ ...formData, name: e.target.value })}
-              placeholder="e.g. Golden Morn Cereal 900g"
+              placeholder="Basmati Rice 5kg"
             />
           </div>
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="prod-sku">SKU / Barcode *</label>
+              <label htmlFor="prod-sku">SKU / Barcode</label>
               <input
                 id="prod-sku"
                 type="text"
                 required
                 value={formData.sku}
                 onChange={e => setFormData({ ...formData, sku: e.target.value })}
-                placeholder="e.g. GM-900"
+                placeholder="CWG-GRN-001"
               />
             </div>
             <div className="form-group">
-              <label htmlFor="prod-category">Category *</label>
+              <label htmlFor="prod-category">Category</label>
               <select
                 id="prod-category"
                 value={formData.category}
                 onChange={e => setFormData({ ...formData, category: e.target.value })}
               >
-                {CATEGORIES.map(c => (
-                  <option key={c} value={c}>
-                    {c.replace('_', ' ').toUpperCase()}
+                {PRODUCT_PAGE_CATEGORIES.filter(c => c.id !== 'all').map(c => (
+                  <option key={c.id} value={c.id}>
+                    {c.label}
                   </option>
                 ))}
               </select>
@@ -160,7 +155,63 @@ export default function ProductFormModal({ product, isOpen, onClose, onSave }) {
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="prod-unit">Unit of Measure *</label>
+              <label htmlFor="prod-sell">Selling price (₦)</label>
+              <input
+                id="prod-sell"
+                type="number"
+                step="any"
+                min="0"
+                required
+                value={formData.sell_price}
+                onChange={e => setFormData({ ...formData, sell_price: e.target.value })}
+                placeholder="9500"
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="prod-cost">Cost price (₦)</label>
+              <input
+                id="prod-cost"
+                type="number"
+                step="any"
+                min="0"
+                required
+                value={formData.cost_price}
+                onChange={e => setFormData({ ...formData, cost_price: e.target.value })}
+                placeholder="7800"
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="prod-stock">Stock on hand</label>
+              <input
+                id="prod-stock"
+                type="number"
+                min="0"
+                required
+                value={formData.current_stock}
+                onChange={e => setFormData({ ...formData, current_stock: e.target.value })}
+                placeholder="42"
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="prod-reorder">Reorder level</label>
+              <input
+                id="prod-reorder"
+                type="number"
+                min="0"
+                required
+                value={formData.reorder_threshold}
+                onChange={e => setFormData({ ...formData, reorder_threshold: e.target.value })}
+                placeholder="12"
+              />
+            </div>
+          </div>
+
+          <div className="form-row align-items-center">
+            <div className="form-group">
+              <label htmlFor="prod-unit">Unit</label>
               <select
                 id="prod-unit"
                 value={formData.unit}
@@ -173,91 +224,22 @@ export default function ProductFormModal({ product, isOpen, onClose, onSave }) {
                 ))}
               </select>
             </div>
-            <div className="form-group">
-              <label htmlFor="prod-cost">Cost Price (₦) *</label>
-              <input
-                id="prod-cost"
-                type="number"
-                step="0.01"
-                min="0"
-                required
-                value={formData.cost_price}
-                onChange={e => setFormData({ ...formData, cost_price: e.target.value })}
-                placeholder="0.00"
-              />
-            </div>
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="prod-sell">Selling Price (₦) *</label>
-              <input
-                id="prod-sell"
-                type="number"
-                step="0.01"
-                min="0"
-                required
-                value={formData.sell_price}
-                onChange={e => setFormData({ ...formData, sell_price: e.target.value })}
-                placeholder="0.00"
-              />
-            </div>
-          </div>
-
-          {hasMarginData && (
-            <div
-              className={`product-margin-badge ${
-                profit < 0
-                  ? 'product-margin-badge--negative'
-                  : marginPercent >= 20
-                  ? 'product-margin-badge--high'
-                  : 'product-margin-badge--medium'
-              }`}
-            >
-              <span>{profit < 0 ? 'Warning: Below cost' : 'Estimated Margin:'}</span>
-              <strong>{profit >= 0 ? '+' : ''}{formatMoney(profit)} ({marginPercent}%)</strong>
-            </div>
-          )}
-
-          <ProductImageUploader
-            imagePath={formData.image_path}
-            onChange={url => setFormData(prev => ({ ...prev, image_path: url }))}
-            onError={setError}
-          />
-
-          {!isEditing && (
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="prod-stock">Initial Stock Quantity *</label>
-                <input
-                  id="prod-stock"
-                  type="number"
-                  min="0"
-                  required
-                  value={formData.current_stock}
-                  onChange={e => setFormData({ ...formData, current_stock: e.target.value })}
-                  placeholder="0"
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="prod-threshold">Reorder Alert Threshold *</label>
-                <input
-                  id="prod-threshold"
-                  type="number"
-                  min="0"
-                  required
-                  value={formData.reorder_threshold}
-                  onChange={e => setFormData({ ...formData, reorder_threshold: e.target.value })}
-                  placeholder="5"
-                />
+            <div className="form-group profit-margin-col">
+              <label className="profit-margin-label">Profit margin</label>
+              <div
+                className={`profit-margin-value ${
+                  profit < 0 ? 'profit-margin-value--negative' : ''
+                }`}
+              >
+                {sell > 0 ? `${marginPercent}%` : '—'}
               </div>
             </div>
-          )}
+          </div>
 
           <div className="product-modal-actions">
             <button
               type="button"
-              className="btn btn-secondary"
+              className="btn-modal-cancel"
               onClick={onClose}
               disabled={submitting}
             >
@@ -265,10 +247,10 @@ export default function ProductFormModal({ product, isOpen, onClose, onSave }) {
             </button>
             <button
               type="submit"
-              className="btn btn-primary"
+              className="btn-modal-save"
               disabled={submitting}
             >
-              {submitting ? 'Saving...' : isEditing ? 'Update Product' : 'Add Product'}
+              {submitting ? 'Saving...' : 'Save changes'}
             </button>
           </div>
         </form>

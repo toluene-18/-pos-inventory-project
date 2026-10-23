@@ -1,8 +1,18 @@
-﻿import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { loginUser } from '../services/api';
+import { humanizeErrorMessage } from '../utils/errorMessage';
+import PasswordResetModal from '../components/auth/PasswordResetModal';
 import '../styles/login-brand.css';
 import '../styles/login-form.css';
 import '../styles/login-responsive.css';
+
+function formatStateCountry(rawState) {
+  if (!rawState) return 'Lagos, Nigeria';
+  const cleaned = rawState.replace(/\bstate\b/gi, '').trim();
+  if (!cleaned) return 'Lagos, Nigeria';
+  const capitalized = cleaned.charAt(0).toUpperCase() + cleaned.slice(1).toLowerCase();
+  return `${capitalized}, Nigeria`;
+}
 
 function Login({ onLogin }) {
   const [email, setEmail] = useState('');
@@ -10,26 +20,32 @@ function Login({ onLogin }) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showResetModal, setShowResetModal] = useState(false);
+
+  const storeProfile = useMemo(() => {
+    try {
+      const saved = localStorage.getItem('cwg_store_profile');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  }, []);
+
+  const locationDisplay = useMemo(() => {
+    return formatStateCountry(storeProfile?.state);
+  }, [storeProfile]);
 
   async function handleSubmit(event) {
     event.preventDefault();
-
     setError('');
     setLoading(true);
 
     try {
       const data = await loginUser(email, password);
-
       onLogin(data.user);
       setPassword('');
     } catch (err) {
-      if (err instanceof TypeError) {
-        setError(
-          'Could not reach the server. Check that Laravel is running and that CORS allows this frontend.'
-        );
-      } else {
-        setError(err.message || 'Something went wrong. Please try again.');
-      }
+      setError(humanizeErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -47,14 +63,14 @@ function Login({ onLogin }) {
             </span>
 
             <span className="brand-name">
-              <strong>CWG</strong>
-              <span>Retail Suite</span>
+              <strong>{storeProfile?.name?.split(' ')[0] || 'CWG'}</strong>
+              <span>{storeProfile?.name?.split(' ').slice(1).join(' ') || 'Retail Suite'}</span>
             </span>
           </a>
 
           <div className="location-pill">
             <span className="location-dot" />
-            Lagos, Nigeria
+            {locationDisplay}
           </div>
 
           <div className="brand-message">
@@ -140,7 +156,19 @@ function Login({ onLogin }) {
             </div>
 
             <div className="form-group">
-              <label htmlFor="password">Password</label>
+              <div className="label-row">
+                <label htmlFor="password">Password</label>
+                <button
+                  type="button"
+                  className="link-button forgot-pwd-link"
+                  onClick={() => {
+                    setResetEmail(email);
+                    setShowResetModal(true);
+                  }}
+                >
+                  Forgot password?
+                </button>
+              </div>
 
               <div className="input-wrap">
                 <span className="input-icon" aria-hidden="true">
@@ -224,6 +252,11 @@ function Login({ onLogin }) {
           </footer>
         </div>
       </section>
+
+      <PasswordResetModal
+        isOpen={showResetModal}
+        onClose={() => setShowResetModal(false)}
+      />
     </main>
   );
 }
