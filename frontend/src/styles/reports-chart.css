@@ -1,8 +1,8 @@
 
 /* Sales over time chart card */
 .reports-chart-card {
-  background: #14191f;
-  border: 1px solid #232a32;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 22px;
   display: flex;
@@ -22,7 +22,7 @@
   margin: 0;
   font-size: 16px;
   font-weight: 700;
-  color: #f8fafc;
+  color: var(--text);
 }
 
 .reports-chart-head p {
@@ -42,8 +42,8 @@
   gap: 6px;
   padding: 5px 12px;
   border-radius: 6px;
-  background: #101418;
-  border: 1px solid #28313b;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
   font-size: 12px;
 }
 
@@ -53,7 +53,7 @@
 }
 
 .stat-pill-val {
-  color: #f8fafc;
+  color: var(--text);
   font-weight: 700;
 }
 

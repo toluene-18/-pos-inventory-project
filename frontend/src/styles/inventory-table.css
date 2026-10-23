@@ -3,8 +3,8 @@
    ================================================================ */
 
 .inventory-table-container {
-  background: #14191f;
-  border: 1px solid #232a32;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   overflow-x: auto;
 }
@@ -15,7 +15,7 @@
 }
 
 .inventory-table th {
-  background: #101418;
+  background: var(--surface-2);
   padding: 12px 14px;
   text-align: left;
   font-size: 11px;
@@ -23,20 +23,20 @@
   color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border-bottom: 1px solid #232a32;
+  border-bottom: 1px solid var(--border);
   white-space: nowrap;
 }
 
 .inventory-table td {
   padding: 12px 14px;
-  border-bottom: 1px solid #1c222a;
+  border-bottom: 1px solid var(--border);
   font-size: 13px;
-  color: #e2e8f0;
+  color: var(--text);
   vertical-align: middle;
 }
 
 .inventory-table tr:hover {
-  background: #181e26;
+  background: var(--surface-hover);
 }
 
 .inv-row--selected {
@@ -70,7 +70,7 @@
   width: 36px;
   height: 36px;
   border-radius: 6px;
-  background: #1c232a;
+  background: var(--surface-2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -97,7 +97,7 @@
 
 .inv-prod-name {
   font-weight: 600;
-  color: #f8fafc;
+  color: var(--text);
   line-height: 1.3;
 }
 
@@ -162,7 +162,7 @@
 
 .inv-onhand-val {
   font-weight: 700;
-  color: #f8fafc;
+  color: var(--text);
 }
 
 .inv-threshold-val {
@@ -172,7 +172,7 @@
 .inv-cost-val,
 .inv-sell-val {
   font-size: 12.5px;
-  color: #cbd5e1;
+  color: var(--text);
 }
 
 .inv-stockval {
@@ -186,8 +186,8 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  border: 1px solid #28313b;
-  background: #161b20;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
   color: #94a3b8;
   display: inline-flex;
   align-items: center;

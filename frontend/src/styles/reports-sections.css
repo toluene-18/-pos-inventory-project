@@ -15,8 +15,8 @@
 }
 
 .reports-section-card {
-  background: #14191f;
-  border: 1px solid #232a32;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 22px;
   display: flex;
@@ -46,7 +46,7 @@
   margin: 0;
   font-size: 16px;
   font-weight: 700;
-  color: #f8fafc;
+  color: var(--text);
 }
 
 .reports-section-head p {
@@ -113,7 +113,7 @@
 .donut-center-val {
   font-size: 13px;
   font-weight: 800;
-  color: #f8fafc;
+  color: var(--text);
   margin-top: 2px;
 }
 
@@ -160,7 +160,7 @@
 }
 
 .cat-amount {
-  color: #f1f5f9;
+  color: var(--text);
   font-weight: 600;
 }
 
@@ -172,7 +172,7 @@
 .cat-progress-track {
   height: 5px;
   border-radius: 9999px;
-  background: #101418;
+  background: var(--surface-2);
   overflow: hidden;
 }
 
@@ -199,7 +199,7 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: #1c232a;
+  background: var(--surface-hover);
   color: #94a3b8;
   font-size: 11px;
   font-weight: 700;
@@ -229,7 +229,7 @@
 }
 
 .top-product-name {
-  color: #f8fafc;
+  color: var(--text);
   font-weight: 500;
 }
 
@@ -253,7 +253,7 @@
 .top-product-bar-track {
   height: 5px;
   border-radius: 9999px;
-  background: #101418;
+  background: var(--surface-2);
   overflow: hidden;
 }
 

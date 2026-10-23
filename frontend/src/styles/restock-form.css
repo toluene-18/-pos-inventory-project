@@ -1,6 +1,6 @@
 .stock-mode-card {
-  background: #101418;
-  border: 1px solid #232a32;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 14px 16px;
   display: flex;
@@ -50,7 +50,7 @@
 .stock-mode-title {
   font-size: 14px;
   font-weight: 600;
-  color: #f8fafc;
+  color: var(--text);
 }
 
 .stock-mode-desc {
@@ -107,8 +107,8 @@
 .reason-chip-btn {
   padding: 5px 12px;
   border-radius: 6px;
-  border: 1px solid #28313b;
-  background: #101418;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
   color: #94a3b8;
   font-size: 12px;
   cursor: pointer;

@@ -56,27 +56,49 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Light mode overrides for shared controls */
+/* Light mode overrides for shared components */
+[data-theme='light'] .panel,
 [data-theme='light'] .settings-panel,
 [data-theme='light'] .settings-nav-card,
 [data-theme='light'] .prod-grid-card,
 [data-theme='light'] .inv-kpi-card,
 [data-theme='light'] .inventory-table-container,
 [data-theme='light'] .store-preview-card,
-[data-theme='light'] .thermal-receipt-preview {
+[data-theme='light'] .staff-table-card,
+[data-theme='light'] .preferences-card,
+[data-theme='light'] .activity-event-card,
+[data-theme='light'] .set-stat-card,
+[data-theme='light'] .receipt-toggle-row,
+[data-theme='light'] .modal-content,
+[data-theme='light'] .settings-modal {
   background-color: var(--surface);
   border-color: var(--border);
   color: var(--text);
 }
 
-[data-theme='light'] .settings-nav-card:hover {
+[data-theme='light'] .settings-nav-card:hover,
+[data-theme='light'] .inv-btn-secondary:hover,
+[data-theme='light'] .btn-action:hover,
+[data-theme='light'] .preset-pill:hover {
   background-color: var(--surface-hover);
+}
+
+[data-theme='light'] .staff-table th,
+[data-theme='light'] .inventory-table th,
+[data-theme='light'] .staff-table-footer-note,
+[data-theme='light'] .activity-search-box,
+[data-theme='light'] .inventory-search-wrap,
+[data-theme='light'] .products-search-box-readdy {
+  background-color: var(--surface-2);
+  border-color: var(--border);
+  color: var(--text-muted);
 }
 
 [data-theme='light'] input,
 [data-theme='light'] select,
 [data-theme='light'] textarea,
-[data-theme='light'] .inv-select {
+[data-theme='light'] .inv-select,
+[data-theme='light'] .pref-threshold-box {
   background-color: #ffffff;
   border-color: var(--border);
   color: var(--text);
@@ -86,4 +108,8 @@ body {
 [data-theme='light'] .inv-select option {
   background-color: #ffffff;
   color: #171b1f;
+}
+
+[data-theme='light'] .prod-card-thumb-wrap {
+  background-color: #ede7dc;
 }

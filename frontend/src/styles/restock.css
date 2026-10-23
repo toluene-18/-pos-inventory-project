@@ -21,7 +21,7 @@
   margin: 0;
   font-size: 24px;
   font-weight: 700;
-  color: #f8fafc;
+  color: var(--text);
   letter-spacing: -0.02em;
 }
 
@@ -44,9 +44,9 @@
   gap: 8px;
   padding: 8px 16px;
   border-radius: 8px;
-  border: 1px solid #28313b;
-  background: #161b20;
-  color: #cbd5e1;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -57,7 +57,7 @@
 .restock-nav-btn:hover {
   background: #1f252d;
   border-color: #384350;
-  color: #f8fafc;
+  color: var(--text);
 }
 
 /* Alert banners */
@@ -85,8 +85,8 @@
 
 /* Record a stock change card */
 .stock-change-card {
-  background: #14191f;
-  border: 1px solid #232a32;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 24px;
   display: flex;
@@ -116,7 +116,7 @@
   margin: 0;
   font-size: 16px;
   font-weight: 700;
-  color: #f8fafc;
+  color: var(--text);
 }
 
 .stock-change-head p {

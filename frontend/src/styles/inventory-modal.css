@@ -15,8 +15,8 @@
 }
 
 .stock-restock-modal {
-  background: #14191f;
-  border: 1px solid #28313b;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   width: 440px;
   max-width: 95vw;
@@ -65,7 +65,7 @@
   margin: 0;
   font-size: 16px;
   font-weight: 700;
-  color: #f8fafc;
+  color: var(--text);
 }
 
 .restock-modal-titles p {
@@ -85,7 +85,7 @@
 }
 
 .restock-modal-close:hover {
-  color: #f8fafc;
+  color: var(--text);
 }
 
 /* Selected Stock Box */
@@ -107,8 +107,8 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background: #101418;
-  border: 1px solid #232a32;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 10px 14px;
 }
@@ -117,7 +117,7 @@
   width: 36px;
   height: 36px;
   border-radius: 6px;
-  background: #1c232a;
+  background: var(--surface-hover);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -146,7 +146,7 @@
   margin: 0;
   font-size: 13px;
   font-weight: 600;
-  color: #f8fafc;
+  color: var(--text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -174,20 +174,20 @@
 .modal-big-input {
   font-size: 22px;
   font-weight: 700;
-  color: #f8fafc;
-  background: #101418;
-  border: 1px solid #28313b;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 8px 12px;
   width: 100%;
 }
 
 .modal-text-input {
-  background: #101418;
-  border: 1px solid #28313b;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 8px 12px;
-  color: #f1f5f9;
+  color: var(--text);
   font-size: 13px;
   width: 100%;
 }
@@ -201,8 +201,8 @@
 .modal-chip-btn {
   padding: 4px 10px;
   border-radius: 6px;
-  border: 1px solid #28313b;
-  background: #101418;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
   color: #94a3b8;
   font-size: 11.5px;
   cursor: pointer;
@@ -240,7 +240,7 @@
 
 .summary-val {
   font-weight: 700;
-  color: #f8fafc;
+  color: var(--text);
 }
 
 /* Actions */
@@ -254,9 +254,9 @@
 .btn-modal-cancel {
   padding: 8px 16px;
   border-radius: 8px;
-  border: 1px solid #28313b;
-  background: #161b20;
-  color: #cbd5e1;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -265,7 +265,7 @@
 
 .btn-modal-cancel:hover {
   background: #1e242c;
-  color: #f8fafc;
+  color: var(--text);
 }
 
 .btn-modal-confirm {
