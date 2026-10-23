@@ -1,0 +1,89 @@
+/* ================================================================
+   theme.css — Global Color Palette & Dynamic Theme Switcher
+   ================================================================ */
+
+:root {
+  --bg: #101418;
+  --surface: #14191f;
+  --surface-2: #1a2027;
+  --surface-hover: #1e2630;
+  --border: #232a32;
+  --border-soft: #28313b;
+  --text: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --green: #10b981;
+  --green-dark: #059669;
+  --green-soft: rgba(16, 185, 129, 0.12);
+  --amber: #f59e0b;
+  --amber-soft: rgba(245, 158, 11, 0.12);
+  --rose: #f43f5e;
+  --rose-soft: rgba(244, 63, 94, 0.12);
+  --violet: #8b5cf6;
+  --violet-soft: rgba(139, 92, 246, 0.12);
+  --radius: 12px;
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  color-scheme: dark;
+}
+
+[data-theme='light'] {
+  --bg: #f5f1ea;
+  --surface: #ffffff;
+  --surface-2: #eae4d7;
+  --surface-hover: #f0ebe0;
+  --border: #ded8cb;
+  --border-soft: #e6e0d3;
+  --text: #171b1f;
+  --text-muted: #5e6b79;
+  --text-dim: #8896a4;
+  --green: #10b981;
+  --green-dark: #059669;
+  --green-soft: rgba(16, 185, 129, 0.1);
+  --amber: #d97706;
+  --amber-soft: rgba(217, 119, 6, 0.1);
+  --rose: #e11d48;
+  --rose-soft: rgba(225, 29, 72, 0.1);
+  --violet: #7c3aed;
+  --violet-soft: rgba(124, 58, 237, 0.1);
+  --radius: 12px;
+  --shadow: 0 2px 10px rgba(40, 30, 20, 0.06);
+  color-scheme: light;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Light mode overrides for shared controls */
+[data-theme='light'] .settings-panel,
+[data-theme='light'] .settings-nav-card,
+[data-theme='light'] .prod-grid-card,
+[data-theme='light'] .inv-kpi-card,
+[data-theme='light'] .inventory-table-container,
+[data-theme='light'] .store-preview-card,
+[data-theme='light'] .thermal-receipt-preview {
+  background-color: var(--surface);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+[data-theme='light'] .settings-nav-card:hover {
+  background-color: var(--surface-hover);
+}
+
+[data-theme='light'] input,
+[data-theme='light'] select,
+[data-theme='light'] textarea,
+[data-theme='light'] .inv-select {
+  background-color: #ffffff;
+  border-color: var(--border);
+  color: var(--text);
+}
+
+[data-theme='light'] select option,
+[data-theme='light'] .inv-select option {
+  background-color: #ffffff;
+  color: #171b1f;
+}

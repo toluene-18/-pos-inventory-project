@@ -20,13 +20,13 @@
   margin: 0;
   font-size: 24px;
   font-weight: 700;
-  color: #f8fafc;
+  color: var(--text);
   letter-spacing: -0.02em;
 }
 
 .settings-header p {
   margin: 6px 0 0;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 13.5px;
 }
 
@@ -84,8 +84,8 @@
   gap: 14px;
   padding: 14px 16px;
   border-radius: 12px;
-  border: 1px solid #232a32;
-  background: #161b20;
+  border: 1px solid var(--border);
+  background: var(--surface);
   text-align: left;
   cursor: pointer;
   transition: all 0.18s ease;
@@ -93,16 +93,16 @@
 }
 
 .settings-nav-card:hover {
-  background: #1c232a;
-  border-color: #2e3742;
+  background: var(--surface-hover);
+  border-color: var(--border-soft);
 }
 
 .settings-nav-card-icon {
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background: #222932;
-  color: #94a3b8;
+  background: var(--surface-2);
+  color: var(--text-muted);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -118,13 +118,13 @@
 .settings-nav-card-title {
   font-size: 14px;
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--text);
   line-height: 1.3;
 }
 
 .settings-nav-card-sub {
   font-size: 11.5px;
-  color: #94a3b8;
+  color: var(--text-muted);
   margin-top: 3px;
   line-height: 1.35;
 }
@@ -162,8 +162,8 @@
 }
 
 .settings-panel {
-  background: #161b20;
-  border: 1px solid #232a32;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 14px;
   padding: 24px;
   display: flex;
@@ -176,7 +176,7 @@
   align-items: flex-start;
   gap: 14px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #232a32;
+  border-bottom: 1px solid var(--border);
 }
 
 .panel-title-with-icon {
@@ -189,7 +189,7 @@
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background: #202730;
+  background: var(--surface-2);
   color: #10b981;
   display: flex;
   align-items: center;
@@ -201,12 +201,12 @@
   margin: 0;
   font-size: 17px;
   font-weight: 700;
-  color: #f8fafc;
+  color: var(--text);
 }
 
 .settings-panel-head p {
   margin: 4px 0 0;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 13px;
   line-height: 1.4;
 }

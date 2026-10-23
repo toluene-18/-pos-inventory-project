@@ -75,9 +75,9 @@
 .activity-time-pill {
   padding: 5px 12px;
   border-radius: 9999px;
-  border: 1px solid #232a32;
-  background: #14191f;
-  color: #94a3b8;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-muted);
   font-size: 12px;
   cursor: pointer;
   transition: all 0.15s;
@@ -98,17 +98,17 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #101418;
-  border: 1px solid #232a32;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 6px 12px;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 .activity-search-box input {
   background: transparent;
   border: none;
   outline: none;
-  color: #f1f5f9;
+  color: var(--text);
   font-size: 12.5px;
 }
 .activity-stream {
@@ -120,8 +120,8 @@
   display: flex;
   gap: 14px;
   padding: 14px 18px;
-  background: #11161b;
-  border: 1px solid #232a32;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 10px;
 }
 .activity-event-badge-icon {
@@ -160,7 +160,7 @@
 .activity-event-title {
   font-size: 13.5px;
   font-weight: 600;
-  color: #f8fafc;
+  color: var(--text);
 }
 .activity-status-tag {
   font-size: 10.5px;
@@ -179,7 +179,7 @@
 .activity-event-detail {
   margin: 4px 0 8px;
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 .activity-event-meta {
   display: flex;

@@ -9,6 +9,7 @@ import { SETTINGS_TABS } from '../components/settings/settingsData';
 import { useSettingsData } from '../components/settings/useSettingsData';
 import '../styles/settings.css';
 import '../styles/settings-tabs.css';
+import '../styles/settings-staff.css';
 import '../styles/settings-activity.css';
 
 export default function Settings({ user, onSessionExpired }) {

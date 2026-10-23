@@ -1,15 +1,14 @@
-
+@import './styles/theme.css';
 @import './styles/dropdowns.css';
 
 :root {
   font-family: Inter, "Segoe UI", Arial, sans-serif;
-  color: #f7f7f2;
-  background: #11120f;
+  color: var(--text);
+  background: var(--bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
   font-optical-sizing: auto;
 }
 
@@ -21,12 +20,15 @@ html {
   min-width: 320px;
   min-height: 100%;
   scroll-behavior: smooth;
+  background-color: var(--bg);
 }
 
 body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
+  background-color: var(--bg);
+  color: var(--text);
 }
 
 body,
@@ -51,10 +53,11 @@ button:disabled {
 
 #root {
   min-height: 100vh;
+  background-color: var(--bg);
 }
 
 ::selection {
-  background: rgba(50, 183, 125, 0.35);
+  background: rgba(16, 185, 129, 0.35);
   color: #fff;
 }
 

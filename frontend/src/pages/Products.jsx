@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import Icon from '../components/ui/Icon';
 import ProductFormModal from '../components/products/ProductFormModal';
-import ProductKpis from '../components/products/ProductKpis';
 import ProductsTable from '../components/products/ProductsTable';
 import {
   getProducts,
@@ -9,8 +8,9 @@ import {
   updateProduct,
   deactivateProduct,
 } from '../services/api';
-import { formatCategory } from '../utils/categories';
+import { PRODUCT_PAGE_CATEGORIES } from '../utils/categories';
 import '../styles/products.css';
+import '../styles/products-grid.css';
 
 export default function Products({ user, onSessionExpired }) {
   const [products, setProducts] = useState([]);
@@ -18,7 +18,6 @@ export default function Products({ user, onSessionExpired }) {
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [viewMode, setViewMode] = useState('table');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [statusMessage, setStatusMessage] = useState('');
@@ -40,46 +39,22 @@ export default function Products({ user, onSessionExpired }) {
   }, [onSessionExpired]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProducts();
   }, [fetchProducts]);
 
-  const categories = useMemo(() => {
-    const set = new Set(products.map(p => p.category).filter(Boolean));
-    return ['all', ...Array.from(set).sort()];
-  }, [products]);
-
-  const stats = useMemo(() => {
-    let totalProducts = products.length;
-    let needsAttention = 0;
-    let belowCostCount = 0;
-    let marginSum = 0;
-    let marginCount = 0;
-
-    for (const p of products) {
-      const qty = p.inventory?.quantity ?? 0;
-      const threshold = p.inventory?.reorder_threshold ?? 0;
-      if (qty <= threshold) needsAttention += 1;
-
-      if (p.cost_price != null && p.sell_price != null) {
-        const cost = Number(p.cost_price);
-        const sell = Number(p.sell_price);
-        if (sell < cost) belowCostCount += 1;
-        if (sell > 0) {
-          marginSum += ((sell - cost) / sell) * 100;
-          marginCount += 1;
-        }
-      }
-    }
-
-    const avgMargin = marginCount > 0 ? Math.round(marginSum / marginCount) : 0;
-    return { totalProducts, needsAttention, belowCostCount, avgMargin };
-  }, [products]);
-
   const filteredProducts = useMemo(() => {
     const q = search.trim().toLowerCase();
+    const activeCatObj = PRODUCT_PAGE_CATEGORIES.find(c => c.id === selectedCategory);
+
     return products.filter(p => {
-      if (selectedCategory !== 'all' && p.category !== selectedCategory) return false;
+      if (selectedCategory !== 'all' && activeCatObj) {
+        const matchesCategory =
+          activeCatObj.match.includes(p.category) ||
+          p.category === selectedCategory ||
+          p.category?.toLowerCase().includes(selectedCategory);
+        if (!matchesCategory) return false;
+      }
+
       if (!q) return true;
       return (
         p.name?.toLowerCase().includes(q) ||
@@ -127,14 +102,26 @@ export default function Products({ user, onSessionExpired }) {
 
   return (
     <div className="products-page">
-      <header className="products-header">
-        <div>
-          <h2>Product Catalogue</h2>
-          <p>Manage items, prices, SKUs, product photos, and profit margin analysis.</p>
+      {/* Top Header matching Readdy Screenshot */}
+      <header className="products-header-readdy">
+        <div className="products-title-group">
+          <div className="products-title-badge">
+            <Icon name="tag" size={20} />
+          </div>
+          <div>
+            <h2>Products</h2>
+            <p>Manage the catalogue, pricing and reorder rules.</p>
+          </div>
         </div>
+
         {isManagement && (
-          <button type="button" className="btn btn-primary" onClick={handleOpenCreate}>
-            <Icon name="plus" size={16} /> Add Product
+          <button
+            type="button"
+            className="btn-add-product"
+            onClick={handleOpenCreate}
+          >
+            <Icon name="plus" size={15} />
+            <span>Add product</span>
           </button>
         )}
       </header>
@@ -151,63 +138,46 @@ export default function Products({ user, onSessionExpired }) {
         </div>
       )}
 
-      <ProductKpis stats={stats} isManagement={isManagement} />
-
-      <div className="products-controls">
-        <div className="products-search-wrap">
-          <Icon name="search" size={16} />
-          <input
-            type="search"
-            placeholder="Search by name, SKU or barcode..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
+      {/* Filter Category Pills + Right-aligned Search Bar */}
+      <div className="products-toolbar-readdy">
+        <div className="products-category-pills">
+          {PRODUCT_PAGE_CATEGORIES.map(cat => {
+            const isActive = selectedCategory === cat.id;
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                className={`prod-cat-pill ${isActive ? 'prod-cat-pill--active' : ''}`}
+                onClick={() => setSelectedCategory(cat.id)}
+              >
+                {cat.label}
+              </button>
+            );
+          })}
         </div>
 
-        <div className="products-filter-wrap">
-          <select
-            id="cat-filter"
-            value={selectedCategory}
-            onChange={e => setSelectedCategory(e.target.value)}
-          >
-            {categories.map(c => (
-              <option key={c} value={c}>
-                {formatCategory(c)}
-              </option>
-            ))}
-          </select>
-
-          <div className="view-mode-toggle">
-            <button
-              type="button"
-              className={`view-btn ${viewMode === 'table' ? 'view-btn--active' : ''}`}
-              onClick={() => setViewMode('table')}
-              title="Table View"
-            >
-              Table
-            </button>
-            <button
-              type="button"
-              className={`view-btn ${viewMode === 'grid' ? 'view-btn--active' : ''}`}
-              onClick={() => setViewMode('grid')}
-              title="Grid View"
-            >
-              Grid
-            </button>
-          </div>
+        <div className="products-search-box-readdy">
+          <Icon name="search" size={14} />
+          <input
+            type="search"
+            placeholder="Search products..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            aria-label="Search products"
+          />
         </div>
       </div>
 
-      <div className="products-table-container">
+      {/* Products Grid (no table view) */}
+      <main className="products-grid-section">
         <ProductsTable
           products={filteredProducts}
           loading={loading}
           isManagement={isManagement}
-          viewMode={viewMode}
           onEdit={handleOpenEdit}
           onDeactivate={handleDeactivate}
         />
-      </div>
+      </main>
 
       <ProductFormModal
         isOpen={modalOpen}

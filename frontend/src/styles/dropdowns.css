@@ -1,5 +1,5 @@
 /* ================================================================
-   dropdowns.css — Consistent Dark Dropdown Styling Across All Pages
+   dropdowns.css — Consistent Dropdown Styling Across Dark & Light Themes
    ================================================================ */
 
 select,
@@ -11,15 +11,15 @@ select,
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-color: #101418;
+  background-color: var(--surface-2, #101418);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 11px 11px;
-  border: 1px solid #28313b;
+  border: 1px solid var(--border, #28313b);
   border-radius: 8px;
   padding: 8px 34px 8px 12px;
-  color: #cbd5e1;
+  color: var(--text, #cbd5e1);
   font-size: 12.5px;
   font-family: inherit;
   cursor: pointer;
@@ -30,9 +30,9 @@ select,
 select:hover,
 .inv-select:hover,
 .filter-select:hover {
-  background-color: #14191f;
-  border-color: #384452;
-  color: #f8fafc;
+  background-color: var(--surface-hover, #14191f);
+  border-color: var(--border-soft, #384452);
+  color: var(--text, #f8fafc);
 }
 
 select:focus,
@@ -40,13 +40,30 @@ select:focus,
 .filter-select:focus {
   border-color: #10b981;
   box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
-  color: #f8fafc;
+  color: var(--text, #f8fafc);
 }
 
 select option,
 .inv-select option {
-  background-color: #14191f;
-  color: #f1f5f9;
+  background-color: var(--surface, #14191f);
+  color: var(--text, #f1f5f9);
   padding: 10px 14px;
   font-size: 13px;
+}
+
+[data-theme='light'] select,
+[data-theme='light'] .inv-select,
+[data-theme='light'] .filter-select,
+[data-theme='light'] .stock-select,
+[data-theme='light'] .custom-dropdown {
+  color-scheme: light;
+  background-color: #ffffff;
+  border-color: var(--border, #ded8cb);
+  color: var(--text, #171b1f);
+}
+
+[data-theme='light'] select option,
+[data-theme='light'] .inv-select option {
+  background-color: #ffffff;
+  color: #171b1f;
 }
