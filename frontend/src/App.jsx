@@ -16,7 +16,6 @@ import RoleRoute from './routes/RoleRoute';
 import usePageNavigate from './hooks/usePageNavigate';
 import { clearAuth, getStoredUser } from './services/api';
 
-/** Pages without a real screen yet — RoleRoute shows a placeholder or "restricted". */
 const UPCOMING = [];
 
 function App() {
@@ -26,7 +25,8 @@ function App() {
 
   function handleLogin(loggedInUser) {
     setUser(loggedInUser);
-    navigate('/dashboard', { replace: true });
+    const destination = loggedInUser.role === 'cashier' ? '/pos' : '/dashboard';
+    navigate(destination, { replace: true });
   }
 
   function handleLogout() {
@@ -35,13 +35,15 @@ function App() {
     navigate('/login', { replace: true });
   }
 
+  const defaultHome = user?.role === 'cashier' ? '/pos' : '/dashboard';
+
   return (
     <Routes>
       <Route
         path="/login"
         element={
           user ? (
-            <Navigate to="/dashboard" replace />
+            <Navigate to={defaultHome} replace />
           ) : (
             <Login onLogin={handleLogin} />
           )
@@ -50,7 +52,7 @@ function App() {
 
       <Route
         path="/register"
-        element={user ? <Navigate to="/dashboard" replace /> : <Register />}
+        element={user ? <Navigate to={defaultHome} replace /> : <Register />}
       />
 
       <Route
@@ -135,7 +137,7 @@ function App() {
 
       <Route
         path="*"
-        element={<Navigate to={user ? '/dashboard' : '/login'} replace />}
+        element={<Navigate to={user ? defaultHome : '/login'} replace />}
       />
     </Routes>
   );

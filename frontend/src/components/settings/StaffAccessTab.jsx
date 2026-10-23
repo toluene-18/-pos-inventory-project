@@ -135,21 +135,23 @@ export default function StaffAccessTab({
                     </span>
                   </td>
                   <td>
-                    <span className={`staff-status-dot ${isActive ? 'staff-status-dot--active' : 'staff-status-dot--inactive'}`}>
+                    <span className={`staff-status-dot ${member.status === 'active' ? 'staff-status-dot--active' : member.status === 'pending' ? 'staff-status-dot--pending' : 'staff-status-dot--inactive'}`}>
                       <i aria-hidden="true" />
-                      {isActive ? 'Active' : 'Inactive'}
+                      {member.status === 'active' ? 'Active' : member.status === 'pending' ? 'Pending' : 'Inactive'}
                     </span>
                   </td>
                   <td className="text-right">
                     <div className="staff-actions-wrap">
-                      <button
-                        type="button"
-                        className="btn-action"
-                        onClick={() => handleOpenEdit(member)}
-                        title="Edit staff member"
-                      >
-                        <Icon name="edit" size={13} /> Edit
-                      </button>
+                      {(!isOwner || currentUser?.role === 'owner') && (
+                        <button
+                          type="button"
+                          className="btn-action"
+                          onClick={() => handleOpenEdit(member)}
+                          title="Edit staff member"
+                        >
+                          <Icon name="edit" size={13} /> Edit
+                        </button>
+                      )}
 
                       {!isOwner && (
                         <>
@@ -187,6 +189,7 @@ export default function StaffAccessTab({
       <StaffModal
         isOpen={modalOpen}
         member={editingMember}
+        currentUser={currentUser}
         onClose={() => setModalOpen(false)}
         onSave={onSaveMember}
       />

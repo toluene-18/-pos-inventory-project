@@ -1,11 +1,11 @@
 /* ================================================================
    pos.css — Point of Sale layout, search, category chips, product grid
    ================================================================ */
-.pos { display: flex; flex-direction: column; gap: 18px; }
+.pos { display: flex; flex-direction: column; gap: 18px; width: 100%; }
 
 .pos-header { display: flex; align-items: center; gap: 12px; }
-.pos-header h2 { margin: 0; font-size: 20px; color: var(--text); }
-.pos-header p { margin: 2px 0 0; color: var(--text-muted); }
+.pos-header h2 { margin: 0; font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
+.pos-header p { margin: 4px 0 0; color: var(--text-muted); font-size: 13px; }
 .pos-header-icon {
   display: grid; place-items: center; width: 40px; height: 40px;
   border-radius: 10px; background: var(--green); color: #fff;
@@ -30,7 +30,7 @@
 .pos-search-input {
   flex: 1;
   display: flex; align-items: center; gap: 10px;
-  padding: 0 12px; height: 44px;
+  padding: 0 14px; height: 46px;
   border: 1px solid var(--border); border-radius: 10px;
   background: var(--surface); color: var(--text-muted);
   transition: border-color .15s, box-shadow .15s;
@@ -49,7 +49,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 44px;
+  height: 46px;
   padding: 0 16px;
   border-radius: 10px;
   border: 1px solid var(--border);
@@ -76,7 +76,7 @@
   transition: all .15s;
 }
 .pos-chip:hover { color: var(--text); border-color: var(--text-dim); }
-.pos-chip.active { background: var(--text); border-color: var(--text); color: var(--bg); font-weight: 600; }
+.pos-chip.active { background: #10b981; border-color: #10b981; color: #ffffff; font-weight: 600; }
 
 /* ── Grid ───────────────────────────────────────────────────────── */
 .pos-grid-meta {
@@ -86,8 +86,16 @@
 
 .pos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 1400px) {
+  .pos-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 900px) {
+  .pos-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 .pos-empty {
@@ -103,20 +111,25 @@
   background: var(--surface); color: var(--text);
   font: inherit; text-align: left; cursor: pointer;
   transition: transform .15s, border-color .15s, box-shadow .15s;
+  height: 100%;
 }
 .pos-tile:not(:disabled):hover {
   transform: translateY(-2px); border-color: var(--green);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, .12);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .14);
 }
 .pos-tile:not(:disabled):active { transform: scale(.98); }
 .pos-tile:disabled { cursor: not-allowed; }
 .pos-tile--out { opacity: .55; }
 
 .pos-tile-media {
-  position: relative; display: grid; place-items: center; aspect-ratio: 4 / 3;
-  background: var(--surface-2); color: var(--tone-fg);
+  position: relative; display: grid; place-items: center;
+  width: 100%; height: 190px;
+  background: #1a1e1b; color: var(--tone-fg);
+  overflow: hidden;
 }
-.pos-tile-media img { width: 100%; height: 100%; object-fit: cover; }
+.pos-tile-media img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
 .pos-tile-mono { font-size: 30px; font-weight: 700; letter-spacing: .02em; opacity: .9; }
 
 .tone-green  { --tone-bg: var(--green-soft);  --tone-fg: var(--green); }
@@ -126,30 +139,31 @@
 .tone-sky    { --tone-bg: rgba(56, 160, 230, .14); --tone-fg: #3a9fe0; }
 
 .pos-stock {
-  position: absolute; top: 8px; left: 8px;
+  position: absolute; top: 10px; left: 10px;
   display: inline-flex; align-items: center; gap: 5px;
-  padding: 3px 8px; border-radius: 999px;
-  background: rgba(0, 0, 0, .55); color: #fff; font-size: 10px; font-weight: 600;
+  padding: 3px 9px; border-radius: 999px;
+  background: rgba(15, 20, 17, 0.75); color: #fff; font-size: 10.5px; font-weight: 600;
   backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 .pos-stock i { width: 6px; height: 6px; border-radius: 50%; background: #34d399; }
 .pos-stock--low i { background: #fbbf24; }
 .pos-stock--out i { background: #f87171; }
 
 .pos-tile-count {
-  position: absolute; top: 8px; right: 8px; padding: 3px 8px; border-radius: 999px;
+  position: absolute; top: 10px; right: 10px; padding: 3px 8px; border-radius: 999px;
   background: var(--green); color: #fff; font-size: 10px; font-weight: 700;
 }
 
-.pos-tile-body { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px 12px; }
+.pos-tile-body { display: flex; flex-direction: column; gap: 3px; padding: 12px 14px 14px; flex: 1; }
 .pos-tile-name {
-  font-size: 13px; font-weight: 600; line-height: 1.3;
+  font-size: 13.5px; font-weight: 600; line-height: 1.3; min-height: 36px;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
-.pos-tile-sku { font-size: 10px; color: var(--text-dim); letter-spacing: .03em; }
-.pos-tile-foot { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.pos-tile-sku { font-size: 10.5px; color: var(--text-dim); letter-spacing: .03em; }
+.pos-tile-foot { display: flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 8px; }
 .pos-tile-price { font-size: 15px; font-weight: 700; }
-.pos-tile-left { margin-left: auto; font-size: 10px; color: var(--text-muted); }
+.pos-tile-left { margin-left: auto; font-size: 11px; color: var(--text-muted); }
 .pos-tile-add {
   display: grid; place-items: center; width: 26px; height: 26px;
   border-radius: 7px; background: var(--green); color: #fff;

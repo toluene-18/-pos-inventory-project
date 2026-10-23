@@ -198,6 +198,13 @@
   background: var(--rose);
 }
 
+.staff-status-dot--pending {
+  color: #f59e0b;
+}
+.staff-status-dot--pending i {
+  background: #f59e0b;
+}
+
 .staff-actions-wrap {
   display: inline-flex;
   align-items: center;

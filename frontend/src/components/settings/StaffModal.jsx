@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import Icon from '../ui/Icon';
 
-export default function StaffModal({ member, isOpen, onClose, onSave }) {
+export default function StaffModal({ member, isOpen, onClose, onSave, currentUser }) {
   const isEditing = Boolean(member);
+  const isOwnerMember = member?.role === 'owner';
+  const isCurrentUserOwner = currentUser?.role === 'owner';
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -65,6 +68,7 @@ export default function StaffModal({ member, isOpen, onClose, onSave }) {
               id="staff-email"
               type="email"
               required
+              disabled={isOwnerMember}
               value={formData.email}
               onChange={e => setFormData({ ...formData, email: e.target.value })}
               placeholder="e.g. amina@cwgretail.com"
@@ -76,12 +80,18 @@ export default function StaffModal({ member, isOpen, onClose, onSave }) {
             <select
               id="staff-role"
               value={formData.role}
+              disabled={isOwnerMember || !isCurrentUserOwner}
               onChange={e => setFormData({ ...formData, role: e.target.value })}
             >
-              <option value="owner">Owner / Admin</option>
+              {isOwnerMember && <option value="owner">Owner / Admin</option>}
               <option value="manager">Manager</option>
               <option value="cashier">Cashier</option>
             </select>
+            {isOwnerMember && (
+              <small style={{ color: 'var(--text-muted)', fontSize: '11px', marginTop: '4px', display: 'block' }}>
+                The store owner role is permanent and cannot be modified.
+              </small>
+            )}
           </div>
 
           <div className="form-group">
@@ -89,10 +99,12 @@ export default function StaffModal({ member, isOpen, onClose, onSave }) {
             <select
               id="staff-status"
               value={formData.status}
+              disabled={isOwnerMember}
               onChange={e => setFormData({ ...formData, status: e.target.value })}
             >
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
+              <option value="pending">Pending Approval</option>
             </select>
           </div>
 
@@ -101,7 +113,7 @@ export default function StaffModal({ member, isOpen, onClose, onSave }) {
               Cancel
             </button>
             <button type="submit" className="btn btn-primary">
-              {isEditing ? 'Save Changes' : 'Add Staff'}
+              {isEditing ? 'Save changes' : 'Add member'}
             </button>
           </div>
         </form>

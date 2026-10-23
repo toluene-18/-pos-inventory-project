@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getStaff } from '../../services/api';
+import { getStaff, updateStaffStatus } from '../../services/api';
 import {
   DEFAULT_PROFILE,
   DEFAULT_STAFF,
@@ -60,24 +60,16 @@ export function useSettingsData(user, onSessionExpired) {
     try {
       const data = await getStaff();
       if (Array.isArray(data) && data.length > 0) {
-        setStaff(prev => {
-          const merged = [...prev];
-          data.forEach(d => {
-            const idx = merged.findIndex(m => m.email === d.email || m.id === d.id);
-            if (idx >= 0) {
-              merged[idx] = { ...merged[idx], ...d };
-            } else {
-              merged.push({ ...d, lastActive: d.lastActive || 'Active recently' });
-            }
-          });
-          localStorage.setItem('cwg_staff_roster', JSON.stringify(merged));
-          return merged;
-        });
+        setStaff(data.map(d => ({
+          ...d,
+          lastActive: d.lastActive || 'Active recently',
+        })));
+        localStorage.setItem('cwg_staff_roster', JSON.stringify(data));
       }
-    } catch (err) {
-      if (err.status === 401) onSessionExpired?.();
+    } catch {
+      // ignore
     }
-  }, [onSessionExpired]);
+  }, []);
 
   useEffect(() => {
     fetchBackendStaff();
@@ -165,7 +157,15 @@ export function useSettingsData(user, onSessionExpired) {
     showToast('Receipt configuration saved successfully.');
   }
 
-  function handleSaveStaffMember(member) {
+  async function handleSaveStaffMember(member) {
+    if (member.id) {
+      try {
+        await updateStaffStatus(member.id, { role: member.role, status: member.status || 'active' });
+      } catch (err) {
+        console.error('Failed to sync staff role to backend', err);
+      }
+    }
+
     setStaff(prev => {
       const exists = prev.some(s => s.id === member.id);
       const updated = exists
@@ -185,10 +185,15 @@ export function useSettingsData(user, onSessionExpired) {
     showToast(`Staff member ${member.name} saved.`);
   }
 
-  function handleToggleStaffStatus(id) {
+  async function handleToggleStaffStatus(id) {
     const target = staff.find(s => s.id === id);
     if (!target) return;
     const nextStatus = target.status === 'active' ? 'inactive' : 'active';
+    try {
+      await updateStaffStatus(id, { status: nextStatus });
+    } catch (err) {
+      console.error('Failed to update status on backend', err);
+    }
     setStaff(prev => {
       const updated = prev.map(s => (s.id === id ? { ...s, status: nextStatus } : s));
       localStorage.setItem('cwg_staff_roster', JSON.stringify(updated));

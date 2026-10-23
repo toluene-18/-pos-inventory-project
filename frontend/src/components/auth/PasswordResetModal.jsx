@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { resetPasswordWithCode } from '../../services/api';
 
 export default function PasswordResetModal({ isOpen, onClose }) {
   const [resetEmail, setResetEmail] = useState('');
@@ -6,31 +7,39 @@ export default function PasswordResetModal({ isOpen, onClose }) {
   const [newPassword, setNewPassword] = useState('');
   const [resetMessage, setResetMessage] = useState('');
   const [resetError, setResetError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   if (!isOpen) return null;
 
-  function handlePasswordReset(e) {
+  async function handlePasswordReset(e) {
     e.preventDefault();
     setResetError('');
     setResetMessage('');
-
-    if (resetCode !== 'CWG-RESET-2026' && resetCode !== '123456') {
-      setResetError('Invalid admin reset code. Please ask your store owner for the code.');
-      return;
-    }
 
     if (newPassword.length < 6) {
       setResetError('New password must be at least 6 characters.');
       return;
     }
 
-    setResetMessage('Password updated successfully. You can now sign in with your new password.');
-    setTimeout(() => {
-      onClose();
-      setResetMessage('');
-      setResetCode('');
-      setNewPassword('');
-    }, 2000);
+    try {
+      setLoading(true);
+      const res = await resetPasswordWithCode({
+        email: resetEmail,
+        code: resetCode,
+        password: newPassword,
+      });
+      setResetMessage(res.message || 'Password updated successfully. You can now sign in.');
+      setTimeout(() => {
+        onClose();
+        setResetMessage('');
+        setResetCode('');
+        setNewPassword('');
+      }, 2000);
+    } catch (err) {
+      setResetError(err.message || 'Failed to reset password. Please check your details.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -97,11 +106,12 @@ export default function PasswordResetModal({ isOpen, onClose }) {
               type="button"
               className="btn-modal-cancel"
               onClick={onClose}
+              disabled={loading}
             >
               Cancel
             </button>
-            <button type="submit" className="btn-modal-save">
-              Update password
+            <button type="submit" className="btn-modal-save" disabled={loading}>
+              {loading ? 'Updating...' : 'Update password'}
             </button>
           </div>
         </form>

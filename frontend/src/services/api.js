@@ -220,6 +220,20 @@ export async function updateUserProfile({ name }) {
   });
 }
 
+export async function resetPasswordWithCode({ email, code, password }) {
+  const response = await fetch(`${API_BASE_URL}/reset-password-with-code`, {
+    method: 'POST',
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, code, password }),
+  });
+  const data = await readJson(response);
+  if (!response.ok) {
+    const errorMsg = data?.errors ? Object.values(data.errors).flat()[0] : data?.message;
+    throw new ApiError(errorMsg || 'Password reset failed.', response.status, data);
+  }
+  return data;
+}
+
 export async function changePassword({ current_password, new_password }) {
   return apiRequest('/user/change-password', {
     method: 'POST',

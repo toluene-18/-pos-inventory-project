@@ -9,7 +9,7 @@ export const PAGES = [
     name: 'Dashboard',
     path: '/dashboard',
     icon: 'dashboard',
-    roles: ['owner', 'manager', 'cashier'],
+    roles: ['owner', 'manager'],
   },
   {
     name: 'Point of Sale',
@@ -51,7 +51,7 @@ export const PAGES = [
     name: 'Settings',
     path: '/settings',
     icon: 'settings',
-    roles: ['owner', 'manager'],
+    roles: ['owner'],
   },
 ];
 
