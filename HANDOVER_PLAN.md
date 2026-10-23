@@ -1,7 +1,7 @@
 # CWG Retail POS & Inventory Management System
 ## Engineering Master Status & Handover Documentation
 
-> **Last Updated:** 2026-10-22  
+> **Last Updated:** 2026-10-23  
 > **Active Git Branch:** `feature/my-react-frontend`  
 > **Repository:** `https://github.com/toluene-18/-pos-inventory-project.git`  
 > **Project Root:** `C:\Users\Dell\pos-inventory-project`  
@@ -83,11 +83,27 @@ The system supports 3 roles: **`owner`**, **`manager`**, and **`cashier`**.
 - Dynamic Sidebar displaying only accessible routes based on user role (`navigation.js`, `Sidebar.jsx`).
 - Strict URL route guarding via `RoleRoute.jsx` and `ProtectedRoute.jsx`.
 
-### Milestone 5: Settings & Staff Management (`/settings`) — COMPLETE ✅
-- **Staff Roster & Pending Approvals:** Owners can review pending accounts, approve with one-click, change role (Cashier / Manager / Owner), and deactivate/reactivate staff members (`StaffManagementTab.jsx`, `settings-staff.css`).
-- **Store Profile & Receipt Branding:** Management can configure store name, branch address, support phone, currency, and custom receipt header/footer messages (`StoreProfileTab.jsx`).
-- **Account Inspector:** Current logged-in user summary with active role badges and permission scope explanation.
-- **Strict Size Separation:** `Settings.jsx` (152 lines), `StaffManagementTab.jsx` (193 lines), `StoreProfileTab.jsx` (143 lines), `settings.css` (144 lines), `settings-staff.css` (169 lines).
+### Milestone 5: Settings & Store Configuration Rebuild (`/settings`) — COMPLETE ✅
+- **Aligned with Readdy Dark Design Suite (5 Full Tabs):**
+  1. **Store Profile:** Live store preview card with emerald monogram avatar, operating hours (Mon-Fri, Sat, Sun), contact details, and address (`StoreProfileTab.jsx`).
+  2. **Staff & Access:** 4 KPI summary cards (Team members, Owners, Cashiers, Inactive), team roster table with role badges and active status indicators, and full "+ Add Staff" modal dialog (`StaffAccessTab.jsx`, `StaffModal.jsx`).
+  3. **Preferences:** Default reorder threshold input with quick presets (`5`, `10`, `15`, `20`, `25`, `30`), "What this means right now" contextual alert badge, bulk threshold application to all 14 inventory products, and low stock alert toggle switch (`PreferencesTab.jsx`).
+  4. **Receipt Basics:** Currency selector (NGN, USD, EUR, GBP), timezone, custom header & footer texts, toggle options (Logo, Item codes, VAT 7.5% breakdown), and real-time live thermal receipt preview with simulated tear lines and barcode (`ReceiptBasicsTab.jsx`).
+  5. **Activity Log:** 4 KPI metric cards (Total events, Staff changes, Threshold changes, People involved), multi-filter category pills (`All activity`, `Staff`, `Thresholds`, `Profile`, `Receipt`), time range filter pills (`All time`, `Today`, `Last 7 days`, `Last 30 days`), instant action/author search, and comprehensive audit feed cards with actor avatars and timestamps (`ActivityLogTab.jsx`).
+- **Dynamic Header & Real-Time Sync:** Features the `"✔ All changes saved"` top-right indicator pill, state persistence to `localStorage` (`cwg_store_profile`, `cwg_staff_roster`, `cwg_preferences`, `cwg_receipt_config`, `cwg_activity_log`), and seamless backend fallback integration (`useSettingsData.js`, `settingsData.js`).
+- **Strict File Size Verification (ALL < 300 Lines):**
+  - `Settings.jsx` (114 lines)
+  - `useSettingsData.js` (225 lines)
+  - `settingsData.js` (198 lines)
+  - `StoreProfileTab.jsx` (130 lines)
+  - `StaffAccessTab.jsx` (172 lines)
+  - `StaffModal.jsx` (96 lines)
+  - `PreferencesTab.jsx` (109 lines)
+  - `ReceiptBasicsTab.jsx` (219 lines)
+  - `ActivityLogTab.jsx` (198 lines)
+  - `settings.css` (212 lines)
+  - `settings-tabs.css` (281 lines)
+  - `settings-activity.css` (202 lines)
 
 ### Milestone 6: Product Image Upload & Storage — COMPLETE ✅
 - **Backend:** `POST /api/products/upload-image` validates image mime types (`jpeg,png,jpg,webp,gif`, max 5MB) and stores to `storage/app/public/products`. Public symlink active at `backend/public/storage`.
@@ -154,4 +170,4 @@ flowchart TD
 1. Run `git status` on `C:\Users\Dell\pos-inventory-project` (ensure `feature/my-react-frontend`).
 2. Run `cd backend; php artisan test` to verify backend integrity.
 3. Run `cd frontend; npm run lint; npm run build`.
-4. Pick up the next step (**Phase 1: Restock Batch Receiving Station**) by creating `frontend/src/pages/Restock.jsx` and hooking it into `App.jsx`.
+4. Pick up the next step (**Phase 1: Owner Reports & Analytics**) in `frontend/src/pages/Reports.jsx`.
