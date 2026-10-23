@@ -1,145 +1,210 @@
 /* ================================================================
-   inventory-table.css — Table, Product thumbnails, Badges
+   inventory-table.css — Inventory Data Table Styling
    ================================================================ */
 
 .inventory-table-container {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  background: #14191f;
+  border: 1px solid #232a32;
+  border-radius: 12px;
   overflow-x: auto;
-  box-shadow: var(--shadow);
 }
 
 .inventory-table {
   width: 100%;
   border-collapse: collapse;
-  text-align: left;
-  font-size: 13px;
 }
 
 .inventory-table th {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border);
-  color: var(--text-muted);
-  font-weight: 600;
+  background: #101418;
+  padding: 12px 14px;
+  text-align: left;
   font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: var(--surface-2);
+  border-bottom: 1px solid #232a32;
+  white-space: nowrap;
 }
 
 .inventory-table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border-soft);
-  color: var(--text);
+  padding: 12px 14px;
+  border-bottom: 1px solid #1c222a;
+  font-size: 13px;
+  color: #e2e8f0;
   vertical-align: middle;
 }
 
-.inventory-table tr:last-child td {
-  border-bottom: none;
+.inventory-table tr:hover {
+  background: #181e26;
 }
 
-.inventory-table tr:hover td {
-  background: var(--surface-2);
+.inv-row--selected {
+  background: rgba(16, 185, 129, 0.05);
 }
 
+.th-checkbox,
+.td-checkbox {
+  width: 40px;
+  text-align: center;
+  padding-left: 16px;
+  padding-right: 8px;
+}
+
+.th-checkbox input,
+.td-checkbox input {
+  accent-color: #10b981;
+  cursor: pointer;
+  width: 14px;
+  height: 14px;
+}
+
+/* Product cell */
 .inv-prod-cell {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.table-thumb {
-  width: 36px;
-  height: 36px;
-  object-fit: cover;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: var(--surface-2);
-}
-
-.table-thumb-mono {
+.inv-prod-thumb {
   width: 36px;
   height: 36px;
   border-radius: 6px;
-  background: var(--surface-2);
-  color: var(--text-muted);
-  font-weight: 700;
-  font-size: 11px;
+  background: #1c232a;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--border);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.inv-prod-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.inv-prod-thumb span {
+  font-size: 11px;
+  font-weight: 700;
+  color: #10b981;
 }
 
 .inv-prod-meta {
   display: flex;
   flex-direction: column;
-  gap: 2px;
 }
 
-.inv-sku-tag {
-  font-size: 11px;
-  color: var(--text-dim);
-  font-family: monospace;
-}
-
-.inv-cat-pill {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: var(--surface-2);
-  color: var(--text-muted);
-  font-size: 11px;
-  text-transform: capitalize;
-}
-
-.inv-qty-value {
-  font-size: 14px;
-}
-
-.unit-label {
-  font-size: 11px;
-  color: var(--text-muted);
-  font-weight: normal;
-}
-
-.text-muted-dark {
-  color: var(--text);
-  font-size: 13px;
-}
-
-.inv-badge {
-  display: inline-block;
-  padding: 3px 8px;
-  border-radius: 4px;
-  font-size: 11px;
+.inv-prod-name {
   font-weight: 600;
+  color: #f8fafc;
+  line-height: 1.3;
 }
 
-.inv-badge--ok {
-  background: var(--green-soft);
-  color: var(--green);
+.inv-prod-sku {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 1px;
 }
 
-.inv-badge--low {
-  background: var(--amber-soft);
-  color: var(--amber);
+.inv-cat-text {
+  font-size: 12.5px;
+  color: #94a3b8;
 }
 
-.inv-badge--out {
-  background: var(--rose-soft);
-  color: var(--rose);
+/* Status pills */
+.inv-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.inv-status-pill .status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.inv-status-pill--low {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fbbf24;
+}
+
+.inv-status-pill--low .status-dot {
+  background: #f59e0b;
+}
+
+.inv-status-pill--out {
+  background: rgba(244, 63, 94, 0.12);
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  color: #fb7185;
+}
+
+.inv-status-pill--out .status-dot {
+  background: #f43f5e;
+}
+
+.inv-status-pill--ok {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34d399;
+}
+
+.inv-status-pill--ok .status-dot {
+  background: #10b981;
+}
+
+.inv-onhand-val {
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.inv-threshold-val {
+  color: #94a3b8;
+}
+
+.inv-cost-val,
+.inv-sell-val {
+  font-size: 12.5px;
+  color: #cbd5e1;
+}
+
+.inv-stockval {
+  font-size: 12.5px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* Row Action circle button */
+.inv-action-btn-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid #28313b;
+  background: #161b20;
+  color: #94a3b8;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.inv-action-btn-circle:hover {
+  background: #10b981;
+  border-color: #10b981;
+  color: #042f2e;
 }
 
 .inventory-loading,
 .inventory-empty {
-  padding: 48px 16px;
+  padding: 48px 24px;
   text-align: center;
-  color: var(--text-muted);
-}
-
-.inventory-empty svg {
-  margin-bottom: 8px;
-  color: var(--text-dim);
+  color: #94a3b8;
 }

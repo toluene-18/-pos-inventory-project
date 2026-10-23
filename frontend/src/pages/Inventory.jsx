@@ -1,10 +1,13 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import Icon from '../components/ui/Icon';
 import StockAdjustModal from '../components/inventory/StockAdjustModal';
 import InventoryKpis from '../components/inventory/InventoryKpis';
 import InventoryTable from '../components/inventory/InventoryTable';
 import { getProducts, adjustStock } from '../services/api';
 import '../styles/inventory.css';
+import '../styles/inventory-modal.css';
+import '../styles/inventory-table.css';
 
 export default function Inventory({ user, onSessionExpired }) {
   const [products, setProducts] = useState([]);
@@ -13,9 +16,11 @@ export default function Inventory({ user, onSessionExpired }) {
   const [search, setSearch] = useState('');
   const [stockFilter, setStockFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
-  const [sortBy, setSortBy] = useState('name-asc');
-  const [adjustingProduct, setAdjustingProduct] = useState(null);
-  const [statusMessage, setStatusMessage] = useState('');
+  const [sortBy, setSortBy] = useState('low-to-high');
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  const [restockTargets, setRestockTargets] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   const isManagement = ['owner', 'manager'].includes(user?.role);
 
@@ -53,9 +58,8 @@ export default function Inventory({ user, onSessionExpired }) {
       const qty = p.inventory?.quantity ?? 0;
       const threshold = p.inventory?.reorder_threshold ?? 0;
       totalUnits += qty;
-      if (p.cost_price) {
-        stockValueCost += Number(p.cost_price) * qty;
-      }
+      const cost = Number(p.cost_price) || 0;
+      stockValueCost += cost * qty;
       if (qty <= 0) outOfStockCount += 1;
       else if (qty <= threshold) lowStockCount += 1;
     }
@@ -66,7 +70,6 @@ export default function Inventory({ user, onSessionExpired }) {
       lowStockCount,
       outOfStockCount,
       stockValueCost,
-      needsAttention: lowStockCount + outOfStockCount,
     };
   }, [products]);
 
@@ -92,8 +95,8 @@ export default function Inventory({ user, onSessionExpired }) {
     result.sort((a, b) => {
       const qtyA = a.inventory?.quantity ?? 0;
       const qtyB = b.inventory?.quantity ?? 0;
-      if (sortBy === 'qty-desc') return qtyB - qtyA;
-      if (sortBy === 'qty-asc') return qtyA - qtyB;
+      if (sortBy === 'low-to-high') return qtyA - qtyB;
+      if (sortBy === 'high-to-low') return qtyB - qtyA;
       if (sortBy === 'name-desc') return b.name.localeCompare(a.name);
       return a.name.localeCompare(b.name);
     });
@@ -101,32 +104,80 @@ export default function Inventory({ user, onSessionExpired }) {
     return result;
   }, [products, search, stockFilter, categoryFilter, sortBy]);
 
-  async function handleSaveAdjustment(adjustmentData) {
-    if (!adjustingProduct) return;
-    await adjustStock(adjustingProduct.id, adjustmentData);
-    setStatusMessage(
-      `Stock for "${adjustingProduct.name}" ${
-        adjustmentData.type === 'increase' ? 'increased' : 'decreased'
-      } by ${adjustmentData.quantity} ${adjustingProduct.unit || 'units'}.`
+  function handleToggleSelect(id) {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function handleToggleSelectAll() {
+    if (filteredProducts.every(p => selectedIds.has(p.id))) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredProducts.map(p => p.id)));
+    }
+  }
+
+  function handleSelectAttention() {
+    const attention = products.filter(p => {
+      const qty = p.inventory?.quantity ?? 0;
+      const threshold = p.inventory?.reorder_threshold ?? 0;
+      return qty <= threshold;
+    });
+    setSelectedIds(new Set(attention.map(p => p.id)));
+  }
+
+  function handleQuickRestock(product) {
+    setRestockTargets([product]);
+    setIsModalOpen(true);
+  }
+
+  function handleBulkRestockClick() {
+    const selected = products.filter(p => selectedIds.has(p.id));
+    if (selected.length === 0) return;
+    setRestockTargets(selected);
+    setIsModalOpen(true);
+  }
+
+  async function handleConfirmRestock({ products: targetProducts, unitsPerProduct, totalUnits, reason }) {
+    for (const p of targetProducts) {
+      await adjustStock(p.id, {
+        type: 'increase',
+        quantity: unitsPerProduct,
+        reason,
+      });
+    }
+
+    setToastMessage(
+      `Restocked ${targetProducts.length} product${targetProducts.length > 1 ? 's' : ''} — +${totalUnits} units added.`
     );
+    setSelectedIds(new Set());
     await fetchProducts();
-    setTimeout(() => setStatusMessage(''), 4000);
+    setTimeout(() => setToastMessage(''), 4000);
   }
 
   return (
     <div className="inventory-page">
       <header className="inventory-header">
         <div>
-          <h2>Inventory Management</h2>
-          <p>Track stock levels, review alerts, monitor valuation, and audit physical counts.</p>
+          <h2>Inventory</h2>
+          <p>Every product on the shelf, with live stock levels, filters, and one-tap restocking.</p>
+        </div>
+
+        <div className="inventory-header-actions">
+          <Link to="/restock" className="inv-btn-secondary">
+            <Icon name="clock" size={14} />
+            <span>Adjustment history</span>
+          </Link>
+          <Link to="/products" className="inv-btn-primary">
+            <Icon name="plus" size={14} />
+            <span>Add product</span>
+          </Link>
         </div>
       </header>
-
-      {statusMessage && (
-        <div className="inventory-alert inventory-alert--success" role="status">
-          <Icon name="check" size={16} /> {statusMessage}
-        </div>
-      )}
 
       {error && (
         <div className="inventory-alert inventory-alert--error" role="alert">
@@ -137,63 +188,76 @@ export default function Inventory({ user, onSessionExpired }) {
       <InventoryKpis stats={stats} isManagement={isManagement} />
 
       <div className="inventory-controls">
-        <div className="inventory-search-wrap">
-          <Icon name="search" size={16} />
-          <input
-            type="search"
-            placeholder="Search by product name, SKU or barcode..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
-        </div>
+        <div className="inventory-toolbar-top">
+          <div className="inventory-search-wrap">
+            <Icon name="search" size={15} />
+            <input
+              type="text"
+              placeholder="Search by product name or SKU..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </div>
 
-        <div className="inventory-filter-group">
-          <select
-            value={categoryFilter}
-            onChange={e => setCategoryFilter(e.target.value)}
-            className="inv-select"
-          >
-            {categories.map(c => (
-              <option key={c} value={c}>
-                {c === 'all' ? 'All Categories' : c.replace('_', ' ').toUpperCase()}
-              </option>
-            ))}
-          </select>
+          <div className="inventory-filter-group">
+            <select
+              value={categoryFilter}
+              onChange={e => setCategoryFilter(e.target.value)}
+              className="inv-select"
+            >
+              <option value="all">All categories</option>
+              {categories.filter(c => c !== 'all').map(c => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
 
-          <select
-            value={sortBy}
-            onChange={e => setSortBy(e.target.value)}
-            className="inv-select"
-          >
-            <option value="name-asc">Sort: Name (A-Z)</option>
-            <option value="name-desc">Sort: Name (Z-A)</option>
-            <option value="qty-desc">Sort: Highest Stock First</option>
-            <option value="qty-asc">Sort: Lowest Stock First</option>
-          </select>
+            <select
+              value={sortBy}
+              onChange={e => setSortBy(e.target.value)}
+              className="inv-select"
+            >
+              <option value="low-to-high">Stock: low to high</option>
+              <option value="high-to-low">Stock: high to low</option>
+              <option value="name-asc">Name (A-Z)</option>
+              <option value="name-desc">Name (Z-A)</option>
+            </select>
+
+            <button
+              type="button"
+              className="btn-select-attention"
+              onClick={handleSelectAttention}
+            >
+              ⚡ Select all low & out of stock
+            </button>
+          </div>
         </div>
 
         <div className="inventory-tabs">
-          <button
-            type="button"
-            className={`inv-tab ${stockFilter === 'all' ? 'inv-tab--active' : ''}`}
-            onClick={() => setStockFilter('all')}
-          >
-            All Items
-          </button>
-          <button
-            type="button"
-            className={`inv-tab ${stockFilter === 'low' ? 'inv-tab--active' : ''}`}
-            onClick={() => setStockFilter('low')}
-          >
-            Low Stock ({stats.lowStockCount})
-          </button>
-          <button
-            type="button"
-            className={`inv-tab ${stockFilter === 'out' ? 'inv-tab--active' : ''}`}
-            onClick={() => setStockFilter('out')}
-          >
-            Out of Stock ({stats.outOfStockCount})
-          </button>
+          {[
+            { id: 'all', label: 'All' },
+            { id: 'ok', label: 'In stock' },
+            { id: 'low', label: 'Low' },
+            { id: 'out', label: 'Out' },
+          ].map(tab => (
+            <button
+              key={tab.id}
+              type="button"
+              className={`inv-tab ${stockFilter === tab.id ? 'inv-tab--active' : ''}`}
+              onClick={() => setStockFilter(tab.id)}
+            >
+              {tab.label}
+            </button>
+          ))}
+
+          {selectedIds.size > 0 && (
+            <button
+              type="button"
+              className="btn-select-attention ml-auto"
+              onClick={handleBulkRestockClick}
+            >
+              Restock {selectedIds.size} Selected Items
+            </button>
+          )}
         </div>
       </div>
 
@@ -202,16 +266,26 @@ export default function Inventory({ user, onSessionExpired }) {
           products={filteredProducts}
           loading={loading}
           isManagement={isManagement}
-          onAdjust={setAdjustingProduct}
+          selectedIds={selectedIds}
+          onToggleSelect={handleToggleSelect}
+          onToggleSelectAll={handleToggleSelectAll}
+          onQuickRestock={handleQuickRestock}
         />
       </div>
 
       <StockAdjustModal
-        isOpen={Boolean(adjustingProduct)}
-        product={adjustingProduct}
-        onClose={() => setAdjustingProduct(null)}
-        onSave={handleSaveAdjustment}
+        isOpen={isModalOpen}
+        selectedProducts={restockTargets}
+        onClose={() => setIsModalOpen(false)}
+        onConfirmRestock={handleConfirmRestock}
       />
+
+      {toastMessage && (
+        <div className="floating-toast-popup" role="status">
+          <Icon name="check" size={15} />
+          <span>{toastMessage}</span>
+        </div>
+      )}
     </div>
   );
 }

@@ -2,206 +2,150 @@ import { useState, useMemo } from 'react';
 import Icon from '../ui/Icon';
 import '../../styles/inventory-modal.css';
 
-const RESTOCK_REASONS = [
-  'Supplier shipment / Delivery received',
-  'Physical audit found excess stock',
-  'Customer return to inventory',
-  'Internal store transfer in',
-  'Other (specify note)...',
-];
+const QUICK_CHIPS = [10, 25, 50, 100];
 
-const REMOVE_REASONS = [
-  'Damaged / Broken goods removed',
-  'Expired / Spoilage write-off',
-  'Physical count discrepancy (theft/loss)',
-  'Internal store consumption',
-  'Returned back to supplier/vendor',
-  'Other (specify note)...',
-];
-
-export default function StockAdjustModal({ product, isOpen, onClose, onSave }) {
-  const [type, setType] = useState('increase');
-  const [quantity, setQuantity] = useState('1');
-  const [reasonIndex, setReasonIndex] = useState(0);
-  const [customReason, setCustomReason] = useState('');
+export default function StockAdjustModal({
+  selectedProducts = [],
+  isOpen,
+  onClose,
+  onConfirmRestock,
+}) {
+  const [unitsToAdd, setUnitsToAdd] = useState('100');
+  const [reason, setReason] = useState('Bulk restock from inventory');
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
 
-  const reasonList = useMemo(
-    () => (type === 'increase' ? RESTOCK_REASONS : REMOVE_REASONS),
-    [type]
-  );
+  const productList = useMemo(() => {
+    return Array.isArray(selectedProducts) ? selectedProducts : [selectedProducts].filter(Boolean);
+  }, [selectedProducts]);
 
-  if (!isOpen || !product) return null;
+  const numUnits = Math.max(1, parseInt(unitsToAdd, 10) || 1);
+  const totalUnitsAdded = numUnits * productList.length;
 
-  const currentStock = product.inventory?.quantity ?? 0;
-  const numQuantity = parseInt(quantity, 10) || 0;
-  const unit = product.unit || 'units';
+  const addedCostValue = useMemo(() => {
+    return productList.reduce((sum, p) => {
+      const cost = Number(p.cost_price) || Number(p.sell_price) * 0.7 || 0;
+      return sum + cost * numUnits;
+    }, 0);
+  }, [productList, numUnits]);
 
-  const projectedStock =
-    type === 'increase'
-      ? currentStock + numQuantity
-      : Math.max(0, currentStock - numQuantity);
+  const primaryProduct = productList[0];
+  const onHand = primaryProduct?.inventory?.quantity ?? 0;
 
-  const selectedReason = reasonList[reasonIndex] || reasonList[0];
-  const isCustom = selectedReason.startsWith('Other');
+  if (!isOpen || productList.length === 0) return null;
 
-  async function handleSubmit(e) {
+  function handleChipClick(val) {
+    setUnitsToAdd(String(val));
+  }
+
+  async function handleConfirm(e) {
     e.preventDefault();
-    setError('');
-
-    if (numQuantity <= 0) {
-      setError(`Adjustment quantity must be at least 1 ${unit}.`);
-      return;
-    }
-
-    if (type === 'decrease' && numQuantity > currentStock) {
-      setError(`Cannot reduce stock below zero (current on hand: ${currentStock} ${unit}).`);
-      return;
-    }
-
-    const finalReason = isCustom ? customReason.trim() : selectedReason;
-    if (isCustom && !finalReason) {
-      setError('Please provide a specific reason note.');
-      return;
-    }
-
     setSubmitting(true);
     try {
-      await onSave({
-        type,
-        quantity: numQuantity,
-        reason: finalReason,
+      await onConfirmRestock({
+        products: productList,
+        unitsPerProduct: numUnits,
+        totalUnits: totalUnitsAdded,
+        addedCost: addedCostValue,
+        reason,
       });
       onClose();
-    } catch (err) {
-      setError(err.message || 'Failed to adjust stock.');
     } finally {
       setSubmitting(false);
     }
   }
 
-  function handleTypeChange(newType) {
-    setType(newType);
-    setReasonIndex(0);
-    setError('');
-  }
-
   return (
-    <div className="adjust-modal-backdrop" role="dialog" aria-modal="true">
-      <div className="adjust-modal">
-        <div className="adjust-modal-head">
-          <div className="adjust-modal-title">
-            <span className="adjust-modal-icon">
-              <Icon name="inventory" size={18} />
-            </span>
-            <div>
-              <h3>Adjust Stock</h3>
-              <p>{product.name} ({product.sku})</p>
-            </div>
+    <div className="modal-backdrop" onClick={onClose} role="dialog" aria-modal="true">
+      <div className="stock-restock-modal" onClick={e => e.stopPropagation()}>
+        <div className="restock-modal-head">
+          <div className="restock-modal-badge">
+            <Icon name="plus" size={16} />
           </div>
-          <button type="button" className="adjust-modal-close" onClick={onClose}>
-            <Icon name="x" size={16} />
+          <div className="restock-modal-titles">
+            <h3>Restock {productList.length} product{productList.length > 1 ? 's' : ''}</h3>
+            <p>Adds units to every selected product at once.</p>
+          </div>
+          <button type="button" className="restock-modal-close" onClick={onClose}>
+            ✕
           </button>
         </div>
 
-        {error && (
-          <div className="adjust-form-error" role="alert">
-            {error}
+        <div className="selected-stock-section">
+          <div className="selected-stock-label">
+            SELECTED STOCK · {onHand} UNITS ON HAND
           </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="adjust-form">
-          <div className="adjust-type-toggle">
-            <button
-              type="button"
-              className={`toggle-btn ${type === 'increase' ? 'toggle-btn--increase' : ''}`}
-              onClick={() => handleTypeChange('increase')}
-            >
-              ↓ Restock in
-            </button>
-            <button
-              type="button"
-              className={`toggle-btn ${type === 'decrease' ? 'toggle-btn--decrease' : ''}`}
-              onClick={() => handleTypeChange('decrease')}
-            >
-              ↑ Remove out
-            </button>
-          </div>
-
-          <div className="adjust-stock-preview">
-            <div className="adjust-preview-step">
-              <small>Current On Hand</small>
-              <strong>{currentStock} {unit}</strong>
+          <div className="selected-stock-card">
+            <div className="selected-stock-thumb">
+              {primaryProduct?.image_path ? (
+                <img src={primaryProduct.image_path} alt="" />
+              ) : (
+                <span>{primaryProduct?.name?.slice(0, 2).toUpperCase() || 'PR'}</span>
+              )}
             </div>
-            <div className="adjust-arrow">→</div>
-            <div className="adjust-preview-step">
-              <small>New Level After</small>
-              <strong className={type === 'increase' ? 'text-green' : 'text-amber'}>
-                {projectedStock} {unit}
-              </strong>
+            <div className="selected-stock-info">
+              <h4>{primaryProduct?.name}</h4>
+              <p>{primaryProduct?.sku}</p>
+            </div>
+            <div className="selected-stock-onhand">
+              {onHand} on hand
+            </div>
+          </div>
+        </div>
+
+        <form onSubmit={handleConfirm} className="restock-modal-form">
+          <div className="form-group">
+            <label htmlFor="modal-units-input">UNITS TO ADD PER PRODUCT</label>
+            <input
+              id="modal-units-input"
+              type="number"
+              min="1"
+              value={unitsToAdd}
+              onChange={e => setUnitsToAdd(e.target.value)}
+              className="modal-big-input"
+            />
+            <div className="modal-quick-chips">
+              {QUICK_CHIPS.map(val => (
+                <button
+                  key={val}
+                  type="button"
+                  className={`modal-chip-btn ${numUnits === val ? 'modal-chip-btn--active' : ''}`}
+                  onClick={() => handleChipClick(val)}
+                >
+                  +{val}
+                </button>
+              ))}
             </div>
           </div>
 
           <div className="form-group">
-            <label htmlFor="adjust-qty">
-              Quantity ({unit}) *
-            </label>
+            <label htmlFor="modal-reason-input">REASON NOTE</label>
             <input
-              id="adjust-qty"
-              type="number"
-              min="1"
-              required
-              value={quantity}
-              onChange={e => setQuantity(e.target.value)}
-              placeholder="1"
+              id="modal-reason-input"
+              type="text"
+              value={reason}
+              onChange={e => setReason(e.target.value)}
+              className="modal-text-input"
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="adjust-reason">Reason *</label>
-            <select
-              id="adjust-reason"
-              value={reasonIndex}
-              onChange={e => setReasonIndex(parseInt(e.target.value, 10))}
-            >
-              {reasonList.map((r, idx) => (
-                <option key={r} value={idx}>
-                  {r}
-                </option>
-              ))}
-            </select>
+          <div className="modal-summary-box">
+            <div className="summary-row">
+              <span className="summary-label">Total units added</span>
+              <span className="summary-val text-green">+{totalUnitsAdded}</span>
+            </div>
+            <div className="summary-row">
+              <span className="summary-label">Added stock value (cost)</span>
+              <span className="summary-val">₦{Math.round(addedCostValue).toLocaleString()}</span>
+            </div>
           </div>
 
-          {isCustom && (
-            <div className="form-group">
-              <label htmlFor="adjust-custom">Reason Details *</label>
-              <textarea
-                id="adjust-custom"
-                rows="2"
-                required
-                value={customReason}
-                onChange={e => setCustomReason(e.target.value)}
-                placeholder="Explain why this inventory adjustment is being made..."
-              />
-            </div>
-          )}
-
-          <div className="adjust-modal-actions">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={onClose}
-              disabled={submitting}
-            >
+          <div className="restock-modal-actions">
+            <button type="button" className="btn-modal-cancel" onClick={onClose} disabled={submitting}>
               Cancel
             </button>
-            <button
-              type="submit"
-              className={`btn ${type === 'increase' ? 'btn-primary' : 'btn-danger'}`}
-              disabled={submitting}
-            >
-              {submitting ? 'Applying...' : 'Apply adjustment'}
+            <button type="submit" className="btn-modal-confirm" disabled={submitting}>
+              <Icon name="check" size={15} />
+              <span>{submitting ? 'Applying...' : 'Confirm restock'}</span>
             </button>
           </div>
         </form>
