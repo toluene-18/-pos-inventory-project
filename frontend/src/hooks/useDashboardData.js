@@ -41,8 +41,8 @@ export default function useDashboardData({ isOwner, period, onSessionExpired }) 
   useEffect(() => {
     let cancelled = false;
 
-    async function load() {
-      setLoading(true);
+    async function load(isSilent = false) {
+      if (!isSilent) setLoading(true);
 
       const today = formatDateYmd(new Date());
       const dayCount = period === '7d' ? 7 : 30;
@@ -74,8 +74,16 @@ export default function useDashboardData({ isOwner, period, onSessionExpired }) 
       const todaySales = valueOf(todayRes, { sales: [] }).sales;
       const range = valueOf(rangeRes, { sales: [], truncated: false });
 
-      const todayMetrics = (isOwner && reportSummary(todayReport)) || summarizeSales(todaySales);
-      const rangeSummary = (isOwner && reportSummary(rangeReport)) || summarizeSales(range.sales);
+      const serverToday = isOwner ? reportSummary(todayReport) : null;
+      const todayMetrics = (serverToday && serverToday.count > 0)
+        ? serverToday
+        : summarizeSales(todaySales);
+
+      const serverRange = isOwner ? reportSummary(rangeReport) : null;
+      const rangeSummary = (serverRange && serverRange.count > 0)
+        ? serverRange
+        : summarizeSales(range.sales);
+
       const lowStock = buildLowStock(products);
       const allFailed = [productsRes, todayRes, rangeRes].every(r => r.status === 'rejected');
 
@@ -113,8 +121,19 @@ export default function useDashboardData({ isOwner, period, onSessionExpired }) 
       setLoading(false);
     });
 
+    const intervalId = setInterval(() => {
+      load(true).catch(() => {});
+    }, 12000);
+
+    function handleWindowFocus() {
+      load(true).catch(() => {});
+    }
+    window.addEventListener('focus', handleWindowFocus);
+
     return () => {
       cancelled = true;
+      clearInterval(intervalId);
+      window.removeEventListener('focus', handleWindowFocus);
     };
   }, [isOwner, onSessionExpired, period]);
 

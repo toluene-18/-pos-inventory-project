@@ -1,91 +1,41 @@
 /* ================================================================
-   reports-chart.css — Sales Over Time Bar Chart Component
+   reports-chart.css — Daily Revenue Bar Chart Component
    ================================================================ */
 
-/* Sales over time chart card */
 .reports-chart-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 22px;
+  border-radius: 10px;
+  padding: 18px 20px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-}
-
-.reports-chart-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
   gap: 16px;
-  flex-wrap: wrap;
+  height: 100%;
 }
 
 .reports-chart-head h3 {
   margin: 0;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--text);
 }
 
-.reports-chart-head p {
-  margin: 3px 0 0;
-  font-size: 12.5px;
-  color: var(--text-muted);
-}
-
-.reports-chart-badges {
-  display: flex;
-  gap: 10px;
-}
-
-.stat-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  border-radius: 6px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  font-size: 12px;
-}
-
-.stat-pill-label {
-  color: var(--text-muted);
-  font-weight: 600;
-}
-
-.stat-pill-val {
-  color: var(--text);
-  font-weight: 700;
-}
-
-.stat-pill--best .stat-pill-val {
-  color: #10b981;
-}
-
-.stat-pill--best small {
-  color: var(--text-dim);
-  font-size: 11px;
-}
-
-/* Chart Container & Axis Layout */
-.chart-container-outer {
-  width: 100%;
-  height: 240px;
+.reports-bar-chart-container {
   display: flex;
   gap: 12px;
+  height: 220px;
+  position: relative;
 }
 
 .chart-y-axis {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding-bottom: 24px;
-  font-size: 11px;
+  padding-bottom: 22px;
+  font-size: 10.5px;
   color: var(--text-dim);
   text-align: right;
-  min-width: 44px;
+  min-width: 38px;
   user-select: none;
 }
 
@@ -98,7 +48,10 @@
 
 .chart-grid-lines {
   position: absolute;
-  inset: 0 0 24px 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 22px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -106,17 +59,20 @@
 }
 
 .chart-grid-line {
-  border-bottom: 1px dashed var(--border);
   width: 100%;
+  height: 1px;
+  background: var(--border);
+  opacity: 0.6;
 }
 
 .chart-bars-track {
   position: relative;
-  z-index: 2;
+  flex: 1;
   display: flex;
+  justify-content: space-around;
   align-items: flex-end;
-  height: calc(100% - 24px);
-  gap: 4px;
+  padding-bottom: 22px;
+  z-index: 1;
 }
 
 .bar-column {
@@ -124,10 +80,16 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
   align-items: center;
+  justify-content: flex-end;
   position: relative;
   cursor: pointer;
+  padding: 0 4px;
+}
+
+.bar-column--active {
+  background: rgba(16, 185, 129, 0.04);
+  border-radius: 6px 6px 0 0;
 }
 
 .bar-wrapper {
@@ -141,44 +103,49 @@
 
 .bar-fill {
   width: 100%;
-  max-width: 18px;
+  max-width: 32px;
   background: #10b981;
-  border-radius: 3px 3px 0 0;
-  transition: all 0.15s ease;
+  border-radius: 4px 4px 0 0;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .bar-fill--hovered {
-  background: #34d399;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+  background: #0ea371;
+  filter: brightness(1.1);
 }
 
 .bar-tooltip {
   position: absolute;
-  bottom: calc(100% + 8px);
-  background: var(--surface);
+  top: -46px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface-2);
   border: 1px solid var(--border);
+  padding: 5px 10px;
   border-radius: 6px;
-  padding: 6px 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   white-space: nowrap;
   pointer-events: none;
   z-index: 10;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-align: center;
 }
 
 .tooltip-date {
-  font-size: 10.5px;
-  color: var(--text-muted);
+  font-size: 10px;
+  color: var(--text-dim);
 }
 
 .tooltip-val {
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 700;
   color: #10b981;
 }
 
 .x-tick-label {
   position: absolute;
-  bottom: -22px;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
   font-size: 10px;
   color: var(--text-dim);
   white-space: nowrap;

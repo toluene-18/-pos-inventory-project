@@ -1,226 +1,109 @@
 /* ================================================================
-   reports-sections.css — Category Donut & Top Products
+   reports-sections.css — Donut, Top Products & Payment Methods
    ================================================================ */
-
-.reports-bottom-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-@media (max-width: 960px) {
-  .reports-bottom-grid {
-    grid-template-columns: 1fr;
-  }
-}
 
 .reports-section-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 22px;
+  border-radius: 10px;
+  padding: 18px 20px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-}
-
-.reports-section-head {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.reports-section-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  gap: 16px;
+  height: 100%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .reports-section-head h3 {
   margin: 0;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--text);
 }
 
 .reports-section-head p {
   margin: 2px 0 0;
-  font-size: 12.5px;
-  color: var(--text-muted);
-}
-
-.top-products-badge {
-  margin-left: auto;
-  padding: 4px 10px;
-  border-radius: 9999px;
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
   font-size: 11px;
-  font-weight: 600;
+  color: var(--text-dim);
 }
 
-/* Category Donut & Bars */
-.category-breakdown-body {
-  display: grid;
-  grid-template-columns: 160px 1fr;
-  gap: 24px;
+/* Category Donut & Legend List */
+.category-donut-container {
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  gap: 16px;
+  flex: 1;
+  justify-content: center;
 }
 
-@media (max-width: 600px) {
-  .category-breakdown-body {
-    grid-template-columns: 1fr;
-    justify-items: center;
-  }
-}
-
-.donut-chart-side {
-  position: relative;
-  width: 160px;
-  height: 160px;
+.donut-chart-wrap {
+  width: 150px;
+  height: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .donut-svg {
-  width: 160px;
-  height: 160px;
+  width: 150px;
+  height: 150px;
 }
 
-.donut-center-label {
-  position: absolute;
+.donut-legend-list {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  pointer-events: none;
-}
-
-.donut-center-sub {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--text-dim);
-  letter-spacing: 0.05em;
-}
-
-.donut-center-val {
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--text);
-  margin-top: 2px;
-}
-
-.category-bars-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   width: 100%;
 }
 
-.cat-row {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.cat-row-header {
+.donut-legend-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 12.5px;
+  font-size: 12px;
 }
 
-.cat-name-badge {
+.donut-legend-name-wrap {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.cat-dot {
+.donut-legend-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
-.cat-name {
+.donut-legend-name {
   color: var(--text);
+  font-weight: 500;
+}
+
+.donut-legend-percent {
+  color: var(--text-dim);
   font-weight: 600;
 }
 
-.cat-numbers {
-  display: flex;
-  gap: 10px;
-}
-
-.cat-amount {
-  color: var(--text);
-  font-weight: 600;
-}
-
-.cat-percent {
-  color: var(--text-muted);
-  font-size: 11.5px;
-}
-
-.cat-progress-track {
-  height: 5px;
-  border-radius: 9999px;
-  background: var(--surface-2);
-  overflow: hidden;
-}
-
-.cat-progress-fill {
-  height: 100%;
-  border-radius: 9999px;
-  transition: width 0.3s ease;
-}
-
-/* Top Products Ranked List */
+/* Top Selling Products */
 .top-products-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 14px;
 }
 
 .top-product-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-
-.top-product-rank {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: var(--surface-2);
-  color: var(--text-muted);
-  font-size: 11px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  border: 1px solid var(--border);
-}
-
-.top-product-rank--gold {
-  background: #f59e0b;
-  color: #0f172a;
-  border-color: #f59e0b;
 }
 
 .top-product-info {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
 }
 
 .top-product-meta {
@@ -230,30 +113,30 @@
   font-size: 12.5px;
 }
 
-.top-product-name {
-  color: var(--text);
-  font-weight: 500;
-}
-
-.top-product-stats {
+.top-product-title-wrap {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
+.top-product-name {
+  color: var(--text);
+  font-weight: 500;
+}
+
 .top-product-units {
-  color: var(--text-muted);
-  font-size: 11.5px;
+  color: var(--text-dim);
+  font-size: 11px;
 }
 
 .top-product-revenue {
-  color: #10b981;
-  font-weight: 600;
-  font-size: 12px;
+  color: var(--text);
+  font-weight: 700;
+  font-size: 12.5px;
 }
 
 .top-product-bar-track {
-  height: 5px;
+  height: 4px;
   border-radius: 9999px;
   background: var(--surface-2);
   overflow: hidden;
@@ -262,6 +145,77 @@
 .top-product-bar-fill {
   height: 100%;
   background: #10b981;
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+/* Payment Methods */
+.reports-payment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  justify-content: center;
+}
+
+.reports-payment-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.reports-payment-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12.5px;
+}
+
+.reports-payment-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reports-payment-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.reports-payment-name {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.reports-payment-numbers {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reports-payment-amount {
+  color: var(--text);
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.reports-payment-badge {
+  color: var(--text-dim);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.reports-payment-track {
+  height: 5px;
+  border-radius: 9999px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.reports-payment-fill {
+  height: 100%;
   border-radius: 9999px;
   transition: width 0.3s ease;
 }

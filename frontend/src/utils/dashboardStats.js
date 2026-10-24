@@ -65,7 +65,8 @@ export function buildChartPoints(sales, from, to) {
   const totals = new Map();
 
   for (const sale of sales) {
-    const day = String(sale.created_at || '').slice(0, 10);
+    if (!sale.created_at) continue;
+    const day = formatDateYmd(new Date(sale.created_at));
     if (!day) continue;
     const cur = totals.get(day) || { value: 0, count: 0 };
     totals.set(day, { value: addMoney(cur.value, sale.total), count: cur.count + 1 });

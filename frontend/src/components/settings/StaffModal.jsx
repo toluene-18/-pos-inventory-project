@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Icon from '../ui/Icon';
+import '../../styles/settings-modal.css';
 
 export default function StaffModal({ member, isOpen, onClose, onSave, currentUser }) {
   const isEditing = Boolean(member);

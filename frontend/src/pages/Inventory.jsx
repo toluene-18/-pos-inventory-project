@@ -9,6 +9,7 @@ import { formatCategory } from '../utils/categories';
 import '../styles/inventory.css';
 import '../styles/inventory-modal.css';
 import '../styles/inventory-table.css';
+import '../styles/toast-popup.css';
 
 export default function Inventory({ user, onSessionExpired }) {
   const [products, setProducts] = useState([]);
@@ -144,17 +145,10 @@ export default function Inventory({ user, onSessionExpired }) {
   }
 
   async function handleConfirmRestock({ products: targetProducts, unitsPerProduct, totalUnits, reason }) {
-    for (const p of targetProducts) {
-      await adjustStock(p.id, {
-        type: 'increase',
-        quantity: unitsPerProduct,
-        reason,
-      });
-    }
-
-    setToastMessage(
-      `Restocked ${targetProducts.length} product${targetProducts.length > 1 ? 's' : ''} — +${totalUnits} units added.`
+    await Promise.all(
+      targetProducts.map(p => adjustStock(p.id, { type: 'increase', quantity: unitsPerProduct, reason }))
     );
+    setToastMessage(`Restocked ${targetProducts.length} product${targetProducts.length > 1 ? 's' : ''} — +${totalUnits} units added.`);
     setSelectedIds(new Set());
     await fetchProducts();
     setTimeout(() => setToastMessage(''), 4000);

@@ -2,6 +2,21 @@ import { useState } from 'react';
 import Icon from '../ui/Icon';
 import StaffModal from './StaffModal';
 
+function formatRelativeTime(dateStr) {
+  if (!dateStr) return 'Active recently';
+  try {
+    const d = new Date(dateStr);
+    const now = new Date();
+    const diffSec = Math.floor((now - d) / 1000);
+    if (diffSec < 60) return 'Just now';
+    if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m ago`;
+    if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h ago`;
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  } catch {
+    return 'Active recently';
+  }
+}
+
 export default function StaffAccessTab({
   staff,
   currentUser,
@@ -98,6 +113,7 @@ export default function StaffAccessTab({
               <th>STAFF MEMBER</th>
               <th>ROLE</th>
               <th>STATUS</th>
+              <th>LAST ACTIVE</th>
               <th className="text-right">ACTIONS</th>
             </tr>
           </thead>
@@ -138,6 +154,11 @@ export default function StaffAccessTab({
                     <span className={`staff-status-dot ${member.status === 'active' ? 'staff-status-dot--active' : member.status === 'pending' ? 'staff-status-dot--pending' : 'staff-status-dot--inactive'}`}>
                       <i aria-hidden="true" />
                       {member.status === 'active' ? 'Active' : member.status === 'pending' ? 'Pending' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td>
+                    <span className="staff-last-active-text">
+                      {isYou ? 'Active now' : formatRelativeTime(member.last_active || member.lastActive || member.created_at)}
                     </span>
                   </td>
                   <td className="text-right">

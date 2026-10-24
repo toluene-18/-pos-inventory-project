@@ -1,44 +1,46 @@
 import { useMemo } from 'react';
-import Icon from '../ui/Icon';
 
-export default function ReportsCategoryBreakdown({ categories = [], totalRevenue = 222550 }) {
-  const size = 160;
-  const strokeWidth = 22;
+export default function ReportsCategoryBreakdown({ categories = [] }) {
+  const size = 150;
+  const strokeWidth = 24;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
 
+  const totalPercent = categories.reduce((sum, c) => sum + (c.percent || 0), 0) || 100;
+
   const segments = useMemo(() => {
-    return categories.map((cat, idx) => {
-      const priorSum = categories.slice(0, idx).reduce((acc, c) => acc + c.percent, 0);
+    let accumulated = 0;
+    return categories.map(cat => {
+      const segPercent = (cat.percent / totalPercent) * 100;
+      const strokeDasharray = `${(segPercent / 100) * circumference} ${circumference}`;
+      const strokeDashoffset = -((accumulated / 100) * circumference);
+      accumulated += segPercent;
+
       return {
         ...cat,
-        strokeDasharray: `${(cat.percent / 100) * circumference} ${circumference}`,
-        strokeDashoffset: -((priorSum / 100) * circumference),
+        strokeDasharray,
+        strokeDashoffset,
       };
     });
-  }, [categories, circumference]);
+  }, [categories, circumference, totalPercent]);
 
   return (
-    <div className="reports-section-card">
+    <div className="reports-section-card reports-donut-card">
       <div className="reports-section-head">
-        <span className="reports-section-icon">
-          <Icon name="reports" size={16} />
-        </span>
         <div>
-          <h3>Sales by category</h3>
-          <p>Where the revenue comes from</p>
+          <h3>Revenue by category</h3>
         </div>
       </div>
 
-      <div className="category-breakdown-body">
-        <div className="donut-chart-side">
+      <div className="category-donut-container">
+        <div className="donut-chart-wrap">
           <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="donut-svg">
             <circle
               cx={size / 2}
               cy={size / 2}
               r={radius}
               fill="transparent"
-              stroke="#1e242c"
+              stroke="var(--surface-2)"
               strokeWidth={strokeWidth}
             />
             {segments.map(cat => (
@@ -58,34 +60,16 @@ export default function ReportsCategoryBreakdown({ categories = [], totalRevenue
               />
             ))}
           </svg>
-          <div className="donut-center-label">
-            <span className="donut-center-sub">TOTAL</span>
-            <span className="donut-center-val">₦{totalRevenue.toLocaleString()}</span>
-          </div>
         </div>
 
-        <div className="category-bars-list">
+        <div className="donut-legend-list">
           {categories.map(cat => (
-            <div key={cat.name} className="cat-row">
-              <div className="cat-row-header">
-                <div className="cat-name-badge">
-                  <span className="cat-dot" style={{ backgroundColor: cat.color }} />
-                  <span className="cat-name">{cat.name}</span>
-                </div>
-                <div className="cat-numbers">
-                  <span className="cat-amount">₦{cat.amount.toLocaleString()}</span>
-                  <span className="cat-percent">{cat.percent}%</span>
-                </div>
+            <div key={cat.name} className="donut-legend-item">
+              <div className="donut-legend-name-wrap">
+                <span className="donut-legend-dot" style={{ backgroundColor: cat.color }} />
+                <span className="donut-legend-name">{cat.name}</span>
               </div>
-              <div className="cat-progress-track">
-                <div
-                  className="cat-progress-fill"
-                  style={{
-                    width: `${cat.percent}%`,
-                    backgroundColor: cat.color,
-                  }}
-                />
-              </div>
+              <span className="donut-legend-percent">{cat.percent}%</span>
             </div>
           ))}
         </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getStaff, updateStaffStatus } from '../../services/api';
+import { getStaff, updateStaffStatus, deleteStaffMember } from '../../services/api';
 import {
   DEFAULT_PROFILE,
   DEFAULT_STAFF,
@@ -208,9 +208,14 @@ export function useSettingsData(user, onSessionExpired) {
     showToast(`Status for ${target.name} changed to ${nextStatus}.`);
   }
 
-  function handleDeleteStaffMember(id) {
+  async function handleDeleteStaffMember(id) {
     const target = staff.find(s => s.id === id);
     if (!target) return;
+    try {
+      await deleteStaffMember(id);
+    } catch (err) {
+      console.warn('Backend staff delete notice:', err.message);
+    }
     setStaff(prev => {
       const updated = prev.filter(s => s.id !== id);
       localStorage.setItem('cwg_staff_roster', JSON.stringify(updated));

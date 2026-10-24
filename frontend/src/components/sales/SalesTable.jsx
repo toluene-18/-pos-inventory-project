@@ -1,6 +1,7 @@
 import React from 'react';
 import Icon from '../ui/Icon';
 import '../../styles/sales-table.css';
+import '../../styles/sales-breakdown.css';
 
 export default function SalesTable({
   sales = [],

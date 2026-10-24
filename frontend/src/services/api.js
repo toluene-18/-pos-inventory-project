@@ -213,6 +213,12 @@ export async function updateStaffStatus(userId, { role, status }) {
   });
 }
 
+export async function deleteStaffMember(userId) {
+  return apiRequest(`/staff/${userId}`, {
+    method: 'DELETE',
+  });
+}
+
 export async function updateUserProfile({ name }) {
   return apiRequest('/user/profile', {
     method: 'PATCH',

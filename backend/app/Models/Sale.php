@@ -24,4 +24,9 @@ class Sale extends Model
     {
         return $this->hasMany(SaleItem::class);
     }
+
+    protected function serializeDate(\DateTimeInterface $date): string
+    {
+        return $date->setTimezone(new \DateTimeZone(config('app.timezone', 'Africa/Lagos')))->format('Y-m-d\TH:i:sP');
+    }
 }

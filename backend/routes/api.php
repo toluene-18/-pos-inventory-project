@@ -37,6 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('role:owner')->group(function () {
         Route::patch('/staff/{user}/approve', [AuthController::class, 'approveStaff']);
+        Route::delete('/staff/{user}', [AuthController::class, 'deleteStaff']);
     });
 
     Route::post('/sales', [SaleController::class, 'store']);

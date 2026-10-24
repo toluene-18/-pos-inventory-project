@@ -1,0 +1,148 @@
+/* ================================================================
+   sales-breakdown.css — Expanded Receipt Breakdown in Sales Table
+   ================================================================ */
+
+.sales-expanded-row td {
+  padding: 0 14px 16px;
+  background: transparent !important;
+  border-bottom: 1px solid var(--border);
+}
+
+.sales-expanded-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+[data-theme="dark"] .sales-expanded-card {
+  background: #111412;
+  border-color: #232825;
+}
+
+.sales-expanded-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
+}
+
+[data-theme="dark"] .sales-expanded-head {
+  border-color: #202422;
+}
+
+.sales-expanded-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.sales-expanded-lines {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.sales-breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sales-breakdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sales-breakdown-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.sales-breakdown-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+[data-theme="dark"] .sales-breakdown-name {
+  color: #ffffff;
+}
+
+.sales-breakdown-sku {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.sales-breakdown-total {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+[data-theme="dark"] .sales-breakdown-total {
+  color: #ffffff;
+}
+
+.sales-expanded-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+[data-theme="dark"] .sales-expanded-foot {
+  border-color: #202422;
+}
+
+.sales-foot-totals {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.sales-foot-total-col small {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+
+.sales-foot-total-col strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+[data-theme="dark"] .sales-foot-total-col strong {
+  color: #ffffff;
+}
+
+.btn-reprint-receipt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: none;
+  background: #10b981;
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-reprint-receipt:hover {
+  background: #0ea371;
+}
