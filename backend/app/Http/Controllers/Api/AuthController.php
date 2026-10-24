@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Sale;
+use App\Models\StockAdjustment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -143,19 +144,39 @@ class AuthController extends Controller
 
     public function deleteStaff(Request $request, User $user)
     {
-        if ($request->user()?->role !== 'owner') {
+        $actor = $request->user();
+
+        if (!in_array($actor->role, ['owner', 'manager'], true)) {
             return response()->json([
-                'message' => 'Only the store owner can remove staff members.',
+                'message' => 'Only the store owner or manager can remove staff members.',
             ], 403);
         }
 
-        if ($user->role === 'owner' || $user->id === $request->user()?->id) {
+        if ($user->role === 'owner') {
             return response()->json([
                 'message' => 'The owner account cannot be deleted.',
             ], 422);
         }
 
-        $user->delete();
+        if ($user->id === $actor->id) {
+            return response()->json([
+                'message' => 'You cannot delete your own account.',
+            ], 422);
+        }
+
+        if ($actor->role === 'manager' && in_array($user->role, ['owner', 'manager'], true)) {
+            return response()->json([
+                'message' => 'Managers can only delete cashiers.',
+            ], 403);
+        }
+
+        DB::transaction(function () use ($user, $actor) {
+            $user->tokens()->delete();
+            Sale::where('user_id', $user->id)->update(['user_id' => $actor->id]);
+            StockAdjustment::where('user_id', $user->id)->update(['user_id' => $actor->id]);
+            User::where('approved_by', $user->id)->update(['approved_by' => null]);
+            $user->delete();
+        });
 
         return response()->json([
             'message' => 'Staff member removed successfully.',

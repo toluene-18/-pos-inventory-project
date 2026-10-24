@@ -23,6 +23,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('role:owner,manager')->group(function () {
         Route::get('/staff', [AuthController::class, 'listStaff']);
+        Route::patch('/staff/{user}/approve', [AuthController::class, 'approveStaff']);
+        Route::delete('/staff/{user}', [AuthController::class, 'deleteStaff']);
         Route::post('/products/create', [ProductController::class, 'store']);
         Route::post('/products/upload-image', [ProductController::class, 'uploadImage']);
         Route::patch('/products/{product}', [ProductController::class, 'update']);
@@ -33,11 +35,6 @@ Route::middleware('auth:sanctum')->group(function () {
         [StockAdjustmentController::class, 'store']);
 
         Route::get('/reports/sales', [SaleController::class, 'report']);
-    });
-
-    Route::middleware('role:owner')->group(function () {
-        Route::patch('/staff/{user}/approve', [AuthController::class, 'approveStaff']);
-        Route::delete('/staff/{user}', [AuthController::class, 'deleteStaff']);
     });
 
     Route::post('/sales', [SaleController::class, 'store']);

@@ -73,3 +73,66 @@ test('pending staff cannot sign in until approved', function () {
         'password' => 'Password123!',
     ])->assertStatus(403);
 });
+
+test('owner can delete a cashier account and it is removed from the database', function () {
+    /** @var \Tests\TestCase $this */
+    $owner = User::factory()->create([
+        'role' => 'owner',
+        'status' => 'active',
+    ]);
+    $cashier = User::factory()->create([
+        'role' => 'cashier',
+        'status' => 'active',
+    ]);
+
+    $this->actingAs($owner, 'sanctum')
+        ->deleteJson('/api/staff/' . $cashier->id)
+        ->assertOk()
+        ->assertJson(['message' => 'Staff member removed successfully.']);
+
+    expect(User::find($cashier->id))->toBeNull();
+});
+
+test('cashier cannot delete staff', function () {
+    /** @var \Tests\TestCase $this */
+    $cashier1 = User::factory()->create(['role' => 'cashier', 'status' => 'active']);
+    $cashier2 = User::factory()->create(['role' => 'cashier', 'status' => 'active']);
+
+    $this->actingAs($cashier1, 'sanctum')
+        ->deleteJson('/api/staff/' . $cashier2->id)
+        ->assertStatus(403);
+
+    expect(User::find($cashier2->id))->not->toBeNull();
+});
+
+test('owner account cannot be deleted', function () {
+    /** @var \Tests\TestCase $this */
+    $owner = User::factory()->create(['role' => 'owner', 'status' => 'active']);
+    $manager = User::factory()->create(['role' => 'manager', 'status' => 'active']);
+
+    $this->actingAs($manager, 'sanctum')
+        ->deleteJson('/api/staff/' . $owner->id)
+        ->assertStatus(422);
+
+    expect(User::find($owner->id))->not->toBeNull();
+});
+
+test('owner can delete staff even if they have historical sales and adjustments', function () {
+    /** @var \Tests\TestCase $this */
+    $owner = User::factory()->create(['role' => 'owner', 'status' => 'active']);
+    $cashier = User::factory()->create(['role' => 'cashier', 'status' => 'active']);
+
+    $sale = \App\Models\Sale::create([
+        'user_id' => $cashier->id,
+        'payment_method' => 'cash',
+        'subtotal' => 5000,
+        'total' => 5000,
+    ]);
+
+    $this->actingAs($owner, 'sanctum')
+        ->deleteJson('/api/staff/' . $cashier->id)
+        ->assertOk();
+
+    expect(User::find($cashier->id))->toBeNull();
+    expect(\App\Models\Sale::find($sale->id)->user_id)->toBe($owner->id);
+});

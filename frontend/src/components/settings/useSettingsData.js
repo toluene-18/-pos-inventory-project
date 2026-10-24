@@ -23,9 +23,9 @@ export function useSettingsData(user, onSessionExpired) {
   const [staff, setStaff] = useState(() => {
     try {
       const saved = localStorage.getItem('cwg_staff_roster');
-      return saved ? JSON.parse(saved) : DEFAULT_STAFF;
+      return saved ? JSON.parse(saved) : [];
     } catch {
-      return DEFAULT_STAFF;
+      return [];
     }
   });
 
@@ -59,12 +59,13 @@ export function useSettingsData(user, onSessionExpired) {
   const fetchBackendStaff = useCallback(async () => {
     try {
       const data = await getStaff();
-      if (Array.isArray(data) && data.length > 0) {
-        setStaff(data.map(d => ({
+      if (Array.isArray(data)) {
+        const shaped = data.map(d => ({
           ...d,
-          lastActive: d.lastActive || 'Active recently',
-        })));
-        localStorage.setItem('cwg_staff_roster', JSON.stringify(data));
+          lastActive: d.last_active || d.lastActive || 'Active recently',
+        }));
+        setStaff(shaped);
+        localStorage.setItem('cwg_staff_roster', JSON.stringify(shaped));
       }
     } catch {
       // ignore
@@ -213,21 +214,30 @@ export function useSettingsData(user, onSessionExpired) {
     if (!target) return;
     try {
       await deleteStaffMember(id);
+      setStaff(prev => {
+        const updated = prev.filter(s => s.id !== id);
+        localStorage.setItem('cwg_staff_roster', JSON.stringify(updated));
+        return updated;
+      });
+      appendActivity(
+        'staff',
+        'Staff removed',
+        `Deleted ${target.name}'s account`,
+        `Removed ${target.name} (${target.email}) from roster`
+      );
+      showToast(`Staff member "${target.name}" removed from roster.`);
     } catch (err) {
-      console.warn('Backend staff delete notice:', err.message);
+      if (err.status === 404) {
+        setStaff(prev => {
+          const updated = prev.filter(s => s.id !== id);
+          localStorage.setItem('cwg_staff_roster', JSON.stringify(updated));
+          return updated;
+        });
+        showToast(`Staff member "${target.name}" removed from roster.`);
+      } else {
+        showToast(err.message || 'Failed to remove staff member.');
+      }
     }
-    setStaff(prev => {
-      const updated = prev.filter(s => s.id !== id);
-      localStorage.setItem('cwg_staff_roster', JSON.stringify(updated));
-      return updated;
-    });
-    appendActivity(
-      'staff',
-      'Staff removed',
-      `Deleted ${target.name}'s account`,
-      `Removed ${target.name} (${target.email}) from roster`
-    );
-    showToast(`Staff member "${target.name}" removed from roster.`);
   }
 
   function handleApplyThresholdToAll() {
