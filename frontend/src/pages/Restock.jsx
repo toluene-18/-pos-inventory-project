@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import Icon from '../components/ui/Icon';
 import StockChangeForm from '../components/restock/StockChangeForm';
 import MultiProductRestock from '../components/restock/MultiProductRestock';

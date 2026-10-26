@@ -1,30 +1,39 @@
 /* ================================================================
-   reports-sections.css — Donut, Top Products & Payment Methods
+   reports-sections.css — Donut, Top Products & Payment Methods Cards
    ================================================================ */
 
 .reports-section-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 18px 20px;
+  border-radius: 12px;
+  padding: 20px 22px;
   display: flex;
   flex-direction: column;
   gap: 16px;
   height: 100%;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .reports-section-head h3 {
   margin: 0;
-  font-size: 14px;
+  font-size: 14.5px;
   font-weight: 700;
   color: var(--text);
+  letter-spacing: -0.01em;
 }
 
 .reports-section-head p {
-  margin: 2px 0 0;
-  font-size: 11px;
+  margin: 3px 0 0;
+  font-size: 11.5px;
   color: var(--text-dim);
+}
+
+.reports-empty-box {
+  padding: 36px 16px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 12.5px;
+  margin: auto 0;
 }
 
 /* Category Donut & Legend List */
@@ -32,7 +41,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
   flex: 1;
   justify-content: center;
 }
@@ -92,53 +101,68 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
-}
-
-.top-product-row {
-  display: flex;
-  align-items: center;
-}
-
-.top-product-info {
   flex: 1;
+  justify-content: center;
+}
+
+.top-product-card-item {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  width: 100%;
 }
 
-.top-product-meta {
+.top-product-header-line {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 12.5px;
+  gap: 12px;
+  width: 100%;
 }
 
-.top-product-title-wrap {
+.top-product-left {
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
+  flex: 1;
 }
 
-.top-product-name {
+.top-product-title {
+  font-size: 13px;
+  font-weight: 600;
   color: var(--text);
-  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.top-product-units {
-  color: var(--text-dim);
+.top-product-units-pill {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  padding: 1px 7px;
+  border-radius: 4px;
   font-size: 11px;
+  font-weight: 500;
+  color: var(--text-dim);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.top-product-revenue {
-  color: var(--text);
+.top-product-amount {
+  font-size: 13px;
   font-weight: 700;
-  font-size: 12.5px;
+  color: var(--text);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .top-product-bar-track {
-  height: 4px;
+  height: 6px;
+  width: 100%;
   border-radius: 9999px;
   background: var(--surface-2);
+  border: 1px solid var(--border);
   overflow: hidden;
 }
 
@@ -158,64 +182,106 @@
   justify-content: center;
 }
 
-.reports-payment-item {
+.payment-method-card-item {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  width: 100%;
 }
 
-.reports-payment-meta {
+.payment-method-header-line {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 12.5px;
+  gap: 12px;
+  width: 100%;
 }
 
-.reports-payment-name-wrap {
+.payment-method-left {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.reports-payment-dot {
-  width: 8px;
-  height: 8px;
+.payment-method-dot {
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   flex-shrink: 0;
 }
 
-.reports-payment-name {
-  color: var(--text);
-  font-weight: 500;
-}
-
-.reports-payment-numbers {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.reports-payment-amount {
+.payment-method-name {
   color: var(--text);
   font-weight: 600;
-  font-size: 12px;
+  font-size: 13px;
 }
 
-.reports-payment-badge {
-  color: var(--text-dim);
-  font-size: 11.5px;
+.payment-method-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.payment-method-amount {
+  color: var(--text);
   font-weight: 700;
+  font-size: 13px;
+  white-space: nowrap;
 }
 
-.reports-payment-track {
-  height: 5px;
+.payment-method-percent-pill {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  padding: 1px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.payment-method-track {
+  height: 6px;
+  width: 100%;
   border-radius: 9999px;
   background: var(--surface-2);
+  border: 1px solid var(--border);
   overflow: hidden;
 }
 
-.reports-payment-fill {
+.payment-method-fill {
   height: 100%;
   border-radius: 9999px;
   transition: width 0.3s ease;
 }
+
+/* Action Type Pills for Activity Log */
+.action-type-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.action-type-pill--sale {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+.action-type-pill--restock {
+  background: rgba(59, 130, 246, 0.12);
+  color: #3b82f6;
+}
+
+.action-type-pill--damage {
+  background: var(--rose-soft);
+  color: var(--rose);
+}
+
+.action-type-pill--correction {
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+

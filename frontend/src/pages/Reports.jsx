@@ -8,17 +8,11 @@ import StockLevelReportTab from '../components/reports/StockLevelReportTab';
 import ProductReportTab from '../components/reports/ProductReportTab';
 import UserReportTab from '../components/reports/UserReportTab';
 import { exportReportToPdf, handleTabExport } from '../components/reports/reportsExport';
-import { getSalesReport, getSalesInRange, getProducts, getStaff } from '../services/api';
+import { buildReportChartData, toLocalYmd } from '../components/reports/reportsChartData';
+import { getSalesReport, getSalesInRange, getProducts, getStaff, getStockAdjustments } from '../services/api';
 import { getCategoryColor } from '../components/reports/reportsData';
 import '../styles/reports.css';
 import '../styles/reports-tabs.css';
-
-function toLocalYmd(date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-}
 
 export default function Reports({ user, onSessionExpired }) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -30,6 +24,7 @@ export default function Reports({ user, onSessionExpired }) {
   const [rawSales, setRawSales] = useState([]);
   const [products, setProducts] = useState([]);
   const [staff, setStaff] = useState([]);
+  const [adjustments, setAdjustments] = useState([]);
   const [reportSummary, setReportSummary] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -50,11 +45,12 @@ export default function Reports({ user, onSessionExpired }) {
       const fromStr = toLocalYmd(fromDate);
       const toStr = toLocalYmd(toDate);
 
-      const [summaryRes, salesRes, prodsRes, staffRes] = await Promise.allSettled([
+      const [summaryRes, salesRes, prodsRes, staffRes, adjRes] = await Promise.allSettled([
         getSalesReport({ from: fromStr, to: toStr }),
         getSalesInRange({ from: fromStr, to: toStr }),
         getProducts(),
         getStaff(),
+        getStockAdjustments(),
       ]);
 
       if (summaryRes.status === 'fulfilled' && summaryRes.value?.summary) {
@@ -68,6 +64,9 @@ export default function Reports({ user, onSessionExpired }) {
       }
       if (staffRes.status === 'fulfilled' && Array.isArray(staffRes.value)) {
         setStaff(staffRes.value);
+      }
+      if (adjRes.status === 'fulfilled' && Array.isArray(adjRes.value)) {
+        setAdjustments(adjRes.value);
       }
     } catch (err) {
       if (err.status === 401) onSessionExpired?.();
@@ -85,75 +84,11 @@ export default function Reports({ user, onSessionExpired }) {
     return ['all', ...list];
   }, [products]);
 
-  // Real chart calculation cleanly adapting to 7d, 30d, 90d, and all time
-  const { chartData, periodTitle } = useMemo(() => {
-    const days = selectedRangeObj.days;
-    const now = new Date();
-    const result = [];
+  const { chartData, periodTitle } = useMemo(
+    () => buildReportChartData(rawSales, selectedRangeObj),
+    [rawSales, selectedRangeObj]
+  );
 
-    if (days <= 30) {
-      // Daily intervals
-      for (let i = days - 1; i >= 0; i--) {
-        const d = new Date(now);
-        d.setDate(d.getDate() - i);
-        const ymd = toLocalYmd(d);
-        const label = d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
-        const dayRev = rawSales
-          .filter(s => s.created_at && toLocalYmd(new Date(s.created_at)) === ymd)
-          .reduce((sum, s) => sum + (Number(s.total) || 0), 0);
-
-        result.push({ date: label, fullDate: `${label} ${d.getFullYear()}`, revenue: dayRev });
-      }
-      return { chartData: result, periodTitle: `Daily revenue (${selectedRangeObj.label})` };
-    }
-
-    if (days <= 90) {
-      // 13 Weekly intervals for 90 days to avoid cramped / disorganized 90 daily bars
-      for (let w = 12; w >= 0; w--) {
-        const start = new Date(now);
-        start.setDate(start.getDate() - w * 7);
-        const end = new Date(start);
-        end.setDate(end.getDate() + 6);
-
-        const startYmd = toLocalYmd(start);
-        const endYmd = toLocalYmd(end);
-        const startLabel = start.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
-        const endLabel = end.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
-
-        const weekRev = rawSales
-          .filter(s => {
-            if (!s.created_at) return false;
-            const ymd = toLocalYmd(new Date(s.created_at));
-            return ymd >= startYmd && ymd <= endYmd;
-          })
-          .reduce((sum, s) => sum + (Number(s.total) || 0), 0);
-
-        result.push({
-          date: startLabel,
-          fullDate: `${startLabel} – ${endLabel}`,
-          revenue: weekRev,
-        });
-      }
-      return { chartData: result, periodTitle: 'Weekly revenue (90 days)' };
-    }
-
-    // 12 Monthly intervals for 365 days / all time
-    for (let m = 11; m >= 0; m--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - m, 1);
-      const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-      const label = d.toLocaleDateString('en-GB', { month: 'short' });
-      const full = d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
-
-      const monthRev = rawSales
-        .filter(s => s.created_at && toLocalYmd(new Date(s.created_at)).startsWith(ym))
-        .reduce((sum, s) => sum + (Number(s.total) || 0), 0);
-
-      result.push({ date: label, fullDate: full, revenue: monthRev });
-    }
-    return { chartData: result, periodTitle: 'Monthly revenue (All time)' };
-  }, [selectedRangeObj, rawSales]);
-
-  // Real KPIs computed directly from database
   const kpis = useMemo(() => {
     const totalRev = rawSales.reduce((sum, s) => sum + (Number(s.total) || 0), 0);
     const transCount = rawSales.length;
@@ -172,7 +107,6 @@ export default function Reports({ user, onSessionExpired }) {
     };
   }, [rawSales, reportSummary]);
 
-  // Real top selling products from database sales
   const topProducts = useMemo(() => {
     const stats = {};
     rawSales.forEach(sale => {
@@ -186,7 +120,6 @@ export default function Reports({ user, onSessionExpired }) {
     return Object.values(stats).sort((a, b) => b.revenue - a.revenue).slice(0, 5);
   }, [rawSales]);
 
-  // Real category breakdown from database sales
   const categoryBreakdown = useMemo(() => {
     const catMap = {};
     rawSales.forEach(sale => {
@@ -203,7 +136,6 @@ export default function Reports({ user, onSessionExpired }) {
     }));
   }, [rawSales]);
 
-  // Real payment breakdown from database sales
   const paymentBreakdown = useMemo(() => {
     if (reportSummary?.payment_breakdown && reportSummary.payment_breakdown.length > 0) {
       return reportSummary.payment_breakdown;
@@ -320,6 +252,7 @@ export default function Reports({ user, onSessionExpired }) {
             <UserReportTab
               staff={staff}
               sales={rawSales}
+              adjustments={adjustments}
               searchQuery={searchQuery}
             />
           )}

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import Icon from '../ui/Icon';
 import '../../styles/restock-invoice-modal.css';
 

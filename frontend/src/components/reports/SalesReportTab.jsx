@@ -57,7 +57,7 @@ export default function SalesReportTab({
         </div>
       </div>
 
-      <div className="reports-section-card">
+      <div className="reports-table-card">
         <div className="reports-section-head">
           <h3>Filtered Sales Transactions ({filteredSales.length})</h3>
           <p>Recent checkout operations matching selected filters</p>

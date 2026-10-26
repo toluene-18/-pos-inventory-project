@@ -1,5 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
 import usePageNavigate from '../hooks/usePageNavigate';
@@ -24,32 +25,17 @@ function AppLayout({ user, onLogout, onUserUpdated }) {
           <Outlet />
         </main>
       </div>
-      <Toaster
+      <ToastContainer
         position="bottom-center"
-        toastOptions={{
-          duration: 3500,
-          style: {
-            background: 'var(--surface)',
-            color: 'var(--text)',
-            border: '1px solid var(--border)',
-            borderRadius: '10px',
-            fontSize: '13px',
-            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35)',
-            zIndex: 99999,
-          },
-          success: {
-            iconTheme: {
-              primary: '#10b981',
-              secondary: '#ffffff',
-            },
-          },
-          error: {
-            iconTheme: {
-              primary: '#f43f5e',
-              secondary: '#ffffff',
-            },
-          },
-        }}
+        autoClose={3500}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
       />
     </div>
   );

@@ -72,7 +72,7 @@ export default function StockLevelReportTab({
         </div>
       </div>
 
-      <div className="reports-section-card">
+      <div className="reports-table-card">
         <div className="reports-section-head">
           <h3>Stock Level Audit & Reorder Deficits ({filteredProducts.length})</h3>
           <p>Real-time inventory levels against minimum safety thresholds</p>

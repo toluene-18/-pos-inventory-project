@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import Icon from '../components/ui/Icon';
 import ProductFormModal from '../components/products/ProductFormModal';
 import ProductsTable from '../components/products/ProductsTable';
@@ -23,6 +23,8 @@ export default function Products({ user, onSessionExpired }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [deactivatingProduct, setDeactivatingProduct] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const isManagement = ['owner', 'manager'].includes(user?.role);
 
@@ -96,16 +98,22 @@ export default function Products({ user, onSessionExpired }) {
     await fetchProducts();
   }
 
-  async function handleDeactivate(product) {
-    if (!window.confirm(`Are you sure you want to deactivate "${product.name}"?`)) {
-      return;
-    }
+  function handlePromptDeactivate(product) {
+    setDeactivatingProduct(product);
+  }
+
+  async function handleConfirmDeactivate() {
+    if (!deactivatingProduct) return;
     try {
-      await deactivateProduct(product.id);
-      toast.success(`Product "${product.name}" deactivated.`);
+      setIsDeleting(true);
+      await deactivateProduct(deactivatingProduct.id);
+      toast.success(`Product "${deactivatingProduct.name}" deactivated.`);
+      setDeactivatingProduct(null);
       await fetchProducts();
     } catch (err) {
       toast.error(err.message || 'Failed to deactivate product.');
+    } finally {
+      setIsDeleting(false);
     }
   }
 
@@ -172,7 +180,7 @@ export default function Products({ user, onSessionExpired }) {
           loading={loading}
           isManagement={isManagement}
           onEdit={handleOpenEdit}
-          onDeactivate={handleDeactivate}
+          onDeactivate={handlePromptDeactivate}
         />
 
         {filteredProducts.length > PRODUCTS_PER_PAGE && (
@@ -212,6 +220,44 @@ export default function Products({ user, onSessionExpired }) {
         onClose={() => setModalOpen(false)}
         onSave={handleSaveProduct}
       />
+
+      {deactivatingProduct && (
+        <div className="restock-modal-backdrop" onClick={() => setDeactivatingProduct(null)} role="dialog" aria-modal="true">
+          <div className="restock-modal-card" style={{ maxWidth: 420 }} onClick={e => e.stopPropagation()}>
+            <div className="restock-modal-head">
+              <div className="restock-modal-icon-badge" style={{ background: 'var(--rose-soft)', color: 'var(--rose)' }}>
+                <Icon name="alert" size={17} />
+              </div>
+              <div className="restock-modal-titles">
+                <h3>Deactivate Product</h3>
+                <p>Are you sure you want to deactivate "{deactivatingProduct.name}"?</p>
+              </div>
+            </div>
+            <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text-muted)' }}>
+              This product will be removed from POS and active catalogues. Inventory records will be safely archived.
+            </p>
+            <div className="restock-modal-actions">
+              <button
+                type="button"
+                className="btn-modal-cancel"
+                onClick={() => setDeactivatingProduct(null)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn-modal-confirm"
+                style={{ background: 'var(--rose)' }}
+                onClick={handleConfirmDeactivate}
+                disabled={isDeleting}
+              >
+                {isDeleting ? 'Deactivating...' : 'Yes, Deactivate'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

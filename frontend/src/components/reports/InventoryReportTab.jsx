@@ -74,7 +74,7 @@ export default function InventoryReportTab({
         </div>
       </div>
 
-      <div className="reports-section-card">
+      <div className="reports-table-card">
         <div className="reports-section-head">
           <h3>Stock Valuation & Margin Breakdown ({filteredProducts.length})</h3>
           <p>Product cost prices, selling rates and inventory assets on record</p>

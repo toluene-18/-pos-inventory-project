@@ -1,10 +1,13 @@
 import { useMemo } from 'react';
 import { formatMoney } from '../../utils/dashboardStats';
 import '../../styles/reports.css';
+import '../../styles/reports-tabs.css';
+import '../../styles/reports-sections.css';
 
 export default function UserReportTab({
   staff = [],
   sales = [],
+  adjustments = [],
   searchQuery = '',
 }) {
   const staffStats = useMemo(() => {
@@ -61,6 +64,61 @@ export default function UserReportTab({
     });
   }, [staff, sales, searchQuery]);
 
+  const activityLog = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    const events = [];
+
+    // Sales events
+    sales.forEach(s => {
+      const staffName = s.user?.name || 'Staff';
+      const userRole = s.user?.role || 'cashier';
+      const itemsCount = s.items?.length || 1;
+      const total = Number(s.total) || 0;
+      const timeMs = new Date(s.created_at).getTime();
+
+      events.push({
+        id: `sale-${s.id}`,
+        timestamp: s.created_at,
+        timeMs,
+        userName: staffName,
+        userRole,
+        actionType: 'sale',
+        actionLabel: 'Sale Completed',
+        detail: `Receipt #${s.receipt_number || String(s.id).padStart(5, '0')} · ${itemsCount} line item(s) via ${s.payment_method || 'cash'}`,
+        value: formatMoney(total),
+      });
+    });
+
+    // Stock adjustment events
+    adjustments.forEach(a => {
+      const staffName = a.staffName || a.user?.name || 'Manager';
+      const userRole = a.user?.role || 'manager';
+      const timeMs = a.timestamp || new Date(a.createdAt || a.created_at).getTime() || Date.now();
+      const type = (a.type || 'restock').toLowerCase();
+
+      events.push({
+        id: `adj-${a.id || Math.random()}`,
+        timestamp: a.createdAt || a.created_at || new Date().toISOString(),
+        timeMs,
+        userName: staffName,
+        userRole,
+        actionType: type.includes('damage') ? 'damage' : type.includes('correct') ? 'correction' : 'restock',
+        actionLabel: type.includes('damage') ? 'Stock Damage' : type.includes('correct') ? 'Inventory Recount' : 'Stock Restocked',
+        detail: `${a.productName || 'Product'} · ${a.reason || 'Inventory update'}`,
+        value: `${a.quantityChange > 0 ? '+' : ''}${a.quantityChange || a.quantity || 0} units`,
+      });
+    });
+
+    events.sort((a, b) => b.timeMs - a.timeMs);
+
+    if (!q) return events.slice(0, 50);
+    return events.filter(e =>
+      e.userName.toLowerCase().includes(q) ||
+      e.actionLabel.toLowerCase().includes(q) ||
+      e.detail.toLowerCase().includes(q)
+    ).slice(0, 50);
+  }, [sales, adjustments, searchQuery]);
+
   const summary = useMemo(() => {
     let totalSalesCount = 0;
     let totalRevenue = 0;
@@ -104,7 +162,7 @@ export default function UserReportTab({
         </div>
       </div>
 
-      <div className="reports-section-card">
+      <div className="reports-table-card">
         <div className="reports-section-head">
           <h3>Cashier & Staff Performance Breakdown ({staffStats.length})</h3>
           <p>Sales volume and payment collections handled by each staff member</p>
@@ -154,6 +212,64 @@ export default function UserReportTab({
               {staffStats.length === 0 && (
                 <tr>
                   <td colSpan="8" className="text-center py-6 text-muted">No staff records match the search query.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Staff Action & Activity Log */}
+      <div className="reports-table-card">
+        <div className="reports-section-head">
+          <h3>Staff Activity & Action Audit Log ({activityLog.length})</h3>
+          <p>Chronological log of checkout sales, stock adjustments and actions recorded by users</p>
+        </div>
+        <div className="reports-table-wrap">
+          <table className="reports-data-table">
+            <thead>
+              <tr>
+                <th>TIMESTAMP</th>
+                <th>STAFF MEMBER</th>
+                <th>ROLE</th>
+                <th>ACTION TYPE</th>
+                <th>ACTION DETAILS</th>
+                <th className="text-right">VALUE / UNITS</th>
+              </tr>
+            </thead>
+            <tbody>
+              {activityLog.map(event => (
+                <tr key={event.id}>
+                  <td>
+                    <span className="text-dim">
+                      {new Date(event.timestamp).toLocaleString('en-GB', {
+                        day: '2-digit',
+                        month: 'short',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </span>
+                  </td>
+                  <td><strong>{event.userName}</strong></td>
+                  <td>
+                    <span className={`role-badge role-badge--${event.userRole}`}>
+                      {event.userRole}
+                    </span>
+                  </td>
+                  <td>
+                    <span className={`action-type-pill action-type-pill--${event.actionType}`}>
+                      {event.actionLabel}
+                    </span>
+                  </td>
+                  <td><span className="text-muted">{event.detail}</span></td>
+                  <td className="text-right"><strong>{event.value}</strong></td>
+                </tr>
+              ))}
+              {activityLog.length === 0 && (
+                <tr>
+                  <td colSpan="6" className="text-center py-6 text-muted">
+                    No activity recorded by staff in this period.
+                  </td>
                 </tr>
               )}
             </tbody>

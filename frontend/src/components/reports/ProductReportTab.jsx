@@ -90,7 +90,7 @@ export default function ProductReportTab({
         </div>
       </div>
 
-      <div className="reports-section-card">
+      <div className="reports-table-card">
         <div className="reports-section-head">
           <h3>Product Sales & Turnover Performance ({productStats.length})</h3>
           <p>Sales volume, generated revenue and stock on hand per product</p>

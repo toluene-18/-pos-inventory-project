@@ -2,7 +2,7 @@ export default function ReportsPaymentMethods({ paymentBreakdown = [], totalReve
   const methodTemplates = [
     { method: 'Cash', key: 'cash', color: '#10b981' },
     { method: 'Card', key: 'card', color: '#f59e0b' },
-    { method: 'Bank Transfer', key: 'bank_transfer', color: '#64748b' },
+    { method: 'Bank Transfer', key: 'bank_transfer', color: '#6366f1' },
   ];
 
   const breakdownMap = Object.fromEntries(
@@ -30,22 +30,22 @@ export default function ReportsPaymentMethods({ paymentBreakdown = [], totalReve
 
       <div className="reports-payment-list">
         {methods.map(m => (
-          <div key={m.key} className="reports-payment-item">
-            <div className="reports-payment-meta">
-              <div className="reports-payment-name-wrap">
-                <span className="reports-payment-dot" style={{ backgroundColor: m.color }} />
-                <span className="reports-payment-name">{m.method}</span>
+          <div key={m.key} className="payment-method-card-item">
+            <div className="payment-method-header-line">
+              <div className="payment-method-left">
+                <span className="payment-method-dot" style={{ backgroundColor: m.color }} />
+                <span className="payment-method-name">{m.method}</span>
               </div>
-              <div className="reports-payment-numbers">
-                <span className="reports-payment-amount">₦{m.amount.toLocaleString()}</span>
-                <span className="reports-payment-badge">{m.percent}%</span>
+              <div className="payment-method-right">
+                <strong className="payment-method-amount">₦{m.amount.toLocaleString()}</strong>
+                <span className="payment-method-percent-pill">{m.percent}%</span>
               </div>
             </div>
-            <div className="reports-payment-track">
+            <div className="payment-method-track">
               <div
-                className="reports-payment-fill"
+                className="payment-method-fill"
                 style={{
-                  width: `${Math.min(100, Math.max(m.percent > 0 ? 4 : 0, m.percent))}%`,
+                  width: `${Math.min(100, Math.max(m.amount > 0 ? 6 : 0, m.percent))}%`,
                   backgroundColor: m.color,
                 }}
               />
