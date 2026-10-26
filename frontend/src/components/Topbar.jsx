@@ -138,7 +138,7 @@ export default function Topbar({ user, onLogout, onNavigate, onUserUpdated }) {
                   onClick={handleSignOut}
                   role="menuitem"
                 >
-                  <Icon name="close" size={14} />
+                  <Icon name="logout" size={14} />
                   <span>Sign out</span>
                 </button>
               </div>

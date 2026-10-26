@@ -16,10 +16,18 @@ function formatRelativeTime(timestamp) {
   return `${diffMonths}mo ago`;
 }
 
-export default function ActivityLogTab({ activityLog = [] }) {
+export default function ActivityLogTab({ activityLog = [], staff = [] }) {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [timeFilter, setTimeFilter] = useState('all');
+  const [staffFilter, setStaffFilter] = useState('all');
   const [search, setSearch] = useState('');
+
+  const staffOptions = useMemo(() => {
+    const names = new Set();
+    staff.forEach(s => s.name && names.add(s.name));
+    activityLog.forEach(e => e.actor && names.add(e.actor));
+    return Array.from(names).sort();
+  }, [staff, activityLog]);
 
   const totalEvents = activityLog.length;
   const staffChanges = activityLog.filter(e => e.category === 'staff').length;
@@ -31,6 +39,9 @@ export default function ActivityLogTab({ activityLog = [] }) {
   const filteredEvents = useMemo(() => {
     return activityLog.filter(event => {
       if (categoryFilter !== 'all' && event.category !== categoryFilter) {
+        return false;
+      }
+      if (staffFilter !== 'all' && event.actor !== staffFilter) {
         return false;
       }
       if (timeFilter === 'today') {
@@ -146,6 +157,19 @@ export default function ActivityLogTab({ activityLog = [] }) {
         </div>
 
         <div className="activity-time-and-search">
+          <select
+            className="inv-select"
+            value={staffFilter}
+            onChange={e => setStaffFilter(e.target.value)}
+            style={{ fontSize: 12.5, padding: '6px 10px', height: 34, borderRadius: 8 }}
+            aria-label="Filter activity by staff member"
+          >
+            <option value="all">All staff members ({staffOptions.length})</option>
+            {staffOptions.map(name => (
+              <option key={name} value={name}>{name}</option>
+            ))}
+          </select>
+
           <div className="activity-time-pills">
             {[
               { id: 'all', label: 'All time' },

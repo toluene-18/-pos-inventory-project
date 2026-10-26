@@ -122,6 +122,12 @@ npm run dev
 ```
 The application opens at `http://localhost:5173`.
 
+### Frontend Architecture & Admin Layer
+- **Admin Separation:** Admin-only views (`Reports`, `Settings`, `Restock`) are isolated in `frontend/src/pages/admin/`, providing a clean architectural boundary between general staff flows and administrative controls.
+- **Audit & Activity Tracking:** Comprehensive staff activity logging accessible in both Settings and User Reports with per-staff member filtering.
+- **Modern Dialogs:** SweetAlert2 integration styled to match dark and light themes, completely replacing legacy browser dialogs.
+- **Frontend Standard:** 100% of `.jsx`, `.js`, and `.css` files are strictly **under 300 lines**.
+
 ### Default Seeded User Credentials
 - **Owner Account:** `owner@cwgretail.com` / `password`
 - **Manager Account:** `manager@cwgretail.com` / `password`
@@ -136,7 +142,7 @@ The application opens at `http://localhost:5173`.
   cd backend
   php artisan test
   ```
-  Result: **62 passed tests (189 assertions)** covering authentication, role middleware, concurrency, stock adjustments, cashier data isolation, and sales reports.
+  Result: **69 passed tests (211 assertions)** covering authentication, role middleware, concurrency, stock adjustments, cashier data isolation, sales reports, and multi-browser store settings persistence.
 
 - **Frontend Quality & Build:**
   ```bash

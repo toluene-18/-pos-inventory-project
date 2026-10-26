@@ -85,18 +85,67 @@ body {
 
 [data-theme='light'] .staff-table th,
 [data-theme='light'] .inventory-table th,
-[data-theme='light'] .staff-table-footer-note,
-[data-theme='light'] .activity-search-box,
-[data-theme='light'] .inventory-search-wrap,
-[data-theme='light'] .products-search-box-readdy {
+[data-theme='light'] .staff-table-footer-note {
   background-color: var(--surface-2);
   border-color: var(--border);
   color: var(--text-muted);
 }
 
-[data-theme='light'] .app-main input,
-[data-theme='light'] .app-main select,
-[data-theme='light'] .app-main textarea,
+/* Search Box Wrappers blend cleanly with surface base */
+.inventory-search-wrap,
+.pos-search-input,
+.products-search-box-readdy,
+.reports-search-box,
+.adjustment-search-box,
+.batch-search-input,
+.sales-search-bar,
+.activity-search-box,
+.topbar-search {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-muted) !important;
+}
+
+[data-theme='light'] .inventory-search-wrap,
+[data-theme='light'] .pos-search-input,
+[data-theme='light'] .products-search-box-readdy,
+[data-theme='light'] .reports-search-box,
+[data-theme='light'] .adjustment-search-box,
+[data-theme='light'] .batch-search-input,
+[data-theme='light'] .sales-search-bar,
+[data-theme='light'] .activity-search-box,
+[data-theme='light'] .topbar-search {
+  background-color: var(--surface) !important;
+  border-color: var(--border) !important;
+}
+
+/* Search inputs inside wrappers must NEVER have white boxes */
+.inventory-search-wrap input,
+.pos-search-input input,
+.products-search-box-readdy input,
+.reports-search-box input,
+.adjustment-search-box input,
+.batch-search-input input,
+.sales-search-bar input,
+.activity-search-box input,
+.topbar-search input,
+[data-theme='light'] .inventory-search-wrap input,
+[data-theme='light'] .pos-search-input input,
+[data-theme='light'] .products-search-box-readdy input,
+[data-theme='light'] .reports-search-box input,
+[data-theme='light'] .adjustment-search-box input,
+[data-theme='light'] .batch-search-input input,
+[data-theme='light'] .sales-search-bar input,
+[data-theme='light'] .activity-search-box input,
+[data-theme='light'] .topbar-search input {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  color: var(--text) !important;
+}
+
 [data-theme='light'] .product-modal input,
 [data-theme='light'] .product-modal select,
 [data-theme='light'] .inv-select,
