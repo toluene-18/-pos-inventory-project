@@ -1,27 +1,23 @@
-import Icon from '../ui/Icon';
-
 export default function ReportsPaymentMethods({ paymentBreakdown = [], totalRevenue = 0 }) {
-  const defaultMethods = [
-    { method: 'Cash', key: 'cash', percent: 55, amount: Math.round(totalRevenue * 0.55), color: '#10b981' },
-    { method: 'Card', key: 'card', percent: 35, amount: Math.round(totalRevenue * 0.35), color: '#f59e0b' },
-    { method: 'Bank Transfer', key: 'bank_transfer', percent: 10, amount: Math.round(totalRevenue * 0.1), color: '#64748b' },
+  const methodTemplates = [
+    { method: 'Cash', key: 'cash', color: '#10b981' },
+    { method: 'Card', key: 'card', color: '#f59e0b' },
+    { method: 'Bank Transfer', key: 'bank_transfer', color: '#64748b' },
   ];
 
-  const methods = paymentBreakdown.length > 0
-    ? paymentBreakdown.map(p => {
-        const total = totalRevenue || 1;
-        const percent = Math.round(((Number(p.revenue) || 0) / total) * 100);
-        const name = p.payment_method === 'cash' ? 'Cash' : p.payment_method === 'card' ? 'Card' : 'Bank Transfer';
-        const color = p.payment_method === 'cash' ? '#10b981' : p.payment_method === 'card' ? '#f59e0b' : '#64748b';
-        return {
-          method: name,
-          key: p.payment_method,
-          percent: percent || (p.payment_method === 'cash' ? 60 : 30),
-          amount: Number(p.revenue) || 0,
-          color,
-        };
-      })
-    : defaultMethods;
+  const breakdownMap = Object.fromEntries(
+    paymentBreakdown.map(p => [p.payment_method, Number(p.revenue) || 0])
+  );
+
+  const methods = methodTemplates.map(m => {
+    const amount = breakdownMap[m.key] || 0;
+    const percent = totalRevenue > 0 ? Math.round((amount / totalRevenue) * 100) : 0;
+    return {
+      ...m,
+      amount,
+      percent,
+    };
+  });
 
   return (
     <div className="reports-section-card reports-payment-card">
@@ -49,7 +45,7 @@ export default function ReportsPaymentMethods({ paymentBreakdown = [], totalReve
               <div
                 className="reports-payment-fill"
                 style={{
-                  width: `${Math.min(100, Math.max(4, m.percent))}%`,
+                  width: `${Math.min(100, Math.max(m.percent > 0 ? 4 : 0, m.percent))}%`,
                   backgroundColor: m.color,
                 }}
               />

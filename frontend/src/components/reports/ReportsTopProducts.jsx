@@ -9,32 +9,38 @@ export default function ReportsTopProducts({ products = [] }) {
         </div>
       </div>
 
-      <div className="top-products-list">
-        {products.slice(0, 6).map((item, idx) => {
-          const widthPercent = (item.revenue / maxRevenue) * 100;
+      {products.length === 0 ? (
+        <div style={{ padding: '36px 16px', textAlign: 'center', color: 'var(--text-dim)', fontSize: '12.5px' }}>
+          No product sales recorded in this period.
+        </div>
+      ) : (
+        <div className="top-products-list">
+          {products.slice(0, 6).map((item, idx) => {
+            const widthPercent = (item.revenue / maxRevenue) * 100;
 
-          return (
-            <div key={item.id || idx} className="top-product-row">
-              <div className="top-product-info">
-                <div className="top-product-meta">
-                  <div className="top-product-title-wrap">
-                    <span className="top-product-name">{item.name}</span>
-                    <small className="top-product-units">{item.units} units</small>
+            return (
+              <div key={item.id || idx} className="top-product-row">
+                <div className="top-product-info">
+                  <div className="top-product-meta">
+                    <div className="top-product-title-wrap">
+                      <span className="top-product-name">{item.name}</span>
+                      <small className="top-product-units">{item.units} units</small>
+                    </div>
+                    <span className="top-product-revenue">₦{item.revenue.toLocaleString()}</span>
                   </div>
-                  <span className="top-product-revenue">₦{item.revenue.toLocaleString()}</span>
-                </div>
 
-                <div className="top-product-bar-track">
-                  <div
-                    className="top-product-bar-fill"
-                    style={{ width: `${Math.min(100, Math.max(6, widthPercent))}%` }}
-                  />
+                  <div className="top-product-bar-track">
+                    <div
+                      className="top-product-bar-fill"
+                      style={{ width: `${Math.min(100, Math.max(6, widthPercent))}%` }}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

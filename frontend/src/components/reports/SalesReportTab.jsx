@@ -13,8 +13,10 @@ export default function SalesReportTab({
   sales = [],
   kpis,
   dailySales,
-  categories,
-  topProducts,
+  periodTitle = 'Daily revenue',
+  categories = [],
+  topProducts = [],
+  paymentBreakdown = [],
   searchQuery = '',
   selectedCategory = 'all',
 }) {
@@ -39,7 +41,7 @@ export default function SalesReportTab({
 
       <div className="reports-two-col-grid">
         <div className="reports-col-chart">
-          <ReportsSalesBarChart dailyData={dailySales} />
+          <ReportsSalesBarChart dailyData={dailySales} periodTitle={periodTitle} />
         </div>
         <div className="reports-col-side">
           <ReportsCategoryBreakdown categories={categories} />
@@ -51,7 +53,7 @@ export default function SalesReportTab({
           <ReportsTopProducts products={topProducts} />
         </div>
         <div className="reports-col-side">
-          <ReportsPaymentMethods totalRevenue={kpis.revenue} />
+          <ReportsPaymentMethods paymentBreakdown={paymentBreakdown} totalRevenue={kpis?.revenue || 0} />
         </div>
       </div>
 

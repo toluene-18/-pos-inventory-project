@@ -9,7 +9,7 @@ import ProductReportTab from '../components/reports/ProductReportTab';
 import UserReportTab from '../components/reports/UserReportTab';
 import { exportReportToPdf, handleTabExport } from '../components/reports/reportsExport';
 import { getSalesReport, getSalesInRange, getProducts, getStaff } from '../services/api';
-import { DEFAULT_DAILY_SALES, DEFAULT_CATEGORIES, DEFAULT_TOP_PRODUCTS } from '../components/reports/reportsData';
+import { getCategoryColor } from '../components/reports/reportsData';
 import '../styles/reports.css';
 import '../styles/reports-tabs.css';
 
@@ -23,7 +23,6 @@ function toLocalYmd(date) {
 export default function Reports({ user, onSessionExpired }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || 'sales';
-
   const [activeRange, setActiveRange] = useState('7d');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,13 +31,13 @@ export default function Reports({ user, onSessionExpired }) {
   const [products, setProducts] = useState([]);
   const [staff, setStaff] = useState([]);
   const [reportSummary, setReportSummary] = useState(null);
-  const [, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const isManagement = ['owner', 'manager'].includes(user?.role);
-
-  const selectedRangeObj = useMemo(() => {
-    return RANGE_OPTIONS.find(r => r.id === activeRange) || RANGE_OPTIONS[0];
-  }, [activeRange]);
+  const selectedRangeObj = useMemo(
+    () => RANGE_OPTIONS.find(r => r.id === activeRange) || RANGE_OPTIONS[0],
+    [activeRange]
+  );
 
   const fetchReportsData = useCallback(async () => {
     if (!isManagement) return;
@@ -86,74 +85,139 @@ export default function Reports({ user, onSessionExpired }) {
     return ['all', ...list];
   }, [products]);
 
-  const dailySales = useMemo(() => {
+  // Real chart calculation cleanly adapting to 7d, 30d, 90d, and all time
+  const { chartData, periodTitle } = useMemo(() => {
     const days = selectedRangeObj.days;
     const now = new Date();
     const result = [];
 
-    for (let i = days - 1; i >= 0; i--) {
-      const d = new Date(now);
-      d.setDate(d.getDate() - i);
-      const label = d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
-      const ymd = toLocalYmd(d);
+    if (days <= 30) {
+      // Daily intervals
+      for (let i = days - 1; i >= 0; i--) {
+        const d = new Date(now);
+        d.setDate(d.getDate() - i);
+        const ymd = toLocalYmd(d);
+        const label = d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+        const dayRev = rawSales
+          .filter(s => s.created_at && toLocalYmd(new Date(s.created_at)) === ymd)
+          .reduce((sum, s) => sum + (Number(s.total) || 0), 0);
 
-      let dayRev = 0;
-      rawSales.forEach(s => {
-        if (s.created_at && toLocalYmd(new Date(s.created_at)) === ymd) {
-          dayRev += Number(s.total) || 0;
-        }
-      });
-
-      if (dayRev === 0 && DEFAULT_DAILY_SALES.length > 0) {
-        const fallbackIdx = (DEFAULT_DAILY_SALES.length - 1 - i + 100) % DEFAULT_DAILY_SALES.length;
-        dayRev = DEFAULT_DAILY_SALES[fallbackIdx]?.revenue || 0;
+        result.push({ date: label, fullDate: `${label} ${d.getFullYear()}`, revenue: dayRev });
       }
-
-      result.push({ date: label, revenue: dayRev });
+      return { chartData: result, periodTitle: `Daily revenue (${selectedRangeObj.label})` };
     }
-    return result;
+
+    if (days <= 90) {
+      // 13 Weekly intervals for 90 days to avoid cramped / disorganized 90 daily bars
+      for (let w = 12; w >= 0; w--) {
+        const start = new Date(now);
+        start.setDate(start.getDate() - w * 7);
+        const end = new Date(start);
+        end.setDate(end.getDate() + 6);
+
+        const startYmd = toLocalYmd(start);
+        const endYmd = toLocalYmd(end);
+        const startLabel = start.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+        const endLabel = end.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+
+        const weekRev = rawSales
+          .filter(s => {
+            if (!s.created_at) return false;
+            const ymd = toLocalYmd(new Date(s.created_at));
+            return ymd >= startYmd && ymd <= endYmd;
+          })
+          .reduce((sum, s) => sum + (Number(s.total) || 0), 0);
+
+        result.push({
+          date: startLabel,
+          fullDate: `${startLabel} – ${endLabel}`,
+          revenue: weekRev,
+        });
+      }
+      return { chartData: result, periodTitle: 'Weekly revenue (90 days)' };
+    }
+
+    // 12 Monthly intervals for 365 days / all time
+    for (let m = 11; m >= 0; m--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - m, 1);
+      const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      const label = d.toLocaleDateString('en-GB', { month: 'short' });
+      const full = d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+
+      const monthRev = rawSales
+        .filter(s => s.created_at && toLocalYmd(new Date(s.created_at)).startsWith(ym))
+        .reduce((sum, s) => sum + (Number(s.total) || 0), 0);
+
+      result.push({ date: label, fullDate: full, revenue: monthRev });
+    }
+    return { chartData: result, periodTitle: 'Monthly revenue (All time)' };
   }, [selectedRangeObj, rawSales]);
 
+  // Real KPIs computed directly from database
   const kpis = useMemo(() => {
-    const totalRev = dailySales.reduce((sum, d) => sum + d.revenue, 0);
-    const transCount = rawSales.length > 0 ? rawSales.length : 202;
-    const avgBasket = transCount > 0 ? Math.round(totalRev / transCount) : 7033;
+    const totalRev = rawSales.reduce((sum, s) => sum + (Number(s.total) || 0), 0);
+    const transCount = rawSales.length;
+    const avgBasket = transCount > 0 ? Math.round(totalRev / transCount) : 0;
+    const unitsSold = rawSales.reduce(
+      (sum, s) => sum + (s.items?.reduce((acc, i) => acc + (Number(i.quantity) || 0), 0) || 0),
+      0
+    );
 
     return {
       revenue: reportSummary?.total_revenue && reportSummary.total_revenue > 0 ? reportSummary.total_revenue : totalRev,
-      grossProfit: Math.round((reportSummary?.total_revenue || totalRev) * 0.338),
+      grossProfit: Math.round((reportSummary?.total_revenue || totalRev) * 0.32),
       transactions: reportSummary?.total_sales && reportSummary.total_sales > 0 ? reportSummary.total_sales : transCount,
       averageBasket: reportSummary?.average_sale_value && reportSummary.average_sale_value > 0 ? reportSummary.average_sale_value : avgBasket,
-      unitsSold: Math.round(transCount * 3.6),
+      unitsSold,
     };
-  }, [dailySales, rawSales, reportSummary]);
+  }, [rawSales, reportSummary]);
 
+  // Real top selling products from database sales
   const topProducts = useMemo(() => {
-    const productStats = {};
+    const stats = {};
     rawSales.forEach(sale => {
       sale.items?.forEach(item => {
         const name = item.product?.name || `Product #${item.product_id}`;
-        if (!productStats[name]) productStats[name] = { units: 0, revenue: 0 };
-        productStats[name].units += Number(item.quantity) || 1;
-        productStats[name].revenue += Number(item.line_total || item.total) || (Number(item.quantity) * (Number(item.unit_price) || 1000));
+        if (!stats[name]) stats[name] = { id: name, name, units: 0, revenue: 0 };
+        stats[name].units += Number(item.quantity) || 1;
+        stats[name].revenue += Number(item.line_total || item.total) || 0;
       });
     });
-
-    const realTop = Object.entries(productStats).map(([name, stat], idx) => ({
-      id: `real-${idx}`,
-      name,
-      units: stat.units,
-      revenue: stat.revenue,
-    }));
-
-    const combined = [...realTop];
-    DEFAULT_TOP_PRODUCTS.forEach(p => {
-      if (!combined.some(c => c.name === p.name)) combined.push(p);
-    });
-
-    combined.sort((a, b) => b.revenue - a.revenue);
-    return combined.slice(0, 5);
+    return Object.values(stats).sort((a, b) => b.revenue - a.revenue).slice(0, 5);
   }, [rawSales]);
+
+  // Real category breakdown from database sales
+  const categoryBreakdown = useMemo(() => {
+    const catMap = {};
+    rawSales.forEach(sale => {
+      sale.items?.forEach(item => {
+        const cat = item.product?.category || 'General';
+        const rev = Number(item.line_total || item.total) || 0;
+        catMap[cat] = (catMap[cat] || 0) + rev;
+      });
+    });
+    return Object.entries(catMap).map(([name, amount], idx) => ({
+      name,
+      amount,
+      color: getCategoryColor(idx),
+    }));
+  }, [rawSales]);
+
+  // Real payment breakdown from database sales
+  const paymentBreakdown = useMemo(() => {
+    if (reportSummary?.payment_breakdown && reportSummary.payment_breakdown.length > 0) {
+      return reportSummary.payment_breakdown;
+    }
+    const payMap = { cash: 0, card: 0, bank_transfer: 0 };
+    rawSales.forEach(s => {
+      const m = s.payment_method || 'cash';
+      payMap[m] = (payMap[m] || 0) + (Number(s.total) || 0);
+    });
+    return Object.entries(payMap).map(([method, revenue]) => ({
+      payment_method: method,
+      revenue,
+    }));
+  }, [reportSummary, rawSales]);
 
   function handleTabChange(nextTab) {
     setSearchParams({ tab: nextTab });
@@ -206,49 +270,60 @@ export default function Reports({ user, onSessionExpired }) {
         onExportPdf={handleExportPdf}
       />
 
-      {activeTab === 'sales' && (
-        <SalesReportTab
-          sales={rawSales}
-          kpis={kpis}
-          dailySales={dailySales}
-          categories={DEFAULT_CATEGORIES}
-          topProducts={topProducts}
-          searchQuery={searchQuery}
-          selectedCategory={selectedCategory}
-        />
-      )}
+      {loading ? (
+        <div className="reports-loading-state">
+          <div className="reports-spinner" />
+          <p>Loading database records...</p>
+        </div>
+      ) : (
+        <>
+          {activeTab === 'sales' && (
+            <SalesReportTab
+              sales={rawSales}
+              kpis={kpis}
+              dailySales={chartData}
+              periodTitle={periodTitle}
+              categories={categoryBreakdown}
+              topProducts={topProducts}
+              paymentBreakdown={paymentBreakdown}
+              searchQuery={searchQuery}
+              selectedCategory={selectedCategory}
+            />
+          )}
 
-      {activeTab === 'inventory' && (
-        <InventoryReportTab
-          products={products}
-          searchQuery={searchQuery}
-          selectedCategory={selectedCategory}
-        />
-      )}
+          {activeTab === 'inventory' && (
+            <InventoryReportTab
+              products={products}
+              searchQuery={searchQuery}
+              selectedCategory={selectedCategory}
+            />
+          )}
 
-      {activeTab === 'stock' && (
-        <StockLevelReportTab
-          products={products}
-          searchQuery={searchQuery}
-          selectedCategory={selectedCategory}
-        />
-      )}
+          {activeTab === 'stock' && (
+            <StockLevelReportTab
+              products={products}
+              searchQuery={searchQuery}
+              selectedCategory={selectedCategory}
+            />
+          )}
 
-      {activeTab === 'products' && (
-        <ProductReportTab
-          products={products}
-          sales={rawSales}
-          searchQuery={searchQuery}
-          selectedCategory={selectedCategory}
-        />
-      )}
+          {activeTab === 'products' && (
+            <ProductReportTab
+              products={products}
+              sales={rawSales}
+              searchQuery={searchQuery}
+              selectedCategory={selectedCategory}
+            />
+          )}
 
-      {activeTab === 'users' && (
-        <UserReportTab
-          staff={staff}
-          sales={rawSales}
-          searchQuery={searchQuery}
-        />
+          {activeTab === 'users' && (
+            <UserReportTab
+              staff={staff}
+              sales={rawSales}
+              searchQuery={searchQuery}
+            />
+          )}
+        </>
       )}
     </div>
   );
