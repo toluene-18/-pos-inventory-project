@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Icon from '../ui/Icon';
+import { confirmAction } from '../../utils/confirmAlert';
 import '../../styles/settings-staff.css';
 
 export default function StaffManagementTab({
@@ -176,12 +177,22 @@ export default function StaffManagementTab({
                                 : 'btn-primary'
                             }`}
                             disabled={actingId === member.id}
-                            onClick={() =>
+                            onClick={async () => {
+                              const isDeactivating = member.status === 'active';
+                              if (isDeactivating) {
+                                const res = await confirmAction({
+                                  title: 'Deactivate Staff Member',
+                                  text: `Are you sure you want to deactivate ${member.name}'s account?`,
+                                  confirmButtonText: 'Yes, Deactivate',
+                                  isDanger: true,
+                                });
+                                if (!res.isConfirmed) return;
+                              }
                               handleAction(member.id, {
                                 role: member.role,
-                                status: member.status === 'active' ? 'inactive' : 'active',
-                              })
-                            }
+                                status: isDeactivating ? 'inactive' : 'active',
+                              });
+                            }}
                           >
                             {member.status === 'active' ? 'Deactivate' : 'Reactivate'}
                           </button>
