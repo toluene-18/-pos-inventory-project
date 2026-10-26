@@ -1,27 +1,17 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Icon from '../components/ui/Icon';
-import ReportsKpis from '../components/reports/ReportsKpis';
-import ReportsSalesBarChart from '../components/reports/ReportsSalesBarChart';
-import ReportsCategoryBreakdown from '../components/reports/ReportsCategoryBreakdown';
-import ReportsTopProducts from '../components/reports/ReportsTopProducts';
-import ReportsPaymentMethods from '../components/reports/ReportsPaymentMethods';
-import { getSalesReport, getSalesInRange } from '../services/api';
-import {
-  DEFAULT_DAILY_SALES,
-  DEFAULT_CATEGORIES,
-  DEFAULT_TOP_PRODUCTS,
-} from '../components/reports/reportsData';
+import ReportsHeader, { RANGE_OPTIONS, REPORT_TABS } from '../components/reports/ReportsHeader';
+import SalesReportTab from '../components/reports/SalesReportTab';
+import InventoryReportTab from '../components/reports/InventoryReportTab';
+import StockLevelReportTab from '../components/reports/StockLevelReportTab';
+import ProductReportTab from '../components/reports/ProductReportTab';
+import UserReportTab from '../components/reports/UserReportTab';
+import { exportReportToPdf, handleTabExport } from '../components/reports/reportsExport';
+import { getSalesReport, getSalesInRange, getProducts, getStaff } from '../services/api';
+import { DEFAULT_DAILY_SALES, DEFAULT_CATEGORIES, DEFAULT_TOP_PRODUCTS } from '../components/reports/reportsData';
 import '../styles/reports.css';
-import '../styles/reports-chart.css';
-import '../styles/reports-sections.css';
-
-const RANGE_OPTIONS = [
-  { id: '7d', label: '7 days', days: 7 },
-  { id: '30d', label: '30 days', days: 30 },
-  { id: '90d', label: '90 days', days: 90 },
-  { id: 'all', label: 'All time', days: 365 },
-  { id: 'custom', label: 'Custom', days: 30 },
-];
+import '../styles/reports-tabs.css';
 
 function toLocalYmd(date) {
   const y = date.getFullYear();
@@ -31,8 +21,16 @@ function toLocalYmd(date) {
 }
 
 export default function Reports({ user, onSessionExpired }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') || 'sales';
+
   const [activeRange, setActiveRange] = useState('7d');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+
   const [rawSales, setRawSales] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [staff, setStaff] = useState([]);
   const [reportSummary, setReportSummary] = useState(null);
   const [, setLoading] = useState(false);
 
@@ -53,9 +51,11 @@ export default function Reports({ user, onSessionExpired }) {
       const fromStr = toLocalYmd(fromDate);
       const toStr = toLocalYmd(toDate);
 
-      const [summaryRes, salesRes] = await Promise.allSettled([
+      const [summaryRes, salesRes, prodsRes, staffRes] = await Promise.allSettled([
         getSalesReport({ from: fromStr, to: toStr }),
         getSalesInRange({ from: fromStr, to: toStr }),
+        getProducts(),
+        getStaff(),
       ]);
 
       if (summaryRes.status === 'fulfilled' && summaryRes.value?.summary) {
@@ -63,6 +63,12 @@ export default function Reports({ user, onSessionExpired }) {
       }
       if (salesRes.status === 'fulfilled' && Array.isArray(salesRes.value?.sales)) {
         setRawSales(salesRes.value.sales);
+      }
+      if (prodsRes.status === 'fulfilled' && Array.isArray(prodsRes.value)) {
+        setProducts(prodsRes.value);
+      }
+      if (staffRes.status === 'fulfilled' && Array.isArray(staffRes.value)) {
+        setStaff(staffRes.value);
       }
     } catch (err) {
       if (err.status === 401) onSessionExpired?.();
@@ -74,6 +80,11 @@ export default function Reports({ user, onSessionExpired }) {
   useEffect(() => {
     fetchReportsData();
   }, [fetchReportsData]);
+
+  const categories = useMemo(() => {
+    const list = Array.from(new Set(products.map(p => p.category).filter(Boolean))).sort();
+    return ['all', ...list];
+  }, [products]);
 
   const dailySales = useMemo(() => {
     const days = selectedRangeObj.days;
@@ -88,11 +99,8 @@ export default function Reports({ user, onSessionExpired }) {
 
       let dayRev = 0;
       rawSales.forEach(s => {
-        if (s.created_at) {
-          const saleYmd = toLocalYmd(new Date(s.created_at));
-          if (saleYmd === ymd) {
-            dayRev += Number(s.total) || 0;
-          }
+        if (s.created_at && toLocalYmd(new Date(s.created_at)) === ymd) {
+          dayRev += Number(s.total) || 0;
         }
       });
 
@@ -103,7 +111,6 @@ export default function Reports({ user, onSessionExpired }) {
 
       result.push({ date: label, revenue: dayRev });
     }
-
     return result;
   }, [selectedRangeObj, rawSales]);
 
@@ -123,18 +130,13 @@ export default function Reports({ user, onSessionExpired }) {
 
   const topProducts = useMemo(() => {
     const productStats = {};
-
     rawSales.forEach(sale => {
-      if (Array.isArray(sale.items)) {
-        sale.items.forEach(item => {
-          const name = item.product?.name || `Product #${item.product_id}`;
-          if (!productStats[name]) {
-            productStats[name] = { units: 0, revenue: 0 };
-          }
-          productStats[name].units += Number(item.quantity) || 1;
-          productStats[name].revenue += Number(item.line_total || item.total) || (Number(item.quantity) * (Number(item.unit_price) || 1000));
-        });
-      }
+      sale.items?.forEach(item => {
+        const name = item.product?.name || `Product #${item.product_id}`;
+        if (!productStats[name]) productStats[name] = { units: 0, revenue: 0 };
+        productStats[name].units += Number(item.quantity) || 1;
+        productStats[name].revenue += Number(item.line_total || item.total) || (Number(item.quantity) * (Number(item.unit_price) || 1000));
+      });
     });
 
     const realTop = Object.entries(productStats).map(([name, stat], idx) => ({
@@ -146,35 +148,35 @@ export default function Reports({ user, onSessionExpired }) {
 
     const combined = [...realTop];
     DEFAULT_TOP_PRODUCTS.forEach(p => {
-      if (!combined.some(c => c.name === p.name)) {
-        combined.push(p);
-      }
+      if (!combined.some(c => c.name === p.name)) combined.push(p);
     });
 
     combined.sort((a, b) => b.revenue - a.revenue);
     return combined.slice(0, 5);
   }, [rawSales]);
 
-  function handleExportCsv() {
-    const rows = [
-      ['Metric', 'Value'],
-      ['Total Revenue (NGN)', kpis.revenue],
-      ['Gross Profit (NGN)', kpis.grossProfit],
-      ['Total Transactions', kpis.transactions],
-      ['Average Basket (NGN)', kpis.averageBasket],
-      ['Total Units Sold', kpis.unitsSold],
-      [],
-      ['Top Products', 'Units Sold', 'Revenue (NGN)'],
-      ...topProducts.map(p => [p.name, p.units, p.revenue]),
-    ];
+  function handleTabChange(nextTab) {
+    setSearchParams({ tab: nextTab });
+    setSearchQuery('');
+  }
 
-    const csvContent = 'data:text/csv;charset=utf-8,' + rows.map(e => e.join(',')).join('\n');
-    const link = document.createElement('a');
-    link.setAttribute('href', encodeURI(csvContent));
-    link.setAttribute('download', `CWG_Financial_Analysis_${activeRange}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  function handleExportCsv() {
+    handleTabExport({ activeTab, activeRange, products, staff, kpis });
+  }
+
+  function handleExportPdf() {
+    const currentTabObj = REPORT_TABS.find(t => t.id === activeTab) || REPORT_TABS[0];
+    if (activeTab === 'inventory') {
+      const headers = ['SKU', 'Product', 'Category', 'Stock Qty', 'Cost Price', 'Sell Price', 'Stock Value'];
+      const rows = products.map(p => {
+        const qty = p.inventory?.quantity ?? 0;
+        const cost = Number(p.cost_price) || 0;
+        return [p.sku, p.name, p.category, qty, cost ? `₦${cost.toLocaleString()}` : '—', `₦${Number(p.sell_price).toLocaleString()}`, `₦${(cost * qty).toLocaleString()}`];
+      });
+      exportReportToPdf(currentTabObj.title, `Inventory asset records filtered for ${selectedRangeObj.label}`, headers, rows);
+    } else {
+      window.print();
+    }
   }
 
   if (!isManagement) {
@@ -190,63 +192,64 @@ export default function Reports({ user, onSessionExpired }) {
 
   return (
     <div className="reports-page">
-      <header className="reports-header-readdy">
-        <div className="reports-title-area">
-          <span className="reports-badge-icon">
-            <Icon name="reports" size={18} />
-          </span>
-          <div>
-            <h2>Financial Analysis</h2>
-            <p>Comprehensive breakdown of your store's sales and margins</p>
-          </div>
-        </div>
+      <ReportsHeader
+        activeTab={activeTab}
+        onTabChange={handleTabChange}
+        activeRange={activeRange}
+        onRangeChange={setActiveRange}
+        categories={categories}
+        selectedCategory={selectedCategory}
+        onCategoryChange={setSelectedCategory}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        onExportCsv={handleExportCsv}
+        onExportPdf={handleExportPdf}
+      />
 
-        <div className="reports-header-controls">
-          <div className="reports-range-pills">
-            {RANGE_OPTIONS.map(opt => (
-              <button
-                key={opt.id}
-                type="button"
-                className={`range-pill-btn ${activeRange === opt.id ? 'range-pill-btn--active' : ''}`}
-                onClick={() => setActiveRange(opt.id)}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
+      {activeTab === 'sales' && (
+        <SalesReportTab
+          sales={rawSales}
+          kpis={kpis}
+          dailySales={dailySales}
+          categories={DEFAULT_CATEGORIES}
+          topProducts={topProducts}
+          searchQuery={searchQuery}
+          selectedCategory={selectedCategory}
+        />
+      )}
 
-          <div className="reports-actions-btns">
-            <button type="button" className="btn-reports-action" onClick={handleExportCsv}>
-              <Icon name="download" size={13} />
-              <span>Export CSV</span>
-            </button>
-            <button type="button" className="btn-reports-action" onClick={() => window.print()}>
-              <Icon name="printer" size={13} />
-              <span>Print</span>
-            </button>
-          </div>
-        </div>
-      </header>
+      {activeTab === 'inventory' && (
+        <InventoryReportTab
+          products={products}
+          searchQuery={searchQuery}
+          selectedCategory={selectedCategory}
+        />
+      )}
 
-      <ReportsKpis kpis={kpis} />
+      {activeTab === 'stock' && (
+        <StockLevelReportTab
+          products={products}
+          searchQuery={searchQuery}
+          selectedCategory={selectedCategory}
+        />
+      )}
 
-      <div className="reports-two-col-grid">
-        <div className="reports-col-chart">
-          <ReportsSalesBarChart dailyData={dailySales} />
-        </div>
-        <div className="reports-col-side">
-          <ReportsCategoryBreakdown categories={DEFAULT_CATEGORIES} />
-        </div>
-      </div>
+      {activeTab === 'products' && (
+        <ProductReportTab
+          products={products}
+          sales={rawSales}
+          searchQuery={searchQuery}
+          selectedCategory={selectedCategory}
+        />
+      )}
 
-      <div className="reports-two-col-grid">
-        <div className="reports-col-chart">
-          <ReportsTopProducts products={topProducts} />
-        </div>
-        <div className="reports-col-side">
-          <ReportsPaymentMethods totalRevenue={kpis.revenue} />
-        </div>
-      </div>
+      {activeTab === 'users' && (
+        <UserReportTab
+          staff={staff}
+          sales={rawSales}
+          searchQuery={searchQuery}
+        />
+      )}
     </div>
   );
 }

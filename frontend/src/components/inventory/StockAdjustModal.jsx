@@ -55,10 +55,10 @@ export default function StockAdjustModal({
   }
 
   return (
-    <div className="modal-backdrop" onClick={onClose} role="dialog" aria-modal="true">
-      <div className="stock-restock-modal" onClick={e => e.stopPropagation()}>
+    <div className="restock-modal-backdrop" onClick={onClose} role="dialog" aria-modal="true">
+      <div className="restock-modal-card" onClick={e => e.stopPropagation()}>
         <div className="restock-modal-head">
-          <div className="restock-modal-badge">
+          <div className="restock-modal-icon-badge">
             <Icon name="plus" size={16} />
           </div>
           <div className="restock-modal-titles">

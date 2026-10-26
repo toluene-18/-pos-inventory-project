@@ -186,7 +186,13 @@
 }
 
 /* Toolbar & Filters */
-.inventory-toolbar {
+.inventory-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.inventory-toolbar-top {
   display: flex;
   justify-content: space-between;
   align-items: center;

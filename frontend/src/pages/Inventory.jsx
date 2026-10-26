@@ -1,15 +1,16 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import Icon from '../components/ui/Icon';
 import StockAdjustModal from '../components/inventory/StockAdjustModal';
+import ProductSalesModal from '../components/inventory/ProductSalesModal';
 import InventoryKpis from '../components/inventory/InventoryKpis';
 import InventoryTable from '../components/inventory/InventoryTable';
-import { getProducts, adjustStock, adjustStockBulk } from '../services/api';
+import { getProducts, adjustStockBulk } from '../services/api';
 import { formatCategory } from '../utils/categories';
 import '../styles/inventory.css';
 import '../styles/inventory-modal.css';
 import '../styles/inventory-table.css';
-import '../styles/toast-popup.css';
 
 export default function Inventory({ user, onSessionExpired }) {
   const [products, setProducts] = useState([]);
@@ -22,7 +23,7 @@ export default function Inventory({ user, onSessionExpired }) {
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [restockTargets, setRestockTargets] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
+  const [selectedProductForSales, setSelectedProductForSales] = useState(null);
 
   const isManagement = ['owner', 'manager'].includes(user?.role);
 
@@ -109,26 +110,18 @@ export default function Inventory({ user, onSessionExpired }) {
   function handleToggleSelect(id) {
     setSelectedIds(prev => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(id)) next.delete(id); else next.add(id);
       return next;
     });
   }
 
   function handleToggleSelectAll() {
-    if (filteredProducts.every(p => selectedIds.has(p.id))) {
-      setSelectedIds(new Set());
-    } else {
-      setSelectedIds(new Set(filteredProducts.map(p => p.id)));
-    }
+    const all = filteredProducts.every(p => selectedIds.has(p.id));
+    setSelectedIds(all ? new Set() : new Set(filteredProducts.map(p => p.id)));
   }
 
   function handleSelectAttention() {
-    const attention = products.filter(p => {
-      const qty = p.inventory?.quantity ?? 0;
-      const threshold = p.inventory?.reorder_threshold ?? 0;
-      return qty <= threshold;
-    });
+    const attention = products.filter(p => (p.inventory?.quantity ?? 0) <= (p.inventory?.reorder_threshold ?? 0));
     setSelectedIds(new Set(attention.map(p => p.id)));
   }
 
@@ -152,10 +145,9 @@ export default function Inventory({ user, onSessionExpired }) {
       reason,
     }));
     await adjustStockBulk(items);
-    setToastMessage(`Restocked ${targetProducts.length} product${targetProducts.length > 1 ? 's' : ''} — +${totalUnits} units added.`);
+    toast.success(`Restocked ${targetProducts.length} product${targetProducts.length > 1 ? 's' : ''} — +${totalUnits} units added.`);
     setSelectedIds(new Set());
     await fetchProducts();
-    setTimeout(() => setToastMessage(''), 4000);
   }
 
   return (
@@ -269,6 +261,7 @@ export default function Inventory({ user, onSessionExpired }) {
           onToggleSelect={handleToggleSelect}
           onToggleSelectAll={handleToggleSelectAll}
           onQuickRestock={handleQuickRestock}
+          onSelectProduct={setSelectedProductForSales}
         />
       </div>
 
@@ -279,12 +272,11 @@ export default function Inventory({ user, onSessionExpired }) {
         onConfirmRestock={handleConfirmRestock}
       />
 
-      {toastMessage && (
-        <div className="floating-toast-popup" role="status">
-          <Icon name="check" size={15} />
-          <span>{toastMessage}</span>
-        </div>
-      )}
+      <ProductSalesModal
+        isOpen={Boolean(selectedProductForSales)}
+        product={selectedProductForSales}
+        onClose={() => setSelectedProductForSales(null)}
+      />
     </div>
   );
 }

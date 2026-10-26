@@ -11,6 +11,7 @@ export default function InventoryTable({
   onToggleSelect,
   onToggleSelectAll,
   onQuickRestock,
+  onSelectProduct,
 }) {
   if (loading) {
     return <div className="inventory-loading">Loading inventory records...</div>;
@@ -73,7 +74,14 @@ export default function InventoryTable({
                   />
                 </td>
                 <td>
-                  <div className="inv-prod-cell">
+                  <div
+                    className="inv-prod-cell"
+                    onClick={() => onSelectProduct?.(p)}
+                    role="button"
+                    tabIndex={0}
+                    style={{ cursor: 'pointer' }}
+                    title={`View sales history for ${p.name}`}
+                  >
                     <ProductThumbnail
                       src={p.image_path}
                       name={p.name}

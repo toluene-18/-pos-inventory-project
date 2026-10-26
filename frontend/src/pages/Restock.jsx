@@ -1,10 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import Icon from '../components/ui/Icon';
 import StockChangeForm from '../components/restock/StockChangeForm';
+import MultiProductRestock from '../components/restock/MultiProductRestock';
+import RestockInvoiceModal from '../components/restock/RestockInvoiceModal';
 import RestockKpis from '../components/restock/RestockKpis';
 import AdjustmentHistoryTable from '../components/restock/AdjustmentHistoryTable';
-import { getProducts, adjustStock, getStockAdjustments } from '../services/api';
+import { getProducts, adjustStock, adjustStockBulk, getStockAdjustments } from '../services/api';
 import { INITIAL_ADJUSTMENTS } from '../components/restock/restockData';
 import '../styles/restock.css';
 import '../styles/restock-form.css';
@@ -21,9 +24,10 @@ export default function Restock({ user, onSessionExpired }) {
     }
   });
 
+  const [activeTab, setActiveTab] = useState('batch'); // 'batch' | 'single'
+  const [batchItems, setBatchItems] = useState([]);
+  const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [statusMessage, setStatusMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   const isManagement = ['owner', 'manager'].includes(user?.role);
@@ -39,21 +43,18 @@ export default function Restock({ user, onSessionExpired }) {
       if (prodsData.status === 'fulfilled' && Array.isArray(prodsData.value)) {
         setProducts(prodsData.value);
       }
-
       if (adjData.status === 'fulfilled' && Array.isArray(adjData.value) && adjData.value.length > 0) {
         setAdjustments(adjData.value);
       }
-      setError('');
     } catch (err) {
       if (err.status === 401) onSessionExpired?.();
-      else setError(err.message || 'Failed to load stock data.');
+      else toast.error(err.message || 'Failed to load stock data.');
     } finally {
       setLoading(false);
     }
   }, [onSessionExpired]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadData();
   }, [loadData]);
 
@@ -67,8 +68,6 @@ export default function Restock({ user, onSessionExpired }) {
     projectedStock,
   }) {
     setSubmitting(true);
-    setError('');
-
     try {
       const backendType = mode === 'damage' ? 'decrease' : 'increase';
       const changeAmount = mode === 'correction' ? projectedStock - currentStock : quantity;
@@ -91,15 +90,8 @@ export default function Restock({ user, onSessionExpired }) {
         previousStock: currentStock,
         newStock: projectedStock,
         reason,
-        staffName: user?.name || 'Chinedu Okafor',
-        createdAt: new Date().toLocaleString('en-GB', {
-          day: '2-digit',
-          month: 'short',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true,
-        }),
+        staffName: user?.name || 'Staff',
+        createdAt: new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }),
         timestamp: Date.now(),
       };
 
@@ -109,16 +101,63 @@ export default function Restock({ user, onSessionExpired }) {
         return updated;
       });
 
-      setStatusMessage(
-        `Successfully logged ${mode} for ${product.name}: stock updated from ${currentStock} to ${projectedStock}.`
-      );
-      setTimeout(() => setStatusMessage(''), 5000);
+      toast.success(`Updated stock for ${product.name}: ${currentStock} ➔ ${projectedStock}.`);
       await loadData();
     } catch (err) {
-      setError(err.message || 'Failed to record stock adjustment.');
+      toast.error(err.message || 'Failed to record stock adjustment.');
     } finally {
       setSubmitting(false);
     }
+  }
+
+  async function handleBulkSubmit({ items, totalUnits, batchItems: targetBatches }) {
+    setSubmitting(true);
+    try {
+      await adjustStockBulk(items);
+      const newEntries = targetBatches.map(b => {
+        const cur = b.product.inventory?.quantity ?? 0;
+        return {
+          id: `adj-${Date.now()}-${b.product.id}`,
+          productName: b.product.name,
+          sku: b.product.sku,
+          unit: b.product.unit || 'units',
+          type: 'restock',
+          typeLabel: 'Restock',
+          quantityChange: b.quantity,
+          previousStock: cur,
+          newStock: cur + b.quantity,
+          reason: 'Bulk shipment restock',
+          staffName: user?.name || 'Staff',
+          createdAt: new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }),
+          timestamp: Date.now(),
+        };
+      });
+
+      setAdjustments(prev => {
+        const updated = [...newEntries, ...prev];
+        localStorage.setItem('cwg_adjustments_history', JSON.stringify(updated));
+        return updated;
+      });
+
+      toast.success(`Successfully restocked ${items.length} products (+${totalUnits} units added)!`);
+      setBatchItems([]);
+      await loadData();
+    } catch (err) {
+      toast.error(err.message || 'Bulk restock failed.');
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  function handleApplyInvoice(matchedItems) {
+    setActiveTab('batch');
+    setBatchItems(prev => {
+      const map = new Map(prev.map(i => [i.product.id, i]));
+      matchedItems.forEach(m => {
+        map.set(m.product.id, m);
+      });
+      return Array.from(map.values());
+    });
   }
 
   if (!isManagement) {
@@ -136,48 +175,70 @@ export default function Restock({ user, onSessionExpired }) {
       <header className="restock-header">
         <div>
           <h2>Restock & Adjustments</h2>
-          <p>
-            Log deliveries, correct miscounts and record damages against any product — every change is
-            captured in the history below.
-          </p>
+          <p>Import invoices, restock multiple items, and manage shelf levels.</p>
         </div>
 
         <div className="restock-header-actions">
+          <button
+            type="button"
+            className="restock-nav-btn"
+            style={{ background: 'var(--green-soft)', color: 'var(--green)', borderColor: 'rgba(16,185,129,0.3)' }}
+            onClick={() => setIsInvoiceOpen(true)}
+          >
+            <Icon name="receipt" size={15} />
+            <span>Import Invoice</span>
+          </button>
           <Link to="/inventory" className="restock-nav-btn">
             <Icon name="inventory" size={15} />
             <span>View inventory</span>
           </Link>
-          <Link to="/products" className="restock-nav-btn">
-            <Icon name="pos" size={15} />
-            <span>Products</span>
-          </Link>
         </div>
       </header>
 
-      {statusMessage && (
-        <div className="restock-alert restock-alert--success" role="status">
-          <Icon name="check" size={16} />
-          <span>{statusMessage}</span>
-        </div>
-      )}
+      {/* Mode Switch Tabs */}
+      <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid var(--border)', paddingBottom: '10px' }}>
+        <button
+          type="button"
+          className={`inv-tab ${activeTab === 'batch' ? 'inv-tab--active' : ''}`}
+          onClick={() => setActiveTab('batch')}
+        >
+          Multi-Product Restock Batch ({batchItems.length})
+        </button>
+        <button
+          type="button"
+          className={`inv-tab ${activeTab === 'single' ? 'inv-tab--active' : ''}`}
+          onClick={() => setActiveTab('single')}
+        >
+          Single Item / Damage / Correction
+        </button>
+      </div>
 
-      {error && (
-        <div className="restock-alert restock-alert--error" role="alert">
-          <Icon name="alert" size={16} />
-          <span>{error}</span>
-        </div>
+      {activeTab === 'batch' ? (
+        <MultiProductRestock
+          products={products}
+          batchItems={batchItems}
+          onUpdateBatch={setBatchItems}
+          onSubmitBulk={handleBulkSubmit}
+          submitting={submitting}
+        />
+      ) : (
+        <StockChangeForm
+          products={products}
+          onSubmit={handleStockChange}
+          submitting={submitting}
+          loading={loading}
+        />
       )}
-
-      <StockChangeForm
-        products={products}
-        onSubmit={handleStockChange}
-        submitting={submitting}
-        loading={loading}
-      />
 
       <RestockKpis adjustments={adjustments} />
-
       <AdjustmentHistoryTable adjustments={adjustments} />
+
+      <RestockInvoiceModal
+        isOpen={isInvoiceOpen}
+        products={products}
+        onClose={() => setIsInvoiceOpen(false)}
+        onApplyInvoice={handleApplyInvoice}
+      />
     </div>
   );
 }

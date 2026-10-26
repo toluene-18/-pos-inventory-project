@@ -162,11 +162,12 @@ export async function adjustStockBulk(items) {
   }
 }
 
-export async function getSales({ from, to, payment_method, page = 1, per_page, all } = {}) {
+export async function getSales({ from, to, payment_method, product_id, page = 1, per_page, all } = {}) {
   const params = new URLSearchParams();
   if (from) params.set('from', from);
   if (to) params.set('to', to);
   if (payment_method && payment_method !== 'all') params.set('payment_method', payment_method);
+  if (product_id) params.set('product_id', String(product_id));
   if (all) {
     params.set('all', '1');
   } else {

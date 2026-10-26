@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import toast from 'react-hot-toast';
 import Icon from '../components/ui/Icon';
 import ProductFormModal from '../components/products/ProductFormModal';
 import ProductsTable from '../components/products/ProductsTable';
@@ -12,15 +13,16 @@ import { PRODUCT_PAGE_CATEGORIES } from '../utils/categories';
 import '../styles/products.css';
 import '../styles/products-grid.css';
 
+const PRODUCTS_PER_PAGE = 8;
+
 export default function Products({ user, onSessionExpired }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-  const [statusMessage, setStatusMessage] = useState('');
 
   const isManagement = ['owner', 'manager'].includes(user?.role);
 
@@ -29,10 +31,9 @@ export default function Products({ user, onSessionExpired }) {
       setLoading(true);
       const data = await getProducts();
       setProducts(data);
-      setError('');
     } catch (err) {
       if (err.status === 401) onSessionExpired?.();
-      else setError(err.message || 'Failed to load products');
+      else toast.error(err.message || 'Failed to load products');
     } finally {
       setLoading(false);
     }
@@ -41,6 +42,10 @@ export default function Products({ user, onSessionExpired }) {
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, selectedCategory]);
 
   const filteredProducts = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -64,6 +69,12 @@ export default function Products({ user, onSessionExpired }) {
     });
   }, [products, search, selectedCategory]);
 
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE));
+  const paginatedProducts = useMemo(() => {
+    const start = (currentPage - 1) * PRODUCTS_PER_PAGE;
+    return filteredProducts.slice(start, start + PRODUCTS_PER_PAGE);
+  }, [filteredProducts, currentPage]);
+
   function handleOpenCreate() {
     setEditingProduct(null);
     setModalOpen(true);
@@ -77,13 +88,12 @@ export default function Products({ user, onSessionExpired }) {
   async function handleSaveProduct(payload, id) {
     if (id) {
       await updateProduct(id, payload);
-      setStatusMessage('Product updated successfully.');
+      toast.success('Product updated successfully.');
     } else {
       await createProduct(payload);
-      setStatusMessage('Product created successfully.');
+      toast.success('Product created successfully.');
     }
     await fetchProducts();
-    setTimeout(() => setStatusMessage(''), 4000);
   }
 
   async function handleDeactivate(product) {
@@ -92,11 +102,10 @@ export default function Products({ user, onSessionExpired }) {
     }
     try {
       await deactivateProduct(product.id);
-      setStatusMessage(`Product "${product.name}" deactivated.`);
+      toast.success(`Product "${product.name}" deactivated.`);
       await fetchProducts();
-      setTimeout(() => setStatusMessage(''), 4000);
     } catch (err) {
-      setError(err.message || 'Failed to deactivate product.');
+      toast.error(err.message || 'Failed to deactivate product.');
     }
   }
 
@@ -125,18 +134,6 @@ export default function Products({ user, onSessionExpired }) {
           </button>
         )}
       </header>
-
-      {statusMessage && (
-        <div className="product-alert product-alert--success" role="status">
-          <Icon name="check" size={16} /> {statusMessage}
-        </div>
-      )}
-
-      {error && (
-        <div className="product-alert product-alert--error" role="alert">
-          <Icon name="alert" size={16} /> {error}
-        </div>
-      )}
 
       {/* Filter Category Pills + Right-aligned Search Bar */}
       <div className="products-toolbar-readdy">
@@ -168,15 +165,45 @@ export default function Products({ user, onSessionExpired }) {
         </div>
       </div>
 
-      {/* Products Grid (no table view) */}
+      {/* Products Grid (max 8 per page) */}
       <main className="products-grid-section">
         <ProductsTable
-          products={filteredProducts}
+          products={paginatedProducts}
           loading={loading}
           isManagement={isManagement}
           onEdit={handleOpenEdit}
           onDeactivate={handleDeactivate}
         />
+
+        {filteredProducts.length > PRODUCTS_PER_PAGE && (
+          <div className="products-pagination">
+            <span className="pagination-text">
+              Showing {(currentPage - 1) * PRODUCTS_PER_PAGE + 1}–
+              {Math.min(currentPage * PRODUCTS_PER_PAGE, filteredProducts.length)} of {filteredProducts.length} items
+            </span>
+            <div className="pagination-btn-group">
+              <button
+                type="button"
+                className="pagination-btn"
+                disabled={currentPage <= 1}
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              >
+                Previous
+              </button>
+              <span className="pagination-current-page">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                type="button"
+                className="pagination-btn"
+                disabled={currentPage >= totalPages}
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </main>
 
       <ProductFormModal

@@ -121,6 +121,7 @@ class SaleController extends Controller
             'payment_method' => 'sometimes|in:cash,card,bank_transfer',
             'from' => 'sometimes|date_format:Y-m-d',
             'to' => 'sometimes|date_format:Y-m-d|after_or_equal:from',
+            'product_id' => 'sometimes|integer|exists:products,id',
             'per_page' => 'sometimes|integer|min:1|max:500',
             'all' => 'sometimes|boolean',
         ]);
@@ -134,6 +135,12 @@ class SaleController extends Controller
 
         if (isset($validated['payment_method'])) {
             $query->where('payment_method', $validated['payment_method']);
+        }
+
+        if (isset($validated['product_id'])) {
+            $query->whereHas('items', function ($q) use ($validated) {
+                $q->where('product_id', $validated['product_id']);
+            });
         }
 
         // Use index range comparison rather than whereDate to enable MySQL B-Tree index scan
