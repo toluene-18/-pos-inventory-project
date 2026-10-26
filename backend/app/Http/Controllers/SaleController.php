@@ -20,12 +20,20 @@ class SaleController extends Controller
         ]);
 
         $sale = DB::transaction(function () use ($validated, $request) {
+            $productIds = collect($validated['items'])->pluck('product_id')->all();
+
+            // 1 batch query to fetch all products and lock their inventories
+            $products = Product::where('is_active', true)
+                ->whereIn('id', $productIds)
+                ->with(['inventory' => fn($q) => $q->lockForUpdate()])
+                ->get()
+                ->keyBy('id');
+
             $subtotal = 0;
             $saleItems = [];
 
             foreach ($validated['items'] as $item) {
-                $product = Product::where('is_active', true)
-                    ->find($item['product_id']);
+                $product = $products->get($item['product_id']);
 
                 if (!$product) {
                     throw ValidationException::withMessages([
@@ -36,9 +44,7 @@ class SaleController extends Controller
                 }
 
                 /** @var \App\Models\Inventory $inventory */
-                $inventory = $product->inventory()
-                    ->lockForUpdate()
-                    ->first();
+                $inventory = $product->inventory;
 
                 if (!$inventory) {
                     throw ValidationException::withMessages([
@@ -115,9 +121,11 @@ class SaleController extends Controller
             'payment_method' => 'sometimes|in:cash,card,bank_transfer',
             'from' => 'sometimes|date_format:Y-m-d',
             'to' => 'sometimes|date_format:Y-m-d|after_or_equal:from',
+            'per_page' => 'sometimes|integer|min:1|max:500',
+            'all' => 'sometimes|boolean',
         ]);
 
-        $query = Sale::with(['user', 'items.product']);
+        $query = Sale::with(['user:id,name,email', 'items.product:id,name,sku,sell_price,unit']);
 
         // Owners and managers can view all sales; cashiers only see their own.
         if ($request->user()->role === 'cashier') {
@@ -125,25 +133,33 @@ class SaleController extends Controller
         }
 
         if (isset($validated['payment_method'])) {
-            $query->where(
-                'payment_method',
-                $validated['payment_method']
-            );
+            $query->where('payment_method', $validated['payment_method']);
         }
 
+        // Use index range comparison rather than whereDate to enable MySQL B-Tree index scan
         if (isset($validated['from'])) {
-            $query->whereDate('created_at', '>=', $validated['from']);
+            $query->where('created_at', '>=', $validated['from'] . ' 00:00:00');
         }
 
         if (isset($validated['to'])) {
-            $query->whereDate('created_at', '<=', $validated['to']);
+            $query->where('created_at', '<=', $validated['to'] . ' 23:59:59');
         }
 
-        $sales = $query->latest()->paginate(15);
+        if ($request->boolean('all')) {
+            $sales = $query->latest()->limit(500)->get();
+            return response()->json([
+                'data' => $sales,
+                'total' => $sales->count(),
+                'current_page' => 1,
+                'last_page' => 1,
+            ]);
+        }
+
+        $perPage = min((int) $request->input('per_page', 15), 500);
+        $sales = $query->latest()->paginate($perPage);
 
         return response()->json($sales);
     }
-
 
     public function report(Request $request)
     {
@@ -155,11 +171,11 @@ class SaleController extends Controller
         $query = Sale::query();
 
         if (isset($validated['from'])) {
-            $query->whereDate('created_at', '>=', $validated['from']);
+            $query->where('created_at', '>=', $validated['from'] . ' 00:00:00');
         }
 
         if (isset($validated['to'])) {
-            $query->whereDate('created_at', '<=', $validated['to']);
+            $query->where('created_at', '<=', $validated['to'] . ' 23:59:59');
         }
 
         $summary = (clone $query)

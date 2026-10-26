@@ -55,7 +55,7 @@ export default function Reports({ user, onSessionExpired }) {
 
       const [summaryRes, salesRes] = await Promise.allSettled([
         getSalesReport({ from: fromStr, to: toStr }),
-        getSalesInRange({ from: fromStr, to: toStr, maxPages: 10 }),
+        getSalesInRange({ from: fromStr, to: toStr }),
       ]);
 
       if (summaryRes.status === 'fulfilled' && summaryRes.value?.summary) {

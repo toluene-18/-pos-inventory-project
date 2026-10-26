@@ -147,26 +147,43 @@ export async function adjustStock(productId, { type, quantity, reason }) {
   }
 }
 
-export async function getSales({ from, to, payment_method, page = 1 } = {}) {
+export async function adjustStockBulk(items) {
+  try {
+    return await apiRequest('/stock-adjustments/bulk', {
+      method: 'POST',
+      body: JSON.stringify({ items }),
+    });
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 422 && error.data?.errors) {
+      const first = Object.values(error.data.errors).flat()[0];
+      if (first) throw new ApiError(first, 422, error.data);
+    }
+    throw error;
+  }
+}
+
+export async function getSales({ from, to, payment_method, page = 1, per_page, all } = {}) {
   const params = new URLSearchParams();
   if (from) params.set('from', from);
   if (to) params.set('to', to);
   if (payment_method && payment_method !== 'all') params.set('payment_method', payment_method);
-  params.set('page', String(page));
+  if (all) {
+    params.set('all', '1');
+  } else {
+    params.set('page', String(page));
+    if (per_page) params.set('per_page', String(per_page));
+  }
   return apiRequest(`/sales?${params.toString()}`);
 }
 
-export async function getSalesInRange({ from, to, maxPages = 20 } = {}) {
-  const first = await getSales({ from, to, page: 1 });
-  const sales = [...(first.data || [])];
-  const lastPage = Math.min(Number(first.last_page) || 1, maxPages);
-
-  for (let page = 2; page <= lastPage; page += 1) {
-    const next = await getSales({ from, to, page });
-    sales.push(...(next.data || []));
-  }
-
-  return { sales, total: Number(first.total) || sales.length, truncated: (Number(first.last_page) || 1) > maxPages };
+export async function getSalesInRange({ from, to } = {}) {
+  const res = await getSales({ from, to, all: true });
+  const sales = Array.isArray(res.data) ? res.data : [];
+  return {
+    sales,
+    total: Number(res.total) || sales.length,
+    truncated: false,
+  };
 }
 
 export async function getSalesReport({ from, to } = {}) {

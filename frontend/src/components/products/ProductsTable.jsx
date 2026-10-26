@@ -12,7 +12,9 @@ export default function ProductsTable({
   onDeactivate,
 }) {
   if (loading) {
-    return <div className="products-loading">Loading products catalogue...</div>;
+    return (
+      <div className="products-loading">Loading products catalogue...</div>
+    );
   }
 
   if (products.length === 0) {
@@ -56,8 +58,8 @@ export default function ProductsTable({
                     isOut
                       ? 'prod-status-chip--out'
                       : isLow
-                      ? 'prod-status-chip--low'
-                      : 'prod-status-chip--ok'
+                        ? 'prod-status-chip--low'
+                        : 'prod-status-chip--ok'
                   }`}
                 >
                   <Icon
@@ -72,8 +74,12 @@ export default function ProductsTable({
 
               <div className="prod-card-bottom-row">
                 <div className="prod-card-pricing-stock">
-                  <span className="prod-card-price">{formatMoney(p.sell_price)}</span>
-                  <span className="prod-card-stock-sub">{qty} {unit} in stock</span>
+                  <span className="prod-card-price">
+                    {formatMoney(p.sell_price)}
+                  </span>
+                  <span className="prod-card-stock-sub">
+                    {qty} {unit} in stock
+                  </span>
                 </div>
 
                 {isManagement && (

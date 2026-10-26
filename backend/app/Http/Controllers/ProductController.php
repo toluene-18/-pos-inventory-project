@@ -10,21 +10,36 @@ class ProductController extends Controller
 {
     public function webIndex()
     {
-        $products = Product::with('inventory')->get();
+        $products = Product::with('inventory')->paginate(8); //make it pagination, at 8 produtcs per page
 
         return view('product.index', compact('products'));
     }
 
     public function index(Request $request)
     {
-        $products = Product::with('inventory')
-            ->where('is_active', true)
-            ->get();
+        $isManagement = in_array($request->user()?->role, ['owner', 'manager'], true);
 
-        // Cost price reveals margins — owners and managers only.
-        if (! in_array($request->user()?->role, ['owner', 'manager'], true)) {
-            $products->each->makeHidden('cost_price');
+        $query = Product::with('inventory')
+            ->where('is_active', true);
+
+        // Performance optimization: project columns at the database level so cost_price
+        // is never selected from MySQL for cashiers, completely eliminating PHP collection loops.
+        if (! $isManagement) {
+            $query->select([
+                'id',
+                'name',
+                'sku',
+                'category',
+                'unit',
+                'sell_price',
+                'image_path',
+                'is_active',
+                'created_at',
+                'updated_at',
+            ]);
         }
+
+        $products = $query->get();
 
         return response()->json($products);
     }
@@ -133,4 +148,6 @@ class ProductController extends Controller
             'product' => $product->fresh()->load('inventory'),
         ], 200);
     }
+
+    
 }

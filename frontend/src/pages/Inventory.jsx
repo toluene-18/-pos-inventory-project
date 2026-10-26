@@ -4,7 +4,7 @@ import Icon from '../components/ui/Icon';
 import StockAdjustModal from '../components/inventory/StockAdjustModal';
 import InventoryKpis from '../components/inventory/InventoryKpis';
 import InventoryTable from '../components/inventory/InventoryTable';
-import { getProducts, adjustStock } from '../services/api';
+import { getProducts, adjustStock, adjustStockBulk } from '../services/api';
 import { formatCategory } from '../utils/categories';
 import '../styles/inventory.css';
 import '../styles/inventory-modal.css';
@@ -145,9 +145,13 @@ export default function Inventory({ user, onSessionExpired }) {
   }
 
   async function handleConfirmRestock({ products: targetProducts, unitsPerProduct, totalUnits, reason }) {
-    await Promise.all(
-      targetProducts.map(p => adjustStock(p.id, { type: 'increase', quantity: unitsPerProduct, reason }))
-    );
+    const items = targetProducts.map(p => ({
+      product_id: p.id,
+      type: 'increase',
+      quantity: unitsPerProduct,
+      reason,
+    }));
+    await adjustStockBulk(items);
     setToastMessage(`Restocked ${targetProducts.length} product${targetProducts.length > 1 ? 's' : ''} — +${totalUnits} units added.`);
     setSelectedIds(new Set());
     await fetchProducts();

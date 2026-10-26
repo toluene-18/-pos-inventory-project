@@ -34,7 +34,7 @@ export default function Sales({ user }) {
   const fetchSales = useCallback(async () => {
     try {
       setLoading(true);
-      const params = {};
+      const params = { per_page: 50 };
       if (paymentFilter !== 'all') params.payment_method = paymentFilter;
       if (fromDate) params.from = fromDate;
       if (toDate) params.to = toDate;

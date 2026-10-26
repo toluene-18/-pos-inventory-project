@@ -31,6 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('products/{product}', [ProductController::class,'delete']);
 
         Route::get('/stock-adjustments', [StockAdjustmentController::class, 'index']);
+        Route::post('/stock-adjustments/bulk', [StockAdjustmentController::class, 'storeBulk']);
         Route::post('/products/{product}/stock-adjustments',
         [StockAdjustmentController::class, 'store']);
 
