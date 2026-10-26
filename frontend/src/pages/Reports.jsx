@@ -205,7 +205,7 @@ export default function Reports({ user, onSessionExpired }) {
       {loading ? (
         <div className="reports-loading-state">
           <div className="reports-spinner" />
-          <p>Loading database records...</p>
+          <p>Preparing your store reports...</p>
         </div>
       ) : (
         <>

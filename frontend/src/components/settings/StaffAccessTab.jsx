@@ -26,6 +26,7 @@ export default function StaffAccessTab({
 }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
+  const [deletingMember, setDeletingMember] = useState(null);
 
   const totalMembers = staff.length;
   const ownerCount = staff.filter(s => s.role === 'owner').length;
@@ -187,11 +188,7 @@ export default function StaffAccessTab({
                           <button
                             type="button"
                             className="btn-action btn-action--danger"
-                            onClick={() => {
-                              if (window.confirm(`Are you sure you want to remove "${member.name}" from the staff roster?`)) {
-                                onDeleteMember?.(member.id);
-                              }
-                            }}
+                            onClick={() => setDeletingMember(member)}
                             title="Delete staff account"
                           >
                             <Icon name="trash" size={12} /> Delete
@@ -214,6 +211,58 @@ export default function StaffAccessTab({
         onClose={() => setModalOpen(false)}
         onSave={onSaveMember}
       />
+
+      {deletingMember && (
+        <div
+          className="restock-modal-backdrop"
+          onClick={() => setDeletingMember(null)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="restock-modal-card"
+            style={{ maxWidth: 420 }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="restock-modal-head">
+              <div
+                className="restock-modal-icon-badge"
+                style={{ background: 'var(--rose-soft)', color: 'var(--rose)' }}
+              >
+                <Icon name="alert" size={17} />
+              </div>
+              <div className="restock-modal-titles">
+                <h3>Remove Staff Member</h3>
+                <p>Are you sure you want to remove "{deletingMember.name}"?</p>
+              </div>
+            </div>
+            <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text-muted)' }}>
+              This staff member will be removed from the store roster and will no longer be able to log in.
+            </p>
+            <div className="restock-modal-actions">
+              <button
+                type="button"
+                className="btn-modal-cancel"
+                onClick={() => setDeletingMember(null)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn-modal-confirm"
+                style={{ background: 'var(--rose)' }}
+                onClick={() => {
+                  const id = deletingMember.id;
+                  setDeletingMember(null);
+                  onDeleteMember?.(id);
+                }}
+              >
+                Remove Staff
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

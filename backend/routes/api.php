@@ -6,11 +6,13 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\SaleController;
+use App\Http\Controllers\StoreSettingController;
 
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/reset-password-with-code', [AuthController::class, 'resetPasswordWithCode']);
+Route::get('/store-settings', [StoreSettingController::class, 'show']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
@@ -36,6 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
         [StockAdjustmentController::class, 'store']);
 
         Route::get('/reports/sales', [SaleController::class, 'report']);
+        Route::post('/store-settings', [StoreSettingController::class, 'update']);
     });
 
     Route::post('/sales', [SaleController::class, 'store']);

@@ -1,5 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getStaff, updateStaffStatus, deleteStaffMember } from '../../services/api';
+import {
+  getStaff,
+  updateStaffStatus,
+  deleteStaffMember,
+  getStoreSettings,
+  updateStoreSettings,
+} from '../../services/api';
 import {
   DEFAULT_PROFILE,
   DEFAULT_STAFF,
@@ -74,6 +80,15 @@ export function useSettingsData(user, onSessionExpired) {
 
   useEffect(() => {
     fetchBackendStaff();
+    getStoreSettings().then(data => {
+      if (data && data.name) {
+        setProfile(prev => {
+          const merged = { ...prev, ...data };
+          localStorage.setItem('cwg_store_profile', JSON.stringify(merged));
+          return merged;
+        });
+      }
+    }).catch(() => {});
   }, [fetchBackendStaff]);
 
   function showToast(msg) {
@@ -118,9 +133,14 @@ export function useSettingsData(user, onSessionExpired) {
     });
   }
 
-  function handleProfileChange(newProfile) {
+  async function handleProfileChange(newProfile) {
     setProfile(newProfile);
     localStorage.setItem('cwg_store_profile', JSON.stringify(newProfile));
+    try {
+      await updateStoreSettings(newProfile);
+    } catch (err) {
+      console.error('Failed to update store settings on backend', err);
+    }
     const loc = [newProfile.city, newProfile.state].filter(Boolean).join(', ');
     appendActivity(
       'profile',

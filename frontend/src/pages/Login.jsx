@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { loginUser } from '../services/api';
+import { useState, useMemo, useEffect } from 'react';
+import { loginUser, getStoreSettings } from '../services/api';
 import { humanizeErrorMessage } from '../utils/errorMessage';
 import PasswordResetModal from '../components/auth/PasswordResetModal';
 import '../styles/login-brand.css';
@@ -22,13 +22,22 @@ function Login({ onLogin }) {
   const [error, setError] = useState('');
   const [showResetModal, setShowResetModal] = useState(false);
 
-  const storeProfile = useMemo(() => {
+  const [storeProfile, setStoreProfile] = useState(() => {
     try {
       const saved = localStorage.getItem('cwg_store_profile');
       return saved ? JSON.parse(saved) : null;
     } catch {
       return null;
     }
+  });
+
+  useEffect(() => {
+    getStoreSettings().then(data => {
+      if (data && data.name) {
+        setStoreProfile(data);
+        localStorage.setItem('cwg_store_profile', JSON.stringify(data));
+      }
+    }).catch(() => {});
   }, []);
 
   const locationDisplay = useMemo(() => {

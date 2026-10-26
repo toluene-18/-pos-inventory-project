@@ -264,3 +264,17 @@ export async function changePassword({ current_password, new_password }) {
     body: JSON.stringify({ current_password, new_password }),
   });
 }
+
+export async function getStoreSettings() {
+  const response = await fetch(`${API_BASE_URL}/store-settings`, {
+    headers: { Accept: 'application/json' },
+  });
+  return readJson(response);
+}
+
+export async function updateStoreSettings(payload) {
+  return apiRequest('/store-settings', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
