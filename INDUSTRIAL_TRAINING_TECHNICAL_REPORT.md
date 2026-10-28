@@ -114,6 +114,9 @@ Finally, I acknowledge my fellow interns and colleagues for the mutual collabora
     - 3.1.3 Meter Testing, Bench Calibration, and Voltage-Current Diagnostics ...................... 14
     - 3.1.4 Firmware Flashing, Parameterization, and Optical Port Configuration .................... 16
     - 3.1.5 Tamper Detection, Anti-Fraud Mechanisms, and Field Auditing ........................... 18
+    - 3.1.6 Standardized Meter Coupling Work Instructions (Assembly & Component Integration) ..... 19
+    - 3.1.7 Post-Test Work Instructions & Electrostatic Discharge (ESD) Safety Protocols ........ 20
+    - 3.1.8 Quality Control (QC), NEMSA Regulatory Certification & Packaging Instructions ......... 21
   - 3.2 SECTION B: IT SUPPORT, PROXIMITY, AND INFRASTRUCTURE MANAGEMENT ........................... 20
     - 3.2.1 Help Desk Operations, Ticket Resolution, and SLA Compliance ............................ 20
     - 3.2.2 System Staging, Custom Windows Deployment, and `.ppkg` Provisioning .................. 22
@@ -158,6 +161,9 @@ Finally, I acknowledge my fellow interns and colleagues for the mutual collabora
 - **Figure 3.2:** Energy Meter Test Bench Calibration Setup with Reference Meter Standard .................... 15
 - **Figure 3.3:** Optical Probe Interface and Parameterization Software Configuration ....................... 17
 - **Figure 3.4:** Meter Terminal Cover Tamper Switch Mechanism and Terminal Block ........................... 19
+- **Figure 3.4A:** Standard Operating Procedure for Meter Coupling Line ..................................... 19
+- **Figure 3.4B:** Post-Test Inspection Station, ESD Safety, and MMS Mode Switching ......................... 20
+- **Figure 3.4C:** Meter Packaging Station, NEMSA Regulatory Seals, and Store Delivery ..................... 21
 - **Figure 3.5:** Enterprise IT Help Desk Incident Logging and Ticketing Interface ........................... 21
 - **Figure 3.6:** Laptop Provisioning Package (`.ppkg`) Automated Staging Screen ............................. 23
 - **Figure 3.7:** Microsoft Active Directory Users and Computers (ADUC) Management Console .................. 25
@@ -364,6 +370,76 @@ Electricity theft is a significant operational challenge in power distribution. 
 |  the heavy-duty internal bi-stable disconnect latch relay.           |
 +-----------------------------------------------------------------------+
 ```
+
+#### 3.1.6 Standardized Meter Coupling Work Instructions (Assembly & Component Integration)
+The mechanical coupling stage transforms verified printed circuit boards (PCBs) and sub-assemblies into fully integrated, ruggedized electrical energy meters. During my training on the factory assembly line, I strictly executed the factory's Standard Operating Procedures (SOP) under the **Coupling Work Instructions**:
+
+1. **Serial Number Verification & Matching:** Match the serial number printed on the meter's front cover and nameplate with the unique electronic barcode and firmware identity of the internal metering Printed Circuit Board (PCB). Maintaining 100% serial integrity prevents traceability corruption and misallocation in utility Management Information Systems.
+2. **Mounting Front Housing Cover:** Carefully position and mount the intermediate front cover onto the PCB housing, ensuring the display aperture aligns precisely with the 7-segment liquid crystal display (LCD) module without pinching internal ribbon cables.
+3. **Internal RTC/Backup Battery Installation:** Insert the long-life internal lithium backup battery (.6\text{ V Li-SOCl}_2$) into its designated retention slot. This battery sustains the real-time clock (RTC), event logs, and non-volatile memory registers during grid supply outages.
+4. **Cellular (GPRS/GSM) Module Integration:** Mount the cellular communication daughterboard (GPRS/4G IoT modem) onto the designated header pins of the meter motherboard. Ensure positive seating and verify that the SIM card carrier and internal whip antenna connector are securely fastened.
+5. **Comprehensive Seating Inspection:** Inspect all internal mechanical clips, connectors, terminal connections, and current sensing shunts/transformers to verify complete, flush seating with zero mechanical strain or loose tolerances.
+6. **Nameplate Cover Installation & Calibrated Fastening:** Align the outer front nameplate cover and fasten all enclosing casing screws using torque-controlled screwdrivers to ensure IP54/IP65 environmental ingress protection against dust and moisture.
+7. **Coupling Ledger Documentation:** Record the meter serial number, PCB batch number, operator ID, and timestamp into the physical **Coupling Records Ledger** for QA/QC batch tracking.
+8. **Inter-Station Routing:** Safely transfer the coupled meter assembly in anti-static transit trays to the **Post-Test and Packaging Stations**.
+
+`
++-----------------------------------------------------------------------+
+|  [SPACE RESERVED FOR FIGURE 3.4A]                                     |
+|                                                                       |
+|  Figure 3.4A: Standard Operating Procedure for Meter Coupling Line   |
+|  Description: Workplace instructional document displaying step-by-     |
+|  step coupling instructions: matching serials, PCB mounting, internal  |
+|  battery insertion, GPRS module seating, and ledger record keeping.    |
++-----------------------------------------------------------------------+
+`
+
+#### 3.1.7 Post-Test Work Instructions & Electrostatic Discharge (ESD) Safety Protocols
+Before meters are approved for commercial sealing, they must undergo comprehensive functional post-testing to confirm operational readiness and communication viability. Because modern solid-state energy meters utilize delicate complementary metal-oxide-semiconductor (CMOS) and microcontroller ICs vulnerable to electrostatic discharge, strict ESD safety protocols are mandated:
+
+1. **ESD Grounding Wrist Strap Protocol:** Operators must securely strap an anti-static ESD wrist band around the wrist and clamp its grounding snap to the workstation's dedicated common ground copper earth bar. This dissipates static charges harmlessly to earth, eliminating electrostatic potentials exceeding $\pm 100\text{ V}$ that could otherwise induce latent gate dielectric puncture in microcontrollers.
+2. **Physical and Enclosure Pre-Inspection:** Visually examine the coupled meter housing for surface hairline cracks, misaligned seals, deformed screw heads, or terminal block flaws prior to energization.
+3. **Mains Energization (Power ON Test):** Mount the meter onto the safe energization fixture and supply nominal alternating voltage (\text{ V AC}, 50\text{ Hz}$). Observe power-on diagnostic routines, self-check cycles, and backlit LCD activation.
+4. **Keypad Functional Validation:** Sequentially press and test all alphanumeric and functional keys on the 12-key tactile elastomer keypad. Confirm that each keystroke generates the corresponding audible beep, increments or registers the correct numeric entry on the LCD display, and responds to command codes (e.g., #001# for total active energy, #002# for instantaneous voltage, #003# for instantaneous current).
+5. **Operational Mode Transition via MMS (Factory to Deployment Mode):** Interface the meter with the workstation via the optical communication probe or serial test jig linked to the proprietary **Meter Management Software (MMS)**. Transmit authenticated administrative commands to switch the meter operating mode from **Factory Mode** (an uncalibrated, open configuration state used during manufacturing) to **Deployment Mode** (the secured, commercially locked state with tamper locks active, token decryption enabled, and tariff parameters frozen).
+6. **Post-Test Result Recording:** Log test status (PASS/FAIL), measured optical transmission latency, keypad diagnostic code, and operator stamp into the testing database and physical ledger.
+
+`
++-----------------------------------------------------------------------+
+|  [SPACE RESERVED FOR FIGURE 3.4B]                                     |
+|                                                                       |
+|  Figure 3.4B: Post-Test Inspection Station and MMS Mode Switching      |
+|  Description: Engineering test station exhibiting the ESD grounding   |
+|  wrist strap connected to earth bar, power-on diagnostic screen,      |
+|  keypad functional checks, and Meter Management Software interface.   |
++-----------------------------------------------------------------------+
+`
+
+#### 3.1.8 Quality Control (QC), NEMSA Regulatory Certification & Packaging Instructions
+The final production station ensures statutory compliance with national electrical grid standards, prevents post-factory tampering, and prepares the meters for warehousing and distribution:
+
+1. **Finished Product Cosmetic & Structural Audit:** Inspect the completely assembled, tested meter for cosmetic scratches, loose terminal screws, or enclosure blemishes.
+2. **Surface Decontamination:** Thoroughly wipe down and clean all dust, grease, fingerprints, or adhesive residues using specialized anti-static cleaning solvents.
+3. **Affixing Internal QC Assurance Seal:** Place the official internal **QC Pass Sticker** over the designated seam joint, certifying that the unit has satisfied all manufacturing and functional tolerances.
+4. **Application of NEMSA Certification Label:** Affix the statutory regulatory certification sticker from the **Nigerian Electricity Management Services Agency (NEMSA)** onto the front faceplate. NEMSA certification is mandatory under the statutory provisions of the NEMSA Act 2015 for all meters deployed on the Nigerian national electrical grid.
+5. **NEMSA Security Seal Reconciliation:** Retrieve and sort out serialized, non-reusable NEMSA poly-carbonate wire security seals. Cross-verify the alphanumeric serial number of each NEMSA seal against the batch deployment manifest.
+6. **NEMSA Wire Sealing:** Thread the high-tensile stainless steel sealing wire through the meter enclosure sealing lugs and crimp the serialized NEMSA seal shut using the official regulatory sealing plier, rendering the housing physically tamper-evident.
+7. **Official CWG Corporate Security Sealing:** Affix the CWG Plc tamper-evident holographic warranty security seal across the housing split-line, guaranteeing factory warranty authenticity and preventing unauthorized opening.
+8. **Documentation Inclusion:** Insert the approved user manual, installation guidelines, STS recharge token quick-start sheet, and terminal connection diagram into the protective product carton.
+9. **Carton Boxing:** Safely position the sealed meter into its protective foam-cushioned cardboard packaging box, folding and sealing the box tabs securely.
+10. **Packaging Ledger Reconciliation:** Record the completed meter serial number, NEMSA seal serial number, CWG seal serial number, carton barcode, and packing date into the **Packaging Records Ledger**.
+11. **Warehouse Transfer & Dispatch Handover:** Stack the packaged cartons onto wooden pallets in standardized batch quantities and physically deliver them to the finished-goods warehouse/store for dispatch to distribution companies (DisCos).
+
+`
++-----------------------------------------------------------------------+
+|  [SPACE RESERVED FOR FIGURE 3.4C]                                     |
+|                                                                       |
+|  Figure 3.4C: Meter Packaging Station, NEMSA Seals, and Store Delivery|
+|  Description: Final packaging line showing finished smart meters with  |
+|  affixed QC and NEMSA regulatory certification stickers, wire security |
+|  seals, user manuals, and boxed units ready for warehouse delivery.    |
++-----------------------------------------------------------------------+
+`
 
 ---
 

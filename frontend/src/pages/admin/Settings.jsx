@@ -60,22 +60,22 @@ export default function Settings({ user, onSessionExpired }) {
               <button
                 key={tab.id}
                 type="button"
-                className={`settings-nav-item ${isActive ? 'active' : ''}`}
+                className={`settings-nav-card ${isActive ? 'settings-nav-card--active' : ''}`}
                 onClick={() => setActiveTab(tab.id)}
               >
-                <span className="settings-nav-icon">
+                <span className="settings-nav-card-icon">
                   <Icon name={tab.icon} size={18} />
                 </span>
-                <div className="settings-nav-text">
-                  <div className="settings-nav-title">{tab.title}</div>
-                  <div className="settings-nav-sub">{tab.subtitle}</div>
+                <div className="settings-nav-card-text">
+                  <div className="settings-nav-card-title">{tab.title}</div>
+                  <div className="settings-nav-card-sub">{tab.subtitle}</div>
                 </div>
               </button>
             );
           })}
         </aside>
 
-        <main className="settings-main-area">
+        <main className="settings-main-content">
           {activeTab === 'profile' && (
             <StoreProfileTab profile={profile} onChange={handleProfileChange} />
           )}
