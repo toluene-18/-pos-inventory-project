@@ -1,5 +1,5 @@
-# Build comprehensive SIWES logbook data
-import os, subprocess, datetime
+# Comprehensive SIWES Logbook Generator with explicit "WORK DONE DURING THE WEEK" section
+import os, subprocess
 
 weeks_data = [
     # METERING REMAINDER WEEKS
@@ -11,6 +11,7 @@ weeks_data = [
         "badge_class": "badge-metering",
         "badge_text": "Metering & Energy Engineering",
         "job_done": "Mechanical Meter Coupling, Component Seating & Real-Time Clock Battery Integration",
+        "work_done_summary": "During this week in the Metering Assembly Station, I carried out mechanical coupling of 240 single-phase smart prepaid electricity meters. The core work done encompassed matching physical outer casing serials with electronic PCB barcodes, installing long-life 3.6V Li-SOCl2 RTC lithium backup batteries to safeguard non-volatile memory during power outages, seating 4G/GPRS IoT cellular communication daughterboards onto the motherboards, inspecting all internal terminal shunts, tightening casing screws using electric torque screwdrivers calibrated to 1.2 Nm to guarantee IP54 ingress protection against dust and moisture, and documenting the batch in the physical Coupling Records Ledger.",
         "days": [
             ("Monday", "17/08/2026", "PCB & Enclosure Matching", "Conducted 100% serial integrity audit matching front cover nameplate serials with electronic PCB barcodes. Inspected internal current transformer terminations."),
             ("Tuesday", "18/08/2026", "Internal Battery & LCD Integration", "Installed long-life 3.6V Li-SOCl2 lithium backup batteries into PCB retention slots for real-time clock (RTC) retention. Mounted front intermediate housing ensuring clear LCD aperture seating."),
@@ -35,6 +36,7 @@ weeks_data = [
         "badge_class": "badge-metering",
         "badge_text": "Metering & Energy Engineering",
         "job_done": "ESD Grounding Setup, Mains Energization, Keypad Verification & Factory-to-Deployment Mode Switching",
+        "work_done_summary": "During this week in the Post-Test Inspection Station, I carried out functional testing and operational mode parameterization of coupled smart meters. Work done included setting up anti-static Electrostatic Discharge (ESD) wrist straps grounded to the common copper earth bar (< 1 MOhm) to prevent gate oxide puncture on CMOS/MCU chips, energizing meters at 230V AC / 50Hz nominal mains, sequentially testing all tactile keys on the 12-key elastomer keypad with diagnostic shortcodes (#001#, #002#, #003#), interfacing infrared optical read-heads to execute proprietary Meter Management Software (MMS) scripts that transitioned meters from Factory Mode to Deployment Mode, and generating 20-digit STS tokens to test relay disconnector tripping.",
         "days": [
             ("Monday", "24/08/2026", "ESD Workstation Grounding Setup", "Inspected ESD wrist straps, verified < 1.0 MOhm resistance path to common copper earth bar, and initiated static-safe post-test workbench procedures."),
             ("Tuesday", "25/08/2026", "Mains Energization & LCD Boot Diagnostics", "Connected coupled smart meters to 230V AC / 50Hz bench power supply; checked power-on self-test (POST) sequences, LCD segment illumination, and relay click."),
@@ -59,6 +61,7 @@ weeks_data = [
         "badge_class": "badge-metering",
         "badge_text": "Metering & Energy Engineering",
         "job_done": "NEMSA Regulatory Compliance Audit, Tamper-Evident Wire Sealing & Palletized Warehouse Transfer",
+        "work_done_summary": "During this week at the Final Packaging & Regulatory Certification Station, I performed statutory quality compliance checks and anti-tamper sealing on 300 tested meters. Work done included conducting visual surface audits and cleaning grease/fingerprint residue with anti-static solution, affixing internal QC Pass stickers over enclosure joints, applying statutory Nigerian Electricity Management Services Agency (NEMSA) regulatory certification labels pursuant to the NEMSA Act 2015, threading stainless steel sealing wire through enclosure sealing lugs, crimping serialized poly-carbonate NEMSA seals, affixing CWG holographic warranty security seals, boxing units with user manuals, and reconciling packaging ledgers.",
         "days": [
             ("Monday", "31/08/2026", "Finished Cosmetic & Housing Audit", "Inspected 300 tested meters for cosmetic flaws, stripped terminal screws, or missing terminal cover screws. Cleaned surface grease using anti-static fluid."),
             ("Tuesday", "01/09/2026", "QC Pass & Statutory NEMSA Sticker Application", "Affixed internal QC Pass guarantee stickers over enclosure seam joints; applied official statutory NEMSA (Nigerian Electricity Management Services Agency Act 2015) compliance labels."),
@@ -88,6 +91,7 @@ weeks_data = [
         "badge_class": "badge-itsupport",
         "badge_text": "IT Support & Proximity",
         "job_done": "IT Proximity Helpdesk Orientation, Ticketing SLA Review & POS Retail Suite Architecture Kickoff",
+        "work_done_summary": "During this week in the IT Support & Proximity Unit, I commenced enterprise helpdesk operations and software project planning. Work done included participating in orientation on the IT Service Management (ITSM) ticketing tool and SLA escalation matrices, resolving 8 corporate desktop support tickets (printer spooler crashes, Microsoft 365 Outlook profile synching, and local IP mapping), participating in the software architecture kickoff meeting for the CWG Retail Suite (Point of Sale & Inventory), drafting the relational Entity-Relationship Diagram (ERD), scaffolding the Laravel 12 backend with Sanctum authentication, and setting up the Vite-powered React frontend repository on GitHub.",
         "days": [
             ("Monday", "14/09/2026", "Proximity Unit Orientation & ITSM Workflow", "Reported to IT Support & Proximity Unit. Received orientation on enterprise IT service desk operations, SLA priority matrices (Severity 1 to 4), and incident ticketing platforms."),
             ("Tuesday", "15/09/2026", "Corporate User Incident Handling", "Resolved 8 Level-1 user tickets: diagnosed corporate printer spooler crashes, configured local network shared printers, and assisted staff with Microsoft 365 Outlook profile sync."),
@@ -113,6 +117,7 @@ weeks_data = [
         "badge_class": "badge-software",
         "badge_text": "Software & IT Systems",
         "job_done": "Enterprise VPN/MFA Support, Database Schema Normalization & Secure RESTful Authentication APIs",
+        "work_done_summary": "During this week across IT Proximity and Software Development, I resolved enterprise user identity issues and developed core backend APIs. Work done included configuring secure remote VPN tunnels (Zscaler Private Access and Cisco AnyConnect) for remote executives, enrolling multi-factor authentication (MFA) devices via Microsoft Authenticator, designing and running normalized database migrations in Third Normal Form (3NF) for users, products, sales, and line items, writing tokenized authentication controllers using Bcrypt password hashing, and disassembling two corporate laptops to upgrade failing mechanical HDDs to high-speed 512GB M.2 NVMe SSDs.",
         "days": [
             ("Monday", "21/09/2026", "Remote VPN & MFA Configuration", "Assisted corporate staff with Zscaler / Cisco AnyConnect secure remote VPN configurations and registered Microsoft Authenticator Multi-Factor Authentication (MFA) tokens."),
             ("Tuesday", "22/09/2026", "Database Migrations & Relational Schema (3NF)", "Designed and executed Laravel migrations in 3rd Normal Form: `users`, `products`, `sales`, `sale_items`, and `stock_adjustments` tables with foreign key constraints."),
@@ -143,6 +148,7 @@ weeks_data = [
         "badge_class": "badge-itsupport",
         "badge_text": "IT Support & Networking",
         "job_done": "Structured Cabling, Patch Panel Termination & Network Continuity Diagnostics",
+        "work_done_summary": "During this week in the Network Infrastructure & Data Center Unit, I carried out structured cabling and local area network diagnostics. Work done included performing an audit of server rack patch panels on the 2nd floor, tracing unmanaged drop cables, terminating 12 new solid-copper Cat6 cables into 24-port patch panels following the TIA/EIA-568B pinout standard, conducting cable continuity and near-end crosstalk tests with an electronic wire tester, assisting Senior Engineers with switch port patching across departmental VLANs (VLAN 10 Admin, VLAN 20 Engineering), and deploying Aruba enterprise Wi-Fi access points to improve coverage in executive meeting spaces.",
         "days": [
             ("Monday", "28/09/2026", "Data Center Patch Panel Audit", "Audited server rack patch panels on the 2nd floor data room; re-labeled Cat6a drop cables and documented port assignments to Cisco Catalyst 2960 switches."),
             ("Tuesday", "29/09/2026", "Cat6 Structured Cabling & RJ-45 Crimping", "Terminated 12 new Cat6 solid copper patch cables according to the TIA/EIA-568B standard; verified pinout continuity, wire-map, and near-end crosstalk with digital cable tester."),
@@ -166,6 +172,7 @@ Pin 5: White/Blue   | Pin 6: Green       | Pin 7: White/Brown | Pin 8: Brown
         "badge_class": "badge-itsupport",
         "badge_text": "Active Directory Administration",
         "job_done": "Active Directory Domain Services, User Provisioning, OUs & Group Policy Object (GPO) Deployment",
+        "work_done_summary": "During this week in Systems Administration, I performed user identity management and policy enforcement on Windows Server 2022 Active Directory Domain Services (AD DS). Work done included provisioning new employee accounts in Active Directory Users and Computers (ADUC), categorizing user objects into departmental Organizational Units (OUs), creating and linking Group Policy Objects (GPOs) for screen timeouts, minimum password complexity (12 characters), and USB mass storage write protection, joining 6 corporate Dell laptops to the `cwg.local` domain, verifying DNS and Kerberos authentication tickets, and executing PowerShell scripts to audit inactive user accounts.",
         "days": [
             ("Monday", "05/10/2026", "Active Directory User Provisioning", "Created new corporate user accounts in Windows Server 2022 Active Directory Users and Computers (ADUC); assigned complex password policies and primary email aliases."),
             ("Tuesday", "06/10/2026", "Organizational Units (OUs) & Departmental Groups", "Structured directory tree hierarchy: segregated user objects into nested OUs (`CWG-Staff`, `Metering-Dept`, `IT-Operations`, `Finance`); assigned security group memberships."),
@@ -190,6 +197,7 @@ Pin 5: White/Blue   | Pin 6: Green       | Pin 7: White/Brown | Pin 8: Brown
         "badge_class": "badge-software",
         "badge_text": "Software Engineering",
         "job_done": "Product Inventory Normalization, Stock Adjustments Engine & Role-Based Middleware Security",
+        "work_done_summary": "During this week in the Software Engineering team, I built the inventory tracking and access control layers of the CWG Retail Suite. Work done included refactoring ProductController to support Route Model Binding and soft deactivation via `is_active` flags, decoupling stock quantities into an independent `inventories` table, developing `StockAdjustmentController.php` with audit reason tagging (`restock`, `damaged`, `audit`), implementing atomic database transactions to guarantee stock consistency during concurrent operations, authoring PHPUnit automated feature tests, and writing role-based middleware that strictly bars cashiers from viewing cost prices, supplier margins, and administrative settings.",
         "days": [
             ("Monday", "12/10/2026", "Product Deactivation & Route Model Binding", "Refactored `ProductController` to use Laravel Route Model Binding; added soft-delete `is_active` flag to archive products safely without breaking historical sales data."),
             ("Tuesday", "13/10/2026", "Decoupled Inventories Table Migration", "Separated stock quantity into dedicated `inventories` table with 1-to-1 product relationship; migrated existing product inventory data seamlessly."),
@@ -213,6 +221,7 @@ Pin 5: White/Blue   | Pin 6: Green       | Pin 7: White/Brown | Pin 8: Brown
         "badge_class": "badge-software",
         "badge_text": "Software Engineering",
         "job_done": "POS Checkout Interface, Barcode SKU Search, 80mm Thermal Receipt Generator & Sales History",
+        "work_done_summary": "During this week in Software Development, I focused on client-side checkout and peripheral hardware integration. Work done included engineering the Point of Sale (POS) user interface in React with real-time barcode scanning, search auto-complete, and cart quantity capping, building an atomic cash tender dialog with automated change calculation, styling an 80mm browser-native thermal receipt print layout using CSS `@media print` rules for thermal printers, creating a paginated Sales History table with multi-parameter date range filters, seeding 14 authentic Nigerian retail products, and building an inventory Restock intake station.",
         "days": [
             ("Monday", "19/10/2026", "POS Interface Grid & Real-Time Cart State", "Built React POS component with live category filtering, rapid barcode/SKU search, responsive product grid, and stock-capped cart line item management."),
             ("Tuesday", "20/10/2026", "Atomic Cash Checkout & Change Calculator", "Engineered checkout settlement modal supporting Cash, Card, and Bank Transfer tender options with automated change calculation and transactional concurrency locking."),
@@ -249,6 +258,7 @@ Pin 5: White/Blue   | Pin 6: Green       | Pin 7: White/Brown | Pin 8: Brown
         "badge_class": "badge-software",
         "badge_text": "Software Engineering",
         "job_done": "Financial Reports Engine, SQL B-Tree Indexing, React-Toastify Popups & Activity Audits",
+        "work_done_summary": "During this week in Software Engineering, I executed critical database query optimizations and built enterprise analytical reporting tools. Work done included eliminating sequential N+1 query loops across sales lookups, applying compound B-Tree indexes on `sales(created_at, payment_method)` and projecting specific SQL columns to dramatically accelerate database response, developing the 5-tab Reports module (Financial Sales, Inventory Valuation, Stock Health, Product Velocity, and User Staff Audits) with CSV and PDF export, organizing 30-day adaptive sales charts, integrating React-Toastify notifications, and incorporating real-world metering work instructions into the IT technical report.",
         "days": [
             ("Monday", "26/10/2026", "Database Performance & SQL B-Tree Indexing", "Eliminated sequential N+1 query loops; added compound B-Tree indexes on `sales(created_at, payment_method)` and projected columns at SQL level for instant response times."),
             ("Tuesday", "27/10/2026", "Financial Analysis Layout & 5 Report Subtabs", "Constructed comprehensive Reports module: Financial Sales, Inventory Valuation, Stock Level Deficits, Product Velocity, and User Staff Audits with CSV/PDF export."),
@@ -274,6 +284,7 @@ AFTER B-TREE INDEXING:
         "badge_class": "badge-itsupport",
         "badge_text": "IT Support & Systems Deployment",
         "job_done": "Laptop Hardware Staging, Windows OS Provisioning (.ppkg), Essential Software Deployment & Active Directory Domain Integration",
+        "work_done_summary": "During this week in the IT Support & Systems Staging Lab, I conducted complete lifecycle preparation and deployment of enterprise laptop hardware for onboarding staff. Work done included unboxing and inspecting 5 Dell Latitude 5440 laptops, configuring UEFI BIOS settings (Secure Boot, TPM 2.0, battery management), performing clean Windows 11 Enterprise installation over GPT partition tables, executing automated staging via Windows Configuration Designer provisioning packages (.ppkg) that injected Wi-Fi profiles, root certificates, and OEM drivers, deploying the enterprise application stack (Microsoft 365, Zscaler VPN, CrowdStrike Falcon), joining devices to the `cwg.local` Active Directory domain, escrowing BitLocker keys to AD, and completing employee handover.",
         "days": [
             ("Monday", "02/11/2026", "New Laptop Unboxing & Hardware POST Verification", "Unboxed batch of 5 brand new corporate enterprise laptops (Dell Latitude 5440); verified battery health, verified UEFI BIOS firmware settings, secure boot, and TPM 2.0 status."),
             ("Tuesday", "03/11/2026", "Windows 11 Enterprise Clean OS Installation", "Configured UEFI bootable flash drives with official Windows 11 Enterprise media; partitioned NVMe SSD storage (GPT scheme) and completed OS base installation."),
@@ -299,9 +310,6 @@ AFTER B-TREE INDEXING:
     }
 ]
 
-print(f"Total weeks prepared: {len(weeks_data)}")
-
-# HTML Generation function
 def generate_html(weeks):
     pages_html = []
     
@@ -350,17 +358,22 @@ def generate_html(weeks):
             </div>
           </div>
 
-          <div class="weekly-summary-box">
-            <div class="weekly-summary-title">Project / Main Job Assigned During the Week</div>
-            <div class="weekly-summary-desc"><strong>{w["job_done"]}</strong></div>
+          <div class="weekly-project-box">
+            <div class="box-tag">PROJECT / MAIN JOB ASSIGNED DURING THE WEEK:</div>
+            <div class="box-heading">{w["job_done"]}</div>
+          </div>
+
+          <div class="work-done-box">
+            <div class="box-tag">WORK DONE DURING THE WEEK:</div>
+            <div class="work-done-text">{w["work_done_summary"]}</div>
           </div>
 
           <table class="logbook-table">
             <thead>
               <tr>
-                <th style="width: 15%;">Day & Date</th>
+                <th style="width: 14%;">Day & Date</th>
                 <th style="width: 25%;">Nature of Work Done</th>
-                <th style="width: 60%;">Detailed Technical Activities & Operations Performed</th>
+                <th style="width: 61%;">Daily Detailed Technical Activities & Operations Performed</th>
               </tr>
             </thead>
             <tbody>
@@ -405,21 +418,21 @@ def generate_html(weeks):
 <style>
   @page {{
     size: A4 portrait;
-    margin: 10mm 12mm 12mm 12mm;
+    margin: 8mm 11mm 10mm 11mm;
   }}
   * {{ box-sizing: border-box; }}
   body {{
     font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
     color: #1e293b;
     background: #ffffff;
-    font-size: 10px;
-    line-height: 1.4;
+    font-size: 9.5px;
+    line-height: 1.35;
     margin: 0;
     padding: 0;
   }}
   .logbook-page {{
     page-break-after: always;
-    padding-bottom: 4px;
+    padding-bottom: 2px;
     height: 100%;
   }}
   .logbook-page:last-child {{
@@ -427,27 +440,27 @@ def generate_html(weeks):
   }}
   .doc-header {{
     border-bottom: 2px solid #059669;
-    padding-bottom: 6px;
-    margin-bottom: 8px;
+    padding-bottom: 4px;
+    margin-bottom: 6px;
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
   }}
   .doc-title-main {{
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 800;
     color: #065f46;
     letter-spacing: -0.01em;
     text-transform: uppercase;
   }}
   .doc-title-sub {{
-    font-size: 10px;
+    font-size: 9.5px;
     color: #475569;
     font-weight: 600;
   }}
   .doc-header-meta {{
     text-align: right;
-    font-size: 9px;
+    font-size: 8.5px;
     color: #64748b;
   }}
   .doc-header-meta strong {{
@@ -455,18 +468,18 @@ def generate_html(weeks):
   }}
   .info-bar {{
     display: grid;
-    grid-template-columns: 1.8fr 1.4fr 1.4fr 1fr;
-    gap: 8px;
+    grid-template-columns: 1.8fr 1.4fr 1.4fr 0.9fr;
+    gap: 6px;
     background: #f8fafc;
     border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    padding: 6px 10px;
-    margin-bottom: 8px;
-    font-size: 9.5px;
+    border-radius: 5px;
+    padding: 5px 8px;
+    margin-bottom: 6px;
+    font-size: 9px;
   }}
   .info-item span {{
     display: block;
-    font-size: 8px;
+    font-size: 7.5px;
     font-weight: 700;
     text-transform: uppercase;
     color: #64748b;
@@ -474,13 +487,13 @@ def generate_html(weeks):
   }}
   .info-item strong {{
     color: #0f172a;
-    font-size: 10px;
+    font-size: 9.5px;
   }}
   .section-badge {{
     display: inline-block;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 8.5px;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 8px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.03em;
@@ -501,52 +514,71 @@ def generate_html(weeks):
     border: 1px solid #a7f3d0;
   }}
 
-  /* Weekly Job Overview Box */
-  .weekly-summary-box {{
+  /* Weekly Project Box */
+  .weekly-project-box {{
     background: #ffffff;
     border: 1px solid #cbd5e1;
-    border-left: 4px solid #059669;
+    border-left: 3.5px solid #059669;
     border-radius: 4px;
-    padding: 6px 10px;
-    margin-bottom: 8px;
+    padding: 5px 8px;
+    margin-bottom: 5px;
   }}
-  .weekly-summary-title {{
-    font-size: 9px;
+  .box-tag {{
+    font-size: 8px;
     font-weight: 800;
     color: #065f46;
     text-transform: uppercase;
-    margin-bottom: 2px;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.03em;
+    margin-bottom: 1px;
   }}
-  .weekly-summary-desc {{
+  .box-heading {{
     font-size: 9.5px;
-    color: #334155;
-    margin: 0;
+    font-weight: 700;
+    color: #0f172a;
   }}
 
-  /* Days Table */
+  /* Explicit WORK DONE DURING THE WEEK Box */
+  .work-done-box {{
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-left: 3.5px solid #16a34a;
+    border-radius: 4px;
+    padding: 5px 8px;
+    margin-bottom: 6px;
+  }}
+  .work-done-box .box-tag {{
+    color: #15803d;
+  }}
+  .work-done-text {{
+    font-size: 9px;
+    color: #166534;
+    line-height: 1.35;
+    text-align: justify;
+  }}
+
+  /* Daily Table */
   table.logbook-table {{
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 8px;
-    font-size: 9.5px;
+    margin-bottom: 6px;
+    font-size: 9px;
   }}
   table.logbook-table th {{
     background: #f1f5f9;
     color: #334155;
     text-align: left;
-    padding: 5px 8px;
+    padding: 4px 6px;
     font-weight: 700;
-    font-size: 8.5px;
+    font-size: 8px;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     border: 1px solid #cbd5e1;
   }}
   table.logbook-table td {{
-    padding: 5px 8px;
+    padding: 4px 6px;
     vertical-align: top;
     border: 1px solid #cbd5e1;
-    line-height: 1.35;
+    line-height: 1.3;
   }}
   table.logbook-table tr:nth-child(even) td {{
     background: #f8fafc;
@@ -560,7 +592,7 @@ def generate_html(weeks):
     display: block;
     font-weight: 500;
     color: #64748b;
-    font-size: 8.5px;
+    font-size: 8px;
   }}
   .col-nature {{
     font-weight: 600;
@@ -574,15 +606,15 @@ def generate_html(weeks):
   .sketch-box {{
     border: 1px dashed #94a3b8;
     background: #f8fafc;
-    border-radius: 5px;
-    padding: 6px 10px;
-    margin-bottom: 8px;
+    border-radius: 4px;
+    padding: 4px 8px;
+    margin-bottom: 6px;
   }}
   .sketch-header {{
-    margin-bottom: 3px;
+    margin-bottom: 2px;
   }}
   .sketch-title {{
-    font-size: 9px;
+    font-size: 8px;
     font-weight: 700;
     color: #475569;
     text-transform: uppercase;
@@ -590,14 +622,14 @@ def generate_html(weeks):
   }}
   .sketch-content {{
     font-family: 'Consolas', 'Courier New', monospace;
-    font-size: 8.5px;
-    line-height: 1.3;
+    font-size: 8px;
+    line-height: 1.25;
     color: #0f172a;
     white-space: pre-wrap;
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 4px;
-    padding: 5px 8px;
+    border-radius: 3px;
+    padding: 4px 6px;
     margin: 0;
   }}
 
@@ -605,35 +637,35 @@ def generate_html(weeks):
   .footer-signoff {{
     display: grid;
     grid-template-columns: 2.2fr 1fr 1fr;
-    gap: 8px;
+    gap: 6px;
     background: #f8fafc;
     border: 1px solid #cbd5e1;
-    border-radius: 5px;
-    padding: 6px 8px;
-    font-size: 9px;
+    border-radius: 4px;
+    padding: 5px 8px;
+    font-size: 8.5px;
   }}
   .signoff-box-title {{
-    font-size: 8px;
+    font-size: 7.5px;
     font-weight: 700;
     text-transform: uppercase;
     color: #64748b;
-    margin-bottom: 2px;
+    margin-bottom: 1px;
   }}
   .student-comment-text {{
     color: #1e293b;
     font-style: italic;
-    line-height: 1.3;
+    line-height: 1.25;
   }}
   .signature-line {{
-    margin-top: 10px;
+    margin-top: 8px;
     border-bottom: 1px dotted #94a3b8;
-    height: 10px;
+    height: 8px;
   }}
   .signature-caption {{
-    font-size: 8px;
+    font-size: 7.5px;
     color: #64748b;
     text-align: center;
-    margin-top: 2px;
+    margin-top: 1px;
   }}
 </style>
 </head>
@@ -648,9 +680,8 @@ html_output = generate_html(weeks_data)
 with open('SIWES_TECHNICAL_LOGBOOK.html', 'w', encoding='utf-8') as f:
     f.write(html_output)
 
-print("Generated SIWES_TECHNICAL_LOGBOOK.html successfully.")
+print("Generated SIWES_TECHNICAL_LOGBOOK.html with explicit WORK DONE DURING THE WEEK successfully.")
 
-# Run Microsoft Edge to generate PDF
 edge_path = r'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe'
 html_abs = os.path.abspath('SIWES_TECHNICAL_LOGBOOK.html')
 pdf_abs = os.path.abspath('SIWES_TECHNICAL_LOGBOOK_REPORT.pdf')
@@ -667,6 +698,6 @@ cmd = [
 res = subprocess.run(cmd, capture_output=True, text=True)
 print(f"Edge conversion exit code: {res.returncode}")
 if os.path.exists(pdf_abs):
-    print(f"SUCCESS! Created PDF at {pdf_abs} with size {os.path.getsize(pdf_abs)} bytes.")
+    print(f"SUCCESS! Updated PDF at {pdf_abs} with size {os.path.getsize(pdf_abs)} bytes.")
 else:
     print("PDF generation failed.")
