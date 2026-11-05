@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CWG Plc - SIWES Technical Logbook (Weeks 11 to 21)</title>
+<style>
+  @page {
+    size: A4 portrait;
+    margin: 10mm 12mm 12mm 12mm;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+    color: #1e293b;
+    background: #ffffff;
+    font-size: 10px;
+    line-height: 1.4;
+    margin: 0;
+    padding: 0;
+  }
+  .logbook-page {
+    page-break-after: always;
+    padding-bottom: 4px;
+    height: 100%;
+  }
+  .logbook-page:last-child {
+    page-break-after: avoid;
+  }
+  .doc-header {
+    border-bottom: 2px solid #059669;
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .doc-title-main {
+    font-size: 13px;
+    font-weight: 800;
+    color: #065f46;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+  .doc-title-sub {
+    font-size: 10px;
+    color: #475569;
+    font-weight: 600;
+  }
+  .doc-header-meta {
+    text-align: right;
+    font-size: 9px;
+    color: #64748b;
+  }
+  .doc-header-meta strong {
+    color: #0f172a;
+  }
+  .info-bar {
+    display: grid;
+    grid-template-columns: 1.8fr 1.4fr 1.4fr 1fr;
+    gap: 8px;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin-bottom: 8px;
+    font-size: 9.5px;
+  }
+  .info-item span {
+    display: block;
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #64748b;
+    letter-spacing: 0.04em;
+  }
+  .info-item strong {
+    color: #0f172a;
+    font-size: 10px;
+  }
+  .section-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 8.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .badge-metering {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+  }
+  .badge-itsupport {
+    background: #dbeafe;
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+  }
+  .badge-software {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+  }
+
+  /* Weekly Job Overview Box */
+  .weekly-summary-box {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-left: 4px solid #059669;
+    border-radius: 4px;
+    padding: 6px 10px;
+    margin-bottom: 8px;
+  }
+  .weekly-summary-title {
+    font-size: 9px;
+    font-weight: 800;
+    color: #065f46;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+    letter-spacing: 0.02em;
+  }
+  .weekly-summary-desc {
+    font-size: 9.5px;
+    color: #334155;
+    margin: 0;
+  }
+
+  /* Days Table */
+  table.logbook-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 8px;
+    font-size: 9.5px;
+  }
+  table.logbook-table th {
+    background: #f1f5f9;
+    color: #334155;
+    text-align: left;
+    padding: 5px 8px;
+    font-weight: 700;
+    font-size: 8.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border: 1px solid #cbd5e1;
+  }
+  table.logbook-table td {
+    padding: 5px 8px;
+    vertical-align: top;
+    border: 1px solid #cbd5e1;
+    line-height: 1.35;
+  }
+  table.logbook-table tr:nth-child(even) td {
+    background: #f8fafc;
+  }
+  .col-day {
+    font-weight: 700;
+    color: #0f172a;
+    white-space: nowrap;
+  }
+  .col-day small {
+    display: block;
+    font-weight: 500;
+    color: #64748b;
+    font-size: 8.5px;
+  }
+  .col-nature {
+    font-weight: 600;
+    color: #065f46;
+  }
+  .col-details {
+    color: #1e293b;
+  }
+
+  /* Sketch / Diagram Box */
+  .sketch-box {
+    border: 1px dashed #94a3b8;
+    background: #f8fafc;
+    border-radius: 5px;
+    padding: 6px 10px;
+    margin-bottom: 8px;
+  }
+  .sketch-header {
+    margin-bottom: 3px;
+  }
+  .sketch-title {
+    font-size: 9px;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .sketch-content {
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 8.5px;
+    line-height: 1.3;
+    color: #0f172a;
+    white-space: pre-wrap;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 5px 8px;
+    margin: 0;
+  }
+
+  /* Bottom Comment & Signoff Box */
+  .footer-signoff {
+    display: grid;
+    grid-template-columns: 2.2fr 1fr 1fr;
+    gap: 8px;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+    padding: 6px 8px;
+    font-size: 9px;
+  }
+  .signoff-box-title {
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #64748b;
+    margin-bottom: 2px;
+  }
+  .student-comment-text {
+    color: #1e293b;
+    font-style: italic;
+    line-height: 1.3;
+  }
+  .signature-line {
+    margin-top: 10px;
+    border-bottom: 1px dotted #94a3b8;
+    height: 10px;
+  }
+  .signature-caption {
+    font-size: 8px;
+    color: #64748b;
+    text-align: center;
+    margin-top: 2px;
+  }
+</style>
+</head>
+<body>
+
+        <div class="logbook-page">
+          <div class="doc-header">
+            <div>
+              <div class="doc-title-main">COMPUTER WAREHOUSE GROUP (CWG) PLC</div>
+              <div class="doc-title-sub">STUDENT INDUSTRIAL WORK EXPERIENCE SCHEME (SIWES) — TECHNICAL LOGBOOK</div>
+            </div>
+            <div class="doc-header-meta">
+              <strong>TRAINING RECORD</strong><br>
+              CWG Infrastructure & Engineering
+            </div>
+          </div>
+
+          <div class="info-bar">
+            <div class="info-item">
+              <span>Section / Department</span>
+              <strong>Metering Department</strong>
+            </div>
+            <div class="info-item">
+              <span>Operational Unit</span>
+              <strong><span class="section-badge badge-metering">Metering & Energy Engineering</span></strong>
+            </div>
+            <div class="info-item">
+              <span>Period of Training</span>
+              <strong>17th August 2026 – 21st August 2026</strong>
+            </div>
+            <div class="info-item">
+              <span>Logbook Week</span>
+              <strong style="color: #059669; font-size: 13px;">Week 11</strong>
+            </div>
+          </div>
+
+          <div class="weekly-summary-box">
+            <div class="weekly-summary-title">Project / Main Job Assigned During the Week</div>
+            <div class="weekly-summary-desc"><strong>Mechanical Meter Coupling, Component Seating & Real-Time Clock Battery Integration</strong></div>
+          </div>
+
+          <table class="logbook-table">
+            <thead>
+              <tr>
+                <th style="width: 15%;">Day & Date</th>
+                <th style="width: 25%;">Nature of Work Done</th>
+                <th style="width: 60%;">Detailed Technical Activities & Operations Performed</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+            <tr>
+              <td class="col-day">Monday<small>17/08/2026</small></td>
+              <td class="col-nature">PCB & Enclosure Matching</td>
+              <td class="col-details">Conducted 100% serial integrity audit matching front cover nameplate serials with electronic PCB barcodes. Inspected internal current transformer terminations.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Tuesday<small>18/08/2026</small></td>
+              <td class="col-nature">Internal Battery & LCD Integration</td>
+              <td class="col-details">Installed long-life 3.6V Li-SOCl2 lithium backup batteries into PCB retention slots for real-time clock (RTC) retention. Mounted front intermediate housing ensuring clear LCD aperture seating.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Wednesday<small>19/08/2026</small></td>
+              <td class="col-nature">GPRS / Cellular Modem Coupling</td>
+              <td class="col-details">Mounted 4G/GPRS communication daughterboards onto meter motherboards. Fastened internal whip antenna leads and validated SIM card tray retention mechanism.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Thursday<small>20/08/2026</small></td>
+              <td class="col-nature">Torque-Calibrated Screw Fastening</td>
+              <td class="col-details">Secured outer transparent casing screws using calibrated electric torque screwdrivers (1.2 Nm) to ensure IP54/IP65 ingress protection against moisture and dust.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Friday<small>21/08/2026</small></td>
+              <td class="col-nature">Coupling Ledger Batch Reconciliation</td>
+              <td class="col-details">Recorded 240 assembled meter units into the physical Coupling Records Ledger; audited serial batch ranges and routed units to the Post-Test station.</td>
+            </tr>
+            
+            </tbody>
+          </table>
+
+          <div class="sketch-box">
+            <div class="sketch-header">
+              <span class="sketch-title">Technical Diagram / Schematic / Architectural Workflow (Meter Coupling & Component Layout Hierarchy)</span>
+            </div>
+            <div class="sketch-content">[Outer Transparent Cover] --> [Front Nameplate (Serial # Audit)]
+   |--> [Sealing Gasket (IP54 Enclosure Ingress Protection)]
+   |--> [Metering PCB Motherboard + LCD Display Aperture]
+   |--> [3.6V Li-SOCl2 RTC Backup Battery] + [GPRS/4G IoT Daughterboard]
+   |--> [Bi-Stable Magnetic Disconnect Latch Relay (100A Rating)]
+   |--> [Base Terminal Housing + Micro-switch Cover Tamper Sensor]</div>
+          </div>
+
+          <div class="footer-signoff">
+            <div>
+              <div class="signoff-box-title">Student Comments & Key Learnings for the Week</div>
+              <div class="student-comment-text">"Learned the critical importance of serial number reconciliation between physical casing and PCB firmware identity to avoid utility billing discrepancies in the Meter Management System (MMS)."</div>
+            </div>
+            <div>
+              <div class="signoff-box-title">Industry Supervisor</div>
+              <div class="signature-line"></div>
+              <div class="signature-caption">Signature & Date Stamp</div>
+            </div>
+            <div>
+              <div class="signoff-box-title">Institutional Supervisor</div>
+              <div class="signature-line"></div>
+              <div class="signature-caption">SIWES Coordinator Signature</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="logbook-page">
+          <div class="doc-header">
+            <div>
+              <div class="doc-title-main">COMPUTER WAREHOUSE GROUP (CWG) PLC</div>
+              <div class="doc-title-sub">STUDENT INDUSTRIAL WORK EXPERIENCE SCHEME (SIWES) — TECHNICAL LOGBOOK</div>
+            </div>
+            <div class="doc-header-meta">
+              <strong>TRAINING RECORD</strong><br>
+              CWG Infrastructure & Engineering
+            </div>
+          </div>
+
+          <div class="info-bar">
+            <div class="info-item">
+              <span>Section / Department</span>
+              <strong>Metering Department</strong>
+            </div>
+            <div class="info-item">
+              <span>Operational Unit</span>
+              <strong><span class="section-badge badge-metering">Metering & Energy Engineering</span></strong>
+            </div>
+            <div class="info-item">
+              <span>Period of Training</span>
+              <strong>24th August 2026 – 28th August 2026</strong>
+            </div>
+            <div class="info-item">
+              <span>Logbook Week</span>
+              <strong style="color: #059669; font-size: 13px;">Week 12</strong>
+            </div>
+          </div>
+
+          <div class="weekly-summary-box">
+            <div class="weekly-summary-title">Project / Main Job Assigned During the Week</div>
+            <div class="weekly-summary-desc"><strong>ESD Grounding Setup, Mains Energization, Keypad Verification & Factory-to-Deployment Mode Switching</strong></div>
+          </div>
+
+          <table class="logbook-table">
+            <thead>
+              <tr>
+                <th style="width: 15%;">Day & Date</th>
+                <th style="width: 25%;">Nature of Work Done</th>
+                <th style="width: 60%;">Detailed Technical Activities & Operations Performed</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+            <tr>
+              <td class="col-day">Monday<small>24/08/2026</small></td>
+              <td class="col-nature">ESD Workstation Grounding Setup</td>
+              <td class="col-details">Inspected ESD wrist straps, verified < 1.0 MOhm resistance path to common copper earth bar, and initiated static-safe post-test workbench procedures.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Tuesday<small>25/08/2026</small></td>
+              <td class="col-nature">Mains Energization & LCD Boot Diagnostics</td>
+              <td class="col-details">Connected coupled smart meters to 230V AC / 50Hz bench power supply; checked power-on self-test (POST) sequences, LCD segment illumination, and relay click.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Wednesday<small>26/08/2026</small></td>
+              <td class="col-nature">Elastomer Keypad Verification</td>
+              <td class="col-details">Sequentially entered diagnostic test shortcodes (#001# for Total Energy, #002# for Instantaneous Voltage, #003# for Current) to confirm audio-tactile elastomer keypad functionality.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Thursday<small>27/08/2026</small></td>
+              <td class="col-nature">MMS Optical Firmware Parameterization</td>
+              <td class="col-details">Coupled infrared optical probes to meter front read-heads; used Meter Management Software (MMS) to switch operational mode from Factory Mode to locked Deployment Mode.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Friday<small>28/08/2026</small></td>
+              <td class="col-nature">Relay Disconnector Operation & Token Acceptance</td>
+              <td class="col-details">Generated 20-digit STS test recharge credit tokens via test generator; loaded tokens via keypad to confirm token acceptance and internal latch relay disconnector trip/close.</td>
+            </tr>
+            
+            </tbody>
+          </table>
+
+          <div class="sketch-box">
+            <div class="sketch-header">
+              <span class="sketch-title">Technical Diagram / Schematic / Architectural Workflow (Post-Test Bench Setup & MMS Mode State Machine)</span>
+            </div>
+            <div class="sketch-content">[Copper Earth Bar] <==== ESD Wrist Strap ====> [Test Technician]
+                                                   |
+[230V AC Mains Test Jig] ===> [Smart Energy Meter] <=== Optical Probe ===> [MMS Test Laptop]
+                                       |
+    State: FACTORY MODE ---------------> Transition Command -------------> State: DEPLOYMENT MODE
+    (Open Calibration Access)        (Cryptographic Authorization)       (Commercial Anti-Tamper Armed)</div>
+          </div>
+
+          <div class="footer-signoff">
+            <div>
+              <div class="signoff-box-title">Student Comments & Key Learnings for the Week</div>
+              <div class="student-comment-text">"Mastered the use of proprietary Meter Management Software (MMS) and optical read-heads. Understood how ESD grounding prevents latent dielectric breakdown in microcontroller gates."</div>
+            </div>
+            <div>
+              <div class="signoff-box-title">Industry Supervisor</div>
+              <div class="signature-line"></div>
+              <div class="signature-caption">Signature & Date Stamp</div>
+            </div>
+            <div>
+              <div class="signoff-box-title">Institutional Supervisor</div>
+              <div class="signature-line"></div>
+              <div class="signature-caption">SIWES Coordinator Signature</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="logbook-page">
+          <div class="doc-header">
+            <div>
+              <div class="doc-title-main">COMPUTER WAREHOUSE GROUP (CWG) PLC</div>
+              <div class="doc-title-sub">STUDENT INDUSTRIAL WORK EXPERIENCE SCHEME (SIWES) — TECHNICAL LOGBOOK</div>
+            </div>
+            <div class="doc-header-meta">
+              <strong>TRAINING RECORD</strong><br>
+              CWG Infrastructure & Engineering
+            </div>
+          </div>
+
+          <div class="info-bar">
+            <div class="info-item">
+              <span>Section / Department</span>
+              <strong>Metering to IT Systems Handover</strong>
+            </div>
+            <div class="info-item">
+              <span>Operational Unit</span>
+              <strong><span class="section-badge badge-metering">Metering & Energy Engineering</span></strong>
+            </div>
+            <div class="info-item">
+              <span>Period of Training</span>
+              <strong>31st August 2026 – 4th September 2026</strong>
+            </div>
+            <div class="info-item">
+              <span>Logbook Week</span>
+              <strong style="color: #059669; font-size: 13px;">Week 13</strong>
+            </div>
+          </div>
+
+          <div class="weekly-summary-box">
+            <div class="weekly-summary-title">Project / Main Job Assigned During the Week</div>
+            <div class="weekly-summary-desc"><strong>NEMSA Regulatory Compliance Audit, Tamper-Evident Wire Sealing & Palletized Warehouse Transfer</strong></div>
+          </div>
+
+          <table class="logbook-table">
+            <thead>
+              <tr>
+                <th style="width: 15%;">Day & Date</th>
+                <th style="width: 25%;">Nature of Work Done</th>
+                <th style="width: 60%;">Detailed Technical Activities & Operations Performed</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+            <tr>
+              <td class="col-day">Monday<small>31/08/2026</small></td>
+              <td class="col-nature">Finished Cosmetic & Housing Audit</td>
+              <td class="col-details">Inspected 300 tested meters for cosmetic flaws, stripped terminal screws, or missing terminal cover screws. Cleaned surface grease using anti-static fluid.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Tuesday<small>01/09/2026</small></td>
+              <td class="col-nature">QC Pass & Statutory NEMSA Sticker Application</td>
+              <td class="col-details">Affixed internal QC Pass guarantee stickers over enclosure seam joints; applied official statutory NEMSA (Nigerian Electricity Management Services Agency Act 2015) compliance labels.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Wednesday<small>02/09/2026</small></td>
+              <td class="col-nature">Serialized NEMSA Poly-carbonate Wire Sealing</td>
+              <td class="col-details">Threaded high-tensile stainless steel sealing wire through meter terminal lugs and casing lugs; crimped serialized NEMSA tamper-evident seals using calibrated sealing pliers.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Thursday<small>03/09/2026</small></td>
+              <td class="col-nature">CWG Holographic Sealing & User Manual Insertion</td>
+              <td class="col-details">Affixed CWG Plc corporate holographic tamper-evident warranty seals; inserted user operating manuals, STS quick-start guides, and wiring schematics into product cartons.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Friday<small>04/09/2026</small></td>
+              <td class="col-nature">Packaging Ledger Audit & Departmental Handover</td>
+              <td class="col-details">Completed batch ledger documentation reconciling 300 meter serials with NEMSA seal serials; transferred palletized batch to warehouse store. Prepared for rotation to IT Support.</td>
+            </tr>
+            
+            </tbody>
+          </table>
+
+          <div class="sketch-box">
+            <div class="sketch-header">
+              <span class="sketch-title">Technical Diagram / Schematic / Architectural Workflow (NEMSA & CWG Tamper-Evident Multi-Tier Sealing Scheme)</span>
+            </div>
+            <div class="sketch-content">+-----------------------------------------------------------------+
+| [Internal QC Seal] -> Validates manufacturing & optical calibration
+| [NEMSA Sticker]   -> Statutory compliance (NEMSA Act 2015 grid mandate)
+| [Wire Crimp Seal] -> Poly-carbonate serialized security wire through lugs
+| [CWG Hologram]    -> Factory warranty authentication seal over casing seam
++-----------------------------------------------------------------+
+          |=========> Protective Box Packaging with Foam Cushioning
+          |=========> User Manual + STS Token Card Enclosure
+          |=========> Palletized Warehouse Transfer for Utility Dispatch</div>
+          </div>
+
+          <div class="footer-signoff">
+            <div>
+              <div class="signoff-box-title">Student Comments & Key Learnings for the Week</div>
+              <div class="student-comment-text">"Learned the legal and technical necessity of statutory NEMSA verification for grid-connected metering equipment in Nigeria, and how multi-tier physical security seals deter meter tampering."</div>
+            </div>
+            <div>
+              <div class="signoff-box-title">Industry Supervisor</div>
+              <div class="signature-line"></div>
+              <div class="signature-caption">Signature & Date Stamp</div>
+            </div>
+            <div>
+              <div class="signoff-box-title">Institutional Supervisor</div>
+              <div class="signature-line"></div>
+              <div class="signature-caption">SIWES Coordinator Signature</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="logbook-page">
+          <div class="doc-header">
+            <div>
+              <div class="doc-title-main">COMPUTER WAREHOUSE GROUP (CWG) PLC</div>
+              <div class="doc-title-sub">STUDENT INDUSTRIAL WORK EXPERIENCE SCHEME (SIWES) — TECHNICAL LOGBOOK</div>
+            </div>
+            <div class="doc-header-meta">
+              <strong>TRAINING RECORD</strong><br>
+              CWG Infrastructure & Engineering
+            </div>
+          </div>
+
+          <div class="info-bar">
+            <div class="info-item">
+              <span>Section / Department</span>
+              <strong>Enterprise IT Infrastructure</strong>
+            </div>
+            <div class="info-item">
+              <span>Operational Unit</span>
+              <strong><span class="section-badge badge-itsupport">IT Support & Proximity</span></strong>
+            </div>
+            <div class="info-item">
+              <span>Period of Training</span>
+              <strong>14th September 2026 – 18th September 2026</strong>
+            </div>
+            <div class="info-item">
+              <span>Logbook Week</span>
+              <strong style="color: #059669; font-size: 13px;">Week 14 (IT Week 1)</strong>
+            </div>
+          </div>
+
+          <div class="weekly-summary-box">
+            <div class="weekly-summary-title">Project / Main Job Assigned During the Week</div>
+            <div class="weekly-summary-desc"><strong>IT Proximity Helpdesk Orientation, Ticketing SLA Review & POS Retail Suite Architecture Kickoff</strong></div>
+          </div>
+
+          <table class="logbook-table">
+            <thead>
+              <tr>
+                <th style="width: 15%;">Day & Date</th>
+                <th style="width: 25%;">Nature of Work Done</th>
+                <th style="width: 60%;">Detailed Technical Activities & Operations Performed</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+            <tr>
+              <td class="col-day">Monday<small>14/09/2026</small></td>
+              <td class="col-nature">Proximity Unit Orientation & ITSM Workflow</td>
+              <td class="col-details">Reported to IT Support & Proximity Unit. Received orientation on enterprise IT service desk operations, SLA priority matrices (Severity 1 to 4), and incident ticketing platforms.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Tuesday<small>15/09/2026</small></td>
+              <td class="col-nature">Corporate User Incident Handling</td>
+              <td class="col-details">Resolved 8 Level-1 user tickets: diagnosed corporate printer spooler crashes, configured local network shared printers, and assisted staff with Microsoft 365 Outlook profile sync.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Wednesday<small>16/09/2026</small></td>
+              <td class="col-nature">CWG Retail Suite Architecture & ERD Review</td>
+              <td class="col-details">Participated in software development kickoff meeting for CWG Retail Suite (POS & Inventory). Reviewed system requirements and drafted relational Entity-Relationship Diagram (ERD).</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Thursday<small>17/09/2026</small></td>
+              <td class="col-nature">Laravel 12 API Scaffold & Sanctum Setup</td>
+              <td class="col-details">Installed Laravel 12 backend framework; configured Laravel Sanctum tokenized authentication and structured database connection parameters for MySQL in .env.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Friday<small>18/09/2026</small></td>
+              <td class="col-nature">Initial React Frontend Scaffolding & Git Tracking</td>
+              <td class="col-details">Scaffolded modern React frontend client using Vite; initialized Git version control repository on GitHub with branch protection rules.</td>
+            </tr>
+            
+            </tbody>
+          </table>
+
+          <div class="sketch-box">
+            <div class="sketch-header">
+              <span class="sketch-title">Technical Diagram / Schematic / Architectural Workflow (ITSM Escalation & Client-Server System Architecture)</span>
+            </div>
+            <div class="sketch-content">[User Incident / Ticket] ---> [Level-1 Proximity Dispatch] ---> [Level-2 Desktop Support]
+                                                                          |
+                                  [CWG Retail Suite Web Client (React 19)]
+                                                  | (RESTful JSON via HTTP)
+                                  [Laravel 12 API Server + Sanctum Token Auth]
+                                                  | (Eloquent ORM)
+                                  [MySQL Relational Database Engine (Port 3306)]</div>
+          </div>
+
+          <div class="footer-signoff">
+            <div>
+              <div class="signoff-box-title">Student Comments & Key Learnings for the Week</div>
+              <div class="student-comment-text">"Gained clear perspective on enterprise helpdesk operations and corporate incident escalation. Successfully initialized the foundational full-stack decoupled architecture for CWG Retail Suite."</div>
+            </div>
+            <div>
+              <div class="signoff-box-title">Industry Supervisor</div>
+              <div class="signature-line"></div>
+              <div class="signature-caption">Signature & Date Stamp</div>
+            </div>
+            <div>
+              <div class="signoff-box-title">Institutional Supervisor</div>
+              <div class="signature-line"></div>
+              <div class="signature-caption">SIWES Coordinator Signature</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="logbook-page">
+          <div class="doc-header">
+            <div>
+              <div class="doc-title-main">COMPUTER WAREHOUSE GROUP (CWG) PLC</div>
+              <div class="doc-title-sub">STUDENT INDUSTRIAL WORK EXPERIENCE SCHEME (SIWES) — TECHNICAL LOGBOOK</div>
+            </div>
+            <div class="doc-header-meta">
+              <strong>TRAINING RECORD</strong><br>
+              CWG Infrastructure & Engineering
+            </div>
+          </div>
+
+          <div class="info-bar">
+            <div class="info-item">
+              <span>Section / Department</span>
+              <strong>Infrastructure & Systems Development</strong>
+            </div>
+            <div class="info-item">
+              <span>Operational Unit</span>
+              <strong><span class="section-badge badge-software">Software & IT Systems</span></strong>
+            </div>
+            <div class="info-item">
+              <span>Period of Training</span>
+              <strong>21st September 2026 – 25th September 2026</strong>
+            </div>
+            <div class="info-item">
+              <span>Logbook Week</span>
+              <strong style="color: #059669; font-size: 13px;">Week 15 (IT Week 2)</strong>
+            </div>
+          </div>
+
+          <div class="weekly-summary-box">
+            <div class="weekly-summary-title">Project / Main Job Assigned During the Week</div>
+            <div class="weekly-summary-desc"><strong>Enterprise VPN/MFA Support, Database Schema Normalization & Secure RESTful Authentication APIs</strong></div>
+          </div>
+
+          <table class="logbook-table">
+            <thead>
+              <tr>
+                <th style="width: 15%;">Day & Date</th>
+                <th style="width: 25%;">Nature of Work Done</th>
+                <th style="width: 60%;">Detailed Technical Activities & Operations Performed</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+            <tr>
+              <td class="col-day">Monday<small>21/09/2026</small></td>
+              <td class="col-nature">Remote VPN & MFA Configuration</td>
+              <td class="col-details">Assisted corporate staff with Zscaler / Cisco AnyConnect secure remote VPN configurations and registered Microsoft Authenticator Multi-Factor Authentication (MFA) tokens.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Tuesday<small>22/09/2026</small></td>
+              <td class="col-nature">Database Migrations & Relational Schema (3NF)</td>
+              <td class="col-details">Designed and executed Laravel migrations in 3rd Normal Form: `users`, `products`, `sales`, `sale_items`, and `stock_adjustments` tables with foreign key constraints.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Wednesday<small>23/09/2026</small></td>
+              <td class="col-nature">Sanctum Token Authentication & Breeze Integration</td>
+              <td class="col-details">Implemented user login, password hash verification (Bcrypt), and token issuance endpoints (`POST /api/login`) with role validation attributes.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Thursday<small>24/09/2026</small></td>
+              <td class="col-nature">Hardware RAM/SSD Laptop Diagnostic</td>
+              <td class="col-details">Diagnosed 2 malfunctioning corporate HP laptops: replaced faulty DDR4 SODIMM RAM modules, upgraded failing HDD to 512GB NVMe SSD, and verified BIOS hardware recognition.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Friday<small>25/09/2026</small></td>
+              <td class="col-nature">Product Creation API & Route Testing</td>
+              <td class="col-details">Developed `ProductController.php` with validation rules; created API endpoint for product catalogue management and tested JSON responses via automated test suite.</td>
+            </tr>
+            
+            </tbody>
+          </table>
+
+          <div class="sketch-box">
+            <div class="sketch-header">
+              <span class="sketch-title">Technical Diagram / Schematic / Architectural Workflow (Database Relational Schema (3NF) Topology)</span>
+            </div>
+            <div class="sketch-content">+---------------+       +------------------+       +-------------------+
+|     USERS     |<----->|      SALES       |<----->|    SALE_ITEMS     |
+| id, name,     | 1   M | id, user_id,     | 1   M | id, sale_id,      |
+| role, status  |       | total, payment   |       | product_id, qty   |
++---------------+       +------------------+       +---------+---------+
+                                                             | M
+                                                             | 1
+                                                   +---------v---------+
+                                                   |     PRODUCTS      |
+                                                   | id, sku, name,    |
+                                                   | sell_price, unit  |
+                                                   +-------------------+</div>
+          </div>
+
+          <div class="footer-signoff">
+            <div>
+              <div class="signoff-box-title">Student Comments & Key Learnings for the Week</div>
+              <div class="student-comment-text">"Understood the practical intersection between hardware maintenance (SSD/RAM staging) and software data integrity (database normalization and token security)."</div>
+            </div>
+            <div>
+              <div class="signoff-box-title">Industry Supervisor</div>
+              <div class="signature-line"></div>
+              <div class="signature-caption">Signature & Date Stamp</div>
+            </div>
+            <div>
+              <div class="signoff-box-title">Institutional Supervisor</div>
+              <div class="signature-line"></div>
+              <div class="signature-caption">SIWES Coordinator Signature</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="logbook-page">
+          <div class="doc-header">
+            <div>
+              <div class="doc-title-main">COMPUTER WAREHOUSE GROUP (CWG) PLC</div>
+              <div class="doc-title-sub">STUDENT INDUSTRIAL WORK EXPERIENCE SCHEME (SIWES) — TECHNICAL LOGBOOK</div>
+            </div>
+            <div class="doc-header-meta">
+              <strong>TRAINING RECORD</strong><br>
+              CWG Infrastructure & Engineering
+            </div>
+          </div>
+
+          <div class="info-bar">
+            <div class="info-item">
+              <span>Section / Department</span>
+              <strong>Enterprise Networking & Workstation Maintenance</strong>
+            </div>
+            <div class="info-item">
+              <span>Operational Unit</span>
+              <strong><span class="section-badge badge-itsupport">IT Support & Networking</span></strong>
+            </div>
+            <div class="info-item">
+              <span>Period of Training</span>
+              <strong>28th September 2026 – 2nd October 2026</strong>
+            </div>
+            <div class="info-item">
+              <span>Logbook Week</span>
+              <strong style="color: #059669; font-size: 13px;">Week 16 (IT Week 3)</strong>
+            </div>
+          </div>
+
+          <div class="weekly-summary-box">
+            <div class="weekly-summary-title">Project / Main Job Assigned During the Week</div>
+            <div class="weekly-summary-desc"><strong>Structured Cabling, Patch Panel Termination & Network Continuity Diagnostics</strong></div>
+          </div>
+
+          <table class="logbook-table">
+            <thead>
+              <tr>
+                <th style="width: 15%;">Day & Date</th>
+                <th style="width: 25%;">Nature of Work Done</th>
+                <th style="width: 60%;">Detailed Technical Activities & Operations Performed</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+            <tr>
+              <td class="col-day">Monday<small>28/09/2026</small></td>
+              <td class="col-nature">Data Center Patch Panel Audit</td>
+              <td class="col-details">Audited server rack patch panels on the 2nd floor data room; re-labeled Cat6a drop cables and documented port assignments to Cisco Catalyst 2960 switches.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Tuesday<small>29/09/2026</small></td>
+              <td class="col-nature">Cat6 Structured Cabling & RJ-45 Crimping</td>
+              <td class="col-details">Terminated 12 new Cat6 solid copper patch cables according to the TIA/EIA-568B standard; verified pinout continuity, wire-map, and near-end crosstalk with digital cable tester.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Wednesday<small>30/09/2026</small></td>
+              <td class="col-nature">Cisco Switch VLAN Patching & Trunking</td>
+              <td class="col-details">Assisted Senior Network Engineer in patching workstation ports to designated Departmental VLANs (VLAN 10: Admin, VLAN 20: Engineering, VLAN 30: Guest Wi-Fi).</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Thursday<small>01/10/2026</small></td>
+              <td class="col-nature">Public Holiday: National Independence Day</td>
+              <td class="col-details">Statutory National Holiday (Nigeria Independence Day). Conducted scheduled remote server health checks and UPS power status monitoring.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Friday<small>02/10/2026</small></td>
+              <td class="col-nature">Wireless Access Point (AP) Deployment</td>
+              <td class="col-details">Mounted and configured Aruba Enterprise Wi-Fi Access Points; measured RF signal coverage and resolved channel interference in the executive conference boardroom.</td>
+            </tr>
+            
+            </tbody>
+          </table>
+
+          <div class="sketch-box">
+            <div class="sketch-header">
+              <span class="sketch-title">Technical Diagram / Schematic / Architectural Workflow (TIA/EIA-568B Color Code & Enterprise Switch Patching)</span>
+            </div>
+            <div class="sketch-content">TIA/EIA-568B Pinout Standard:
+Pin 1: White/Orange | Pin 2: Orange      | Pin 3: White/Green | Pin 4: Blue
+Pin 5: White/Blue   | Pin 6: Green       | Pin 7: White/Brown | Pin 8: Brown
+                       |
+[Wall Data Outlet RJ-45] ===Cat6 Drop===> [24-Port Patch Panel] ===Patch Cord===> [Cisco Switch (VLAN Tagged)]</div>
+          </div>
+
+          <div class="footer-signoff">
+            <div>
+              <div class="signoff-box-title">Student Comments & Key Learnings for the Week</div>
+              <div class="student-comment-text">"Mastered precision RJ-45 crimping under TIA/EIA-568B. Gained real-world appreciation for structured cable dressing and cable management in high-density rack enclosures."</div>
+            </div>
+            <div>
+              <div class="signoff-box-title">Industry Supervisor</div>
+              <div class="signature-line"></div>
+              <div class="signature-caption">Signature & Date Stamp</div>
+            </div>
+            <div>
+              <div class="signoff-box-title">Institutional Supervisor</div>
+              <div class="signature-line"></div>
+              <div class="signature-caption">SIWES Coordinator Signature</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="logbook-page">
+          <div class="doc-header">
+            <div>
+              <div class="doc-title-main">COMPUTER WAREHOUSE GROUP (CWG) PLC</div>
+              <div class="doc-title-sub">STUDENT INDUSTRIAL WORK EXPERIENCE SCHEME (SIWES) — TECHNICAL LOGBOOK</div>
+            </div>
+            <div class="doc-header-meta">
+              <strong>TRAINING RECORD</strong><br>
+              CWG Infrastructure & Engineering
+            </div>
+          </div>
+
+          <div class="info-bar">
+            <div class="info-item">
+              <span>Section / Department</span>
+              <strong>Identity & Access Management</strong>
+            </div>
+            <div class="info-item">
+              <span>Operational Unit</span>
+              <strong><span class="section-badge badge-itsupport">Active Directory Administration</span></strong>
+            </div>
+            <div class="info-item">
+              <span>Period of Training</span>
+              <strong>5th October 2026 – 9th October 2026</strong>
+            </div>
+            <div class="info-item">
+              <span>Logbook Week</span>
+              <strong style="color: #059669; font-size: 13px;">Week 17 (IT Week 4)</strong>
+            </div>
+          </div>
+
+          <div class="weekly-summary-box">
+            <div class="weekly-summary-title">Project / Main Job Assigned During the Week</div>
+            <div class="weekly-summary-desc"><strong>Active Directory Domain Services, User Provisioning, OUs & Group Policy Object (GPO) Deployment</strong></div>
+          </div>
+
+          <table class="logbook-table">
+            <thead>
+              <tr>
+                <th style="width: 15%;">Day & Date</th>
+                <th style="width: 25%;">Nature of Work Done</th>
+                <th style="width: 60%;">Detailed Technical Activities & Operations Performed</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+            <tr>
+              <td class="col-day">Monday<small>05/10/2026</small></td>
+              <td class="col-nature">Active Directory User Provisioning</td>
+              <td class="col-details">Created new corporate user accounts in Windows Server 2022 Active Directory Users and Computers (ADUC); assigned complex password policies and primary email aliases.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Tuesday<small>06/10/2026</small></td>
+              <td class="col-nature">Organizational Units (OUs) & Departmental Groups</td>
+              <td class="col-details">Structured directory tree hierarchy: segregated user objects into nested OUs (`CWG-Staff`, `Metering-Dept`, `IT-Operations`, `Finance`); assigned security group memberships.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Wednesday<small>07/10/2026</small></td>
+              <td class="col-nature">Group Policy Objects (GPOs) Configuration</td>
+              <td class="col-details">Configured and linked Domain GPOs: enforced 15-minute screen lock with password, restricted USB mass storage write access, and mapped departmental network drives (`Z:\Enterprise_Data`).</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Thursday<small>08/10/2026</small></td>
+              <td class="col-nature">Domain Joining & Kerberos Trust Diagnostics</td>
+              <td class="col-details">Joined 6 new corporate Dell Latitude laptops to domain `cwg.local`; verified DNS server lookups, computer account registration, and Kerberos ticket generation.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Friday<small>09/10/2026</small></td>
+              <td class="col-nature">Audit of Inactive AD Accounts & Password Resets</td>
+              <td class="col-details">Executed PowerShell AD audit scripts to identify user accounts inactive for > 60 days; processed 14 self-service password reset requests from enterprise staff.</td>
+            </tr>
+            
+            </tbody>
+          </table>
+
+          <div class="sketch-box">
+            <div class="sketch-header">
+              <span class="sketch-title">Technical Diagram / Schematic / Architectural Workflow (Active Directory Hierarchy & GPO Inheritance Flow)</span>
+            </div>
+            <div class="sketch-content">Domain: cwg.local
+  |--> OU: Corporate Head Office
+         |--> OU: IT-Operations -------> [GPO: Admin Access & Remote Management]
+         |--> OU: Metering-Division ---> [GPO: Optical Testing Hardware Drivers]
+         |--> OU: Commercial Staff ----> [GPO: USB Write Block & Inactivity Lock]
+                 |--> Users: [staff1, staff2] (Members of 'Domain Users' + 'POS-Operators')</div>
+          </div>
+
+          <div class="footer-signoff">
+            <div>
+              <div class="signoff-box-title">Student Comments & Key Learnings for the Week</div>
+              <div class="student-comment-text">"Gained in-depth hands-on experience managing Windows Server Active Directory. Understood how GPOs standardize security policies across hundreds of networked endpoints simultaneously."</div>
+            </div>
+            <div>
+              <div class="signoff-box-title">Industry Supervisor</div>
+              <div class="signature-line"></div>
+              <div class="signature-caption">Signature & Date Stamp</div>
+            </div>
+            <div>
+              <div class="signoff-box-title">Institutional Supervisor</div>
+              <div class="signature-line"></div>
+              <div class="signature-caption">SIWES Coordinator Signature</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="logbook-page">
+          <div class="doc-header">
+            <div>
+              <div class="doc-title-main">COMPUTER WAREHOUSE GROUP (CWG) PLC</div>
+              <div class="doc-title-sub">STUDENT INDUSTRIAL WORK EXPERIENCE SCHEME (SIWES) — TECHNICAL LOGBOOK</div>
+            </div>
+            <div class="doc-header-meta">
+              <strong>TRAINING RECORD</strong><br>
+              CWG Infrastructure & Engineering
+            </div>
+          </div>
+
+          <div class="info-bar">
+            <div class="info-item">
+              <span>Section / Department</span>
+              <strong>Core POS Engine & Inventory Architecture</strong>
+            </div>
+            <div class="info-item">
+              <span>Operational Unit</span>
+              <strong><span class="section-badge badge-software">Software Engineering</span></strong>
+            </div>
+            <div class="info-item">
+              <span>Period of Training</span>
+              <strong>12th October 2026 – 16th October 2026</strong>
+            </div>
+            <div class="info-item">
+              <span>Logbook Week</span>
+              <strong style="color: #059669; font-size: 13px;">Week 18 (IT Week 5)</strong>
+            </div>
+          </div>
+
+          <div class="weekly-summary-box">
+            <div class="weekly-summary-title">Project / Main Job Assigned During the Week</div>
+            <div class="weekly-summary-desc"><strong>Product Inventory Normalization, Stock Adjustments Engine & Role-Based Middleware Security</strong></div>
+          </div>
+
+          <table class="logbook-table">
+            <thead>
+              <tr>
+                <th style="width: 15%;">Day & Date</th>
+                <th style="width: 25%;">Nature of Work Done</th>
+                <th style="width: 60%;">Detailed Technical Activities & Operations Performed</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+            <tr>
+              <td class="col-day">Monday<small>12/10/2026</small></td>
+              <td class="col-nature">Product Deactivation & Route Model Binding</td>
+              <td class="col-details">Refactored `ProductController` to use Laravel Route Model Binding; added soft-delete `is_active` flag to archive products safely without breaking historical sales data.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Tuesday<small>13/10/2026</small></td>
+              <td class="col-nature">Decoupled Inventories Table Migration</td>
+              <td class="col-details">Separated stock quantity into dedicated `inventories` table with 1-to-1 product relationship; migrated existing product inventory data seamlessly.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Wednesday<small>14/10/2026</small></td>
+              <td class="col-nature">Stock Adjustment Controller & Audit Routing</td>
+              <td class="col-details">Implemented `StockAdjustmentController.php` supporting stock audit reasons (`damaged`, `restock`, `inventory_audit`); built transaction logging for stock movements.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Thursday<small>15/10/2026</small></td>
+              <td class="col-nature">Multi-Product Automated Feature Tests</td>
+              <td class="col-details">Authored Pest/PHPUnit automated test suites (`StockAdjustmentTest.php`) verifying inventory increments, boundary conditions, and negative stock prevention.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Friday<small>16/10/2026</small></td>
+              <td class="col-nature">Role Middleware & Cashier Restrictions</td>
+              <td class="col-details">Created custom `EnsureUserHasRole` middleware; ensured cashiers are strictly barred from viewing product cost prices, margin data, or store settings.</td>
+            </tr>
+            
+            </tbody>
+          </table>
+
+          <div class="sketch-box">
+            <div class="sketch-header">
+              <span class="sketch-title">Technical Diagram / Schematic / Architectural Workflow (Inventory Audit Logging & Role Gate State Model)</span>
+            </div>
+            <div class="sketch-content">Request -> [Role Middleware Check]
+             |--> Role == Cashier  ---> Returns: sell_price, sku, name (cost_price HIDDEN)
+             |--> Role == Owner/Mgr --> Returns: cost_price, profit_margin, full_audit
+                                    |
+[Stock Adjustment] ---> [DB Transaction Lock] ---> [Adjust Inventory Qty] ---> [Log Audit Event]</div>
+          </div>
+
+          <div class="footer-signoff">
+            <div>
+              <div class="signoff-box-title">Student Comments & Key Learnings for the Week</div>
+              <div class="student-comment-text">"Learned professional test-driven development (TDD) using automated PHPUnit assertions. Successfully protected sensitive business financial metrics using server-side role middleware."</div>
+            </div>
+            <div>
+              <div class="signoff-box-title">Industry Supervisor</div>
+              <div class="signature-line"></div>
+              <div class="signature-caption">Signature & Date Stamp</div>
+            </div>
+            <div>
+              <div class="signoff-box-title">Institutional Supervisor</div>
+              <div class="signature-line"></div>
+              <div class="signature-caption">SIWES Coordinator Signature</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="logbook-page">
+          <div class="doc-header">
+            <div>
+              <div class="doc-title-main">COMPUTER WAREHOUSE GROUP (CWG) PLC</div>
+              <div class="doc-title-sub">STUDENT INDUSTRIAL WORK EXPERIENCE SCHEME (SIWES) — TECHNICAL LOGBOOK</div>
+            </div>
+            <div class="doc-header-meta">
+              <strong>TRAINING RECORD</strong><br>
+              CWG Infrastructure & Engineering
+            </div>
+          </div>
+
+          <div class="info-bar">
+            <div class="info-item">
+              <span>Section / Department</span>
+              <strong>POS Checkout, Thermal Printing & Sales Engine</strong>
+            </div>
+            <div class="info-item">
+              <span>Operational Unit</span>
+              <strong><span class="section-badge badge-software">Software Engineering</span></strong>
+            </div>
+            <div class="info-item">
+              <span>Period of Training</span>
+              <strong>19th October 2026 – 23rd October 2026</strong>
+            </div>
+            <div class="info-item">
+              <span>Logbook Week</span>
+              <strong style="color: #059669; font-size: 13px;">Week 19 (IT Week 6)</strong>
+            </div>
+          </div>
+
+          <div class="weekly-summary-box">
+            <div class="weekly-summary-title">Project / Main Job Assigned During the Week</div>
+            <div class="weekly-summary-desc"><strong>POS Checkout Interface, Barcode SKU Search, 80mm Thermal Receipt Generator & Sales History</strong></div>
+          </div>
+
+          <table class="logbook-table">
+            <thead>
+              <tr>
+                <th style="width: 15%;">Day & Date</th>
+                <th style="width: 25%;">Nature of Work Done</th>
+                <th style="width: 60%;">Detailed Technical Activities & Operations Performed</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+            <tr>
+              <td class="col-day">Monday<small>19/10/2026</small></td>
+              <td class="col-nature">POS Interface Grid & Real-Time Cart State</td>
+              <td class="col-details">Built React POS component with live category filtering, rapid barcode/SKU search, responsive product grid, and stock-capped cart line item management.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Tuesday<small>20/10/2026</small></td>
+              <td class="col-nature">Atomic Cash Checkout & Change Calculator</td>
+              <td class="col-details">Engineered checkout settlement modal supporting Cash, Card, and Bank Transfer tender options with automated change calculation and transactional concurrency locking.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Wednesday<small>21/10/2026</small></td>
+              <td class="col-nature">Browser-Native 80mm Thermal Receipt Engine</td>
+              <td class="col-details">Implemented browser-native 80mm thermal receipt print stylesheet (`@media print`); styled store header, cashier credentials, line items, VAT, and barcode footer.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Thursday<small>22/10/2026</small></td>
+              <td class="col-nature">Sales History Table & Date Range Filter Presets</td>
+              <td class="col-details">Created sales audit table with filtering by payment method and date presets (Today, 7D, 30D); integrated receipt reprint modal.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Friday<small>23/10/2026</small></td>
+              <td class="col-nature">Database Seeding & Restock Intake Station</td>
+              <td class="col-details">Seeded 14 authentic Nigerian retail products with images; developed Restock & Adjustment station with reason-tagged adjustments and visual stock badges.</td>
+            </tr>
+            
+            </tbody>
+          </table>
+
+          <div class="sketch-box">
+            <div class="sketch-header">
+              <span class="sketch-title">Technical Diagram / Schematic / Architectural Workflow (80mm POS Thermal Receipt Layout Structure)</span>
+            </div>
+            <div class="sketch-content">+---------------------------------------+
+|          CWG PROVISIONS STORE         |
+|  12 Ogui Road, Abeokuta, Ogun State   |
+|  Tel: +234 803 123 4567 | RC: 123456  |
+|---------------------------------------|
+| Receipt #: RCP-2026-0042              |
+| Date: 2026-10-21 14:32 | Cashier: John|
+|---------------------------------------|
+| Item              Qty   Price   Total |
+| MAMADOR OIL 5L      1   14,500 14,500 |
+| DANO MILK 800G      2    4,200  8,400 |
+|---------------------------------------|
+| TOTAL AMOUNT:               NGN 22,900|
+| TENDERED (CASH):            NGN 25,000|
+| CHANGE DUE:                  NGN 2,100|
+|---------------------------------------|
+| Thank you for shopping with CWG Store |
++---------------------------------------+</div>
+          </div>
+
+          <div class="footer-signoff">
+            <div>
+              <div class="signoff-box-title">Student Comments & Key Learnings for the Week</div>
+              <div class="student-comment-text">"Built an authentic, high-speed retail checkout flow with strict inventory synchronization. Designed pixel-perfect 80mm thermal receipt layouts that print without browser margins."</div>
+            </div>
+            <div>
+              <div class="signoff-box-title">Industry Supervisor</div>
+              <div class="signature-line"></div>
+              <div class="signature-caption">Signature & Date Stamp</div>
+            </div>
+            <div>
+              <div class="signoff-box-title">Institutional Supervisor</div>
+              <div class="signature-line"></div>
+              <div class="signature-caption">SIWES Coordinator Signature</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="logbook-page">
+          <div class="doc-header">
+            <div>
+              <div class="doc-title-main">COMPUTER WAREHOUSE GROUP (CWG) PLC</div>
+              <div class="doc-title-sub">STUDENT INDUSTRIAL WORK EXPERIENCE SCHEME (SIWES) — TECHNICAL LOGBOOK</div>
+            </div>
+            <div class="doc-header-meta">
+              <strong>TRAINING RECORD</strong><br>
+              CWG Infrastructure & Engineering
+            </div>
+          </div>
+
+          <div class="info-bar">
+            <div class="info-item">
+              <span>Section / Department</span>
+              <strong>Financial Reports & High-Performance Optimization</strong>
+            </div>
+            <div class="info-item">
+              <span>Operational Unit</span>
+              <strong><span class="section-badge badge-software">Software Engineering</span></strong>
+            </div>
+            <div class="info-item">
+              <span>Period of Training</span>
+              <strong>26th October 2026 – 30th October 2026</strong>
+            </div>
+            <div class="info-item">
+              <span>Logbook Week</span>
+              <strong style="color: #059669; font-size: 13px;">Week 20 (IT Week 7)</strong>
+            </div>
+          </div>
+
+          <div class="weekly-summary-box">
+            <div class="weekly-summary-title">Project / Main Job Assigned During the Week</div>
+            <div class="weekly-summary-desc"><strong>Financial Reports Engine, SQL B-Tree Indexing, React-Toastify Popups & Activity Audits</strong></div>
+          </div>
+
+          <table class="logbook-table">
+            <thead>
+              <tr>
+                <th style="width: 15%;">Day & Date</th>
+                <th style="width: 25%;">Nature of Work Done</th>
+                <th style="width: 60%;">Detailed Technical Activities & Operations Performed</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+            <tr>
+              <td class="col-day">Monday<small>26/10/2026</small></td>
+              <td class="col-nature">Database Performance & SQL B-Tree Indexing</td>
+              <td class="col-details">Eliminated sequential N+1 query loops; added compound B-Tree indexes on `sales(created_at, payment_method)` and projected columns at SQL level for instant response times.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Tuesday<small>27/10/2026</small></td>
+              <td class="col-nature">Financial Analysis Layout & 5 Report Subtabs</td>
+              <td class="col-details">Constructed comprehensive Reports module: Financial Sales, Inventory Valuation, Stock Level Deficits, Product Velocity, and User Staff Audits with CSV/PDF export.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Wednesday<small>28/10/2026</small></td>
+              <td class="col-nature">Adaptive 30-Day Sales Chart & SweetAlert2 Modals</td>
+              <td class="col-details">Organized 30-day/90-day daily sales revenue chart with collision-free interval ticks; replaced old browser alerts with modern themed dialogs and React-Toastify notifications.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Thursday<small>29/10/2026</small></td>
+              <td class="col-nature">Staff Activity Audit Log & Admin Layer Isolation</td>
+              <td class="col-details">Organized admin-only pages under dedicated `pages/admin` directory; added staff event timeline capturing sales transactions, logins, and inventory restock operations.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Friday<small>30/10/2026</small></td>
+              <td class="col-nature">IT Technical Report Metering Instructions Update</td>
+              <td class="col-details">Incorporated physical manufacturing work instructions from the metering factory (Coupling, Post-Test ESD Safety, and NEMSA Packaging) into the comprehensive IT Report.</td>
+            </tr>
+            
+            </tbody>
+          </table>
+
+          <div class="sketch-box">
+            <div class="sketch-header">
+              <span class="sketch-title">Technical Diagram / Schematic / Architectural Workflow (SQL Query Optimization: Before vs After B-Tree Indexing)</span>
+            </div>
+            <div class="sketch-content">BEFORE OPTIMIZATION:
+  Query: SELECT * FROM sales WHERE created_at BETWEEN ? AND ?
+  Execution: Full Table Scan (ALL) -> 5,000+ rows traversed -> High Server Latency (1,800ms)
+
+AFTER B-TREE INDEXING:
+  Schema: INDEX sales_created_payment_idx (created_at, payment_method)
+  Execution: Range Index Scan (range) -> Directly fetches matched pointer rows -> Sub-10ms response</div>
+          </div>
+
+          <div class="footer-signoff">
+            <div>
+              <div class="signoff-box-title">Student Comments & Key Learnings for the Week</div>
+              <div class="student-comment-text">"Learned the deep technical mechanics of database query optimization, compound B-tree index execution plans, and architectural modularity in enterprise web development."</div>
+            </div>
+            <div>
+              <div class="signoff-box-title">Industry Supervisor</div>
+              <div class="signature-line"></div>
+              <div class="signature-caption">Signature & Date Stamp</div>
+            </div>
+            <div>
+              <div class="signoff-box-title">Institutional Supervisor</div>
+              <div class="signature-line"></div>
+              <div class="signature-caption">SIWES Coordinator Signature</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="logbook-page">
+          <div class="doc-header">
+            <div>
+              <div class="doc-title-main">COMPUTER WAREHOUSE GROUP (CWG) PLC</div>
+              <div class="doc-title-sub">STUDENT INDUSTRIAL WORK EXPERIENCE SCHEME (SIWES) — TECHNICAL LOGBOOK</div>
+            </div>
+            <div class="doc-header-meta">
+              <strong>TRAINING RECORD</strong><br>
+              CWG Infrastructure & Engineering
+            </div>
+          </div>
+
+          <div class="info-bar">
+            <div class="info-item">
+              <span>Section / Department</span>
+              <strong>Enterprise IT Operations</strong>
+            </div>
+            <div class="info-item">
+              <span>Operational Unit</span>
+              <strong><span class="section-badge badge-itsupport">IT Support & Systems Deployment</span></strong>
+            </div>
+            <div class="info-item">
+              <span>Period of Training</span>
+              <strong>2nd November 2026 – 6th November 2026</strong>
+            </div>
+            <div class="info-item">
+              <span>Logbook Week</span>
+              <strong style="color: #059669; font-size: 13px;">Week 21 (IT Week 8)</strong>
+            </div>
+          </div>
+
+          <div class="weekly-summary-box">
+            <div class="weekly-summary-title">Project / Main Job Assigned During the Week</div>
+            <div class="weekly-summary-desc"><strong>Laptop Hardware Staging, Windows OS Provisioning (.ppkg), Essential Software Deployment & Active Directory Domain Integration</strong></div>
+          </div>
+
+          <table class="logbook-table">
+            <thead>
+              <tr>
+                <th style="width: 15%;">Day & Date</th>
+                <th style="width: 25%;">Nature of Work Done</th>
+                <th style="width: 60%;">Detailed Technical Activities & Operations Performed</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+            <tr>
+              <td class="col-day">Monday<small>02/11/2026</small></td>
+              <td class="col-nature">New Laptop Unboxing & Hardware POST Verification</td>
+              <td class="col-details">Unboxed batch of 5 brand new corporate enterprise laptops (Dell Latitude 5440); verified battery health, verified UEFI BIOS firmware settings, secure boot, and TPM 2.0 status.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Tuesday<small>03/11/2026</small></td>
+              <td class="col-nature">Windows 11 Enterprise Clean OS Installation</td>
+              <td class="col-details">Configured UEFI bootable flash drives with official Windows 11 Enterprise media; partitioned NVMe SSD storage (GPT scheme) and completed OS base installation.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Wednesday<small>04/11/2026</small></td>
+              <td class="col-nature">Automated Staging via Provisioning Packages (.ppkg)</td>
+              <td class="col-details">Connected corporate provisioning package (.ppkg) generated with Windows Configuration Designer: automatically injected Wi-Fi profiles, corporate root CA certificates, and OEM drivers.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Thursday<small>05/11/2026</small></td>
+              <td class="col-nature">Essential Enterprise Software & Security Suite Installation</td>
+              <td class="col-details">Installed corporate software stack: Microsoft 365 Enterprise Apps (Word, Excel, Outlook, Teams), Zscaler Private Access VPN, CrowdStrike Falcon EDR antivirus, and Google Chrome Enterprise.</td>
+            </tr>
+            
+            <tr>
+              <td class="col-day">Friday<small>06/11/2026</small></td>
+              <td class="col-nature">Domain Joining, Active Directory Staging & User Profile Handover</td>
+              <td class="col-details">Joined newly staged laptops to `cwg.local` Active Directory domain; moved computer objects into `OU=Workstations,OU=CWG-Staff`; tested domain login, BitLocker drive encryption escrow to AD, and handed over to onboarding employee.</td>
+            </tr>
+            
+            </tbody>
+          </table>
+
+          <div class="sketch-box">
+            <div class="sketch-header">
+              <span class="sketch-title">Technical Diagram / Schematic / Architectural Workflow (Complete Laptop Staging & Active Directory Onboarding Workflow)</span>
+            </div>
+            <div class="sketch-content">[New Laptop Hardware] ===> [UEFI / Secure Boot / TPM 2.0 Verification]
+                                    |
+[Clean Windows 11 Enterprise Install (GPT Partition Scheme)]
+                                    |
+[Custom .ppkg Provisioning] ---> Injects Wi-Fi, Root CA, Asset OEM Drivers
+                                    |
+[Software Suite Deployment] ---> M365 Apps, Zscaler VPN, CrowdStrike EDR
+                                    |
+[Active Directory Domain Join] -> cwg.local Domain -> GPO Policy Enforcement
+                                    |
+[BitLocker 256-bit Encryption] -> Recovery Key Escrowed to Active Directory
+                                    |
+[Final Quality Check & Physical Handover to Onboarding Corporate Staff]</div>
+          </div>
+
+          <div class="footer-signoff">
+            <div>
+              <div class="signoff-box-title">Student Comments & Key Learnings for the Week</div>
+              <div class="student-comment-text">"Acquired comprehensive practical mastery in end-to-end enterprise laptop staging, automated provisioning with .ppkg packages, essential enterprise security deployment, and Active Directory domain enrollment."</div>
+            </div>
+            <div>
+              <div class="signoff-box-title">Industry Supervisor</div>
+              <div class="signature-line"></div>
+              <div class="signature-caption">Signature & Date Stamp</div>
+            </div>
+            <div>
+              <div class="signoff-box-title">Institutional Supervisor</div>
+              <div class="signature-line"></div>
+              <div class="signature-caption">SIWES Coordinator Signature</div>
+            </div>
+          </div>
+        </div>
+        
+</body>
+</html>

@@ -518,6 +518,7 @@ A cornerstone of my IT support training was hands-on administration within the *
 - Resolving trust relationship failures between workstations and the primary domain controller (`Test-ComputerSecureChannel`).
 - Unlocking locked-out user accounts following consecutive failed logon attempts and executing secure password resets with mandatory password change upon next logon.
 - Assigning granular NTFS folder permissions and Access Control Lists (ACLs) to network share drives based on Security Group memberships.
+- **Strategic Importance of Active Directory in Enterprise Operations:** In large-scale corporate environments like CWG Plc, Active Directory provides centralized identity management, single point of administration, and deterministic compliance enforcement. Without AD DS, managing hundreds of disparate workstations would require manual local account creation, impossible credential auditing, and fragmented security controls. AD guarantees that permissions, corporate software deployments, security certificates, and BitLocker recovery keys remain unified and cryptographically verifiable across the entire enterprise network.
 
 #### 3.2.4 Computer Hardware Maintenance, Component-Level Repairs, and Upgrades
 Beyond software diagnostics, I performed physical hardware repairs on corporate workstations and laptops (predominantly Dell Latitude and HP EliteBook series).
